@@ -11,11 +11,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.mail.MessagingException;
-import javax.servlet.http.HttpServletRequest;
 
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/v1/users")
 public class UserController {
 
     @Autowired
@@ -23,8 +22,8 @@ public class UserController {
 
 
 
-    @PostMapping("/register")
-    public ResponseEntity<?> registerUser(@RequestBody UserRegistrationDto userRegistration) throws MessagingException, UserAlreadyExistException {
+    @PostMapping("/")
+    public ResponseEntity<?> registerUser(@RequestBody UserRegistrationDto userRegistration) throws Exception {
         userServiceImpl.registerUser(userRegistration);
         return new ResponseEntity<>("Registration successful. Please check your mail for confirmation", HttpStatus.OK);
     }

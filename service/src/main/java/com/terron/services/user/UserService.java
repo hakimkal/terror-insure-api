@@ -12,7 +12,7 @@ import javax.mail.MessagingException;
 
 public interface UserService {
 
-    void registerUser(UserRegistrationDto userRegistrationDto) throws UserAlreadyExistException, MessagingException;
+    void registerUser(UserRegistrationDto userRegistrationDto) throws Exception;
 
     void confirmUser(String token) throws NotFoundException;
 

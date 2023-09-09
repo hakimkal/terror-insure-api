@@ -1,49 +1,56 @@
 package com.terron.services.email;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import javax.mail.internet.MimeMessage;
 
-import javax.mail.MessagingException;
-
-import static com.terron.services.utils.UrlConstant.REGISTER_URL;
-import static com.terron.services.utils.UrlConstant.RESET_URL;
+import java.util.Properties;
 
 @Service
 @Slf4j
 public class EmailServiceImpl implements EmailService {
 
-    @Autowired
-    JavaMailSender javaMailSender;
+    private static final JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
 
+    private final static String USERNAME = "o.ifeoluwah@gmail.com";
+    private final static String PASSWORD = "uwafe5983";
 
-    public void sendEmail(SimpleMailMessage email) {
-        javaMailSender.send(email);
-    }
+    @Override
+    @Async
+    public void sendNotification( String fromAddress, String senderName, String toAddress, String subject, String redirectLink, String content) throws Exception {
+        Properties mailProp = mailSender.getJavaMailProperties();
+        mailProp.setProperty("mail.mime.address.strict", "false");
+        mailProp.put("mail.transport.protocol", "smtp");
+        mailProp.put("mail.smtp.auth", "true");
+        mailProp.put("mail.smtp.starttls.enable", "true");
+        mailProp.put("mail.smtp.starttls.required", "true");
+        mailProp.put("mail.debug", "true");
+        mailProp.put("mail.smtp.ssl.enable", "true");
+        mailProp.put("mail.host", "smtp.gmail.com");
+        mailProp.put("mail.port", 465);
+        mailProp.put("mail.default-encoding", "UTF-8");
 
-    public void sendConfirmationMail(String email, String token) throws MessagingException {
-        final SimpleMailMessage mailMessage = new SimpleMailMessage();
+        MimeMessage mimeMessage = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(mimeMessage);
 
-        mailMessage.setTo(email);
-        mailMessage.setSubject("Mail Confirmation Link!");
-        mailMessage.setFrom("o.ifeoluwah@gmail.com");
-        mailMessage.setText(
-                "Thank you for registering. Please click on the below link to activate your account." +
-                        REGISTER_URL + token);
-        sendEmail(mailMessage);
-    }
-    public void sendResetPasswordMail(String email, String token) throws MessagingException {
-        final SimpleMailMessage mailMessage = new SimpleMailMessage();
+        try{
+            helper.setFrom(fromAddress, senderName);
+            helper.setTo(toAddress);
+            helper.setSubject(subject);
+            helper.setText(content, true);
 
-        mailMessage.setTo(email);
-        mailMessage.setSubject("Reset Password Confirmation Link!");
-        mailMessage.setFrom("o.ifeoluwah@gmail.com");
-        mailMessage.setText(
-                "Please click on the below link to reset your password.\n\t" +
-                        RESET_URL + token);
-        sendEmail(mailMessage);
+        } catch (Exception ex) {
+            throw new Exception("There is a problem with the encoding of your message", ex);
+        }
+//        } catch (MessagingException ex){
+//            throw new FizbizException("There is a problem with your message", ex);
+//        }
+        mailSender.setUsername(USERNAME);
+        mailSender.setPassword(PASSWORD);
+        mailSender.send(mimeMessage);
     }
 
 }

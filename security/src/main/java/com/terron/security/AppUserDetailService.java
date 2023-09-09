@@ -3,6 +3,8 @@ package com.terron.security;
 import com.terron.models.user.UserRole;
 import com.terron.models.user.Users;
 import com.terron.repository.user.UserRepository;
+import javassist.NotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -10,42 +12,41 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.security.core.userdetails.User;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 
 @Service
+@Slf4j
 public class AppUserDetailService implements UserDetailsService {
 
     @Autowired
     UserRepository userRepository;
 
     @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        Optional<Users> user = userRepository.findByEmailAddress(email);
-
-        if (user.isEmpty()) {
-            throw new UsernameNotFoundException("user does not exist");
+    public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
+        Users user = null;
+        try {
+            user = userRepository.findByEmailAddress(s).orElseThrow(() -> new NotFoundException(String.format("User with this email: %s does not exist", s)));
+        } catch (NotFoundException e) {
+            throw new UsernameNotFoundException("Invalid credentials");
         }
-
-        if(user.get().isActive())
-            return new org.springframework.security.core.userdetails.User(user.get().getEmailAddress(), user.get().getPassword(), getAuthorities(user.get().getRole()));
-
-        return null;
+        return new User(user.getEmailAddress(), user.getPassword(), getAuthorities(user.getRole()));
 
     }
 
-    private Collection<GrantedAuthority> getGrantedAuthorities(UserRole roles) {
+    private Collection<GrantedAuthority> getGrantedAuthorities(UserRole role) {
+
         List<GrantedAuthority> grantedAuthorities = new ArrayList<>();
-            grantedAuthorities.add(new SimpleGrantedAuthority(String.valueOf(roles)));
 
-            return grantedAuthorities;
+        grantedAuthorities.add(new SimpleGrantedAuthority(String.valueOf(role)));
+
+        return grantedAuthorities;
     }
 
-
-    public Collection<? extends GrantedAuthority> getAuthorities(UserRole authorities) {
-        return getGrantedAuthorities(authorities);
+    public Collection<? extends GrantedAuthority> getAuthorities(UserRole role){
+        return getGrantedAuthorities(role);
     }
 }
