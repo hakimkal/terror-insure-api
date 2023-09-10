@@ -1,40 +1,11 @@
-/Users/user/terron backend/data/src/main/java/com/terron/dto/InvitedEmployeeDto.java
-/Users/user/terron backend/data/src/main/java/com/terron/dto/UserRegistrationDto.java
-/Users/user/terron backend/data/src/main/java/com/terron/repository/organization/OrganizationRepository.java
-/Users/user/terron backend/data/src/main/java/com/terron/models/professional/ProfessionType.java
-/Users/user/terron backend/data/src/main/java/com/terron/repository/professional/ScheduleRepository.java
-/Users/user/terron backend/data/src/main/java/com/terron/models/client/Clients.java
-/Users/user/terron backend/data/src/main/java/com/terron/models/Clinic.java
-/Users/user/terron backend/data/src/main/java/com/terron/models/assessment/AssessmentType.java
-/Users/user/terron backend/data/src/main/java/com/terron/dto/ScheduleDto.java
-/Users/user/terron backend/data/src/main/java/com/terron/models/client/MedicalRecord.java
-/Users/user/terron backend/data/src/main/java/com/terron/dto/UpdateProfileDto.java
-/Users/user/terron backend/data/src/main/java/com/terron/models/professional/Professional.java
-/Users/user/terron backend/data/src/main/java/com/terron/dto/ClientDto.java
-/Users/user/terron backend/data/src/main/java/com/terron/repository/professional/ProfessionalRepository.java
-/Users/user/terron backend/data/src/main/java/com/terron/models/appointment/SessionRecord.java
-/Users/user/terron backend/data/src/main/java/com/terron/models/wallet/Wallet.java
-/Users/user/terron backend/data/src/main/java/com/terron/models/organization/Organization.java
-/Users/user/terron backend/data/src/main/java/com/terron/dto/DtoUserMapper.java
-/Users/user/terron backend/data/src/main/java/com/terron/repository/organization/OrganizationInviteeRepository.java
-/Users/user/terron backend/data/src/main/java/com/terron/models/professional/schedule/ScheduleTime.java
-/Users/user/terron backend/data/src/main/java/com/terron/dto/OrganizationDto.java
-/Users/user/terron backend/data/src/main/java/com/terron/dto/UpdatePasswordDto.java
-/Users/user/terron backend/data/src/main/java/com/terron/models/user/UserRole.java
-/Users/user/terron backend/data/src/main/java/com/terron/models/address/Address.java
-/Users/user/terron backend/data/src/main/java/com/terron/models/organization/SubscriptionType.java
-/Users/user/terron backend/data/src/main/java/com/terron/models/client/Prescription.java
-/Users/user/terron backend/data/src/main/java/com/terron/models/appointment/Visit.java
-/Users/user/terron backend/data/src/main/java/com/terron/models/user/TherapyParty.java
-/Users/user/terron backend/data/src/main/java/com/terron/repository/client/ClientRepository.java
-/Users/user/terron backend/data/src/main/java/com/terron/models/organization/OrganizationInvitee.java
-/Users/user/terron backend/data/src/main/java/com/terron/dto/ProfessionalDto.java
-/Users/user/terron backend/data/src/main/java/com/terron/models/review/Review.java
-/Users/user/terron backend/data/src/main/java/com/terron/models/appointment/Visit_type.java
-/Users/user/terron backend/data/src/main/java/com/terron/repository/user/UserRepository.java
-/Users/user/terron backend/data/src/main/java/com/terron/models/user/Gender.java
-/Users/user/terron backend/data/src/main/java/com/terron/models/bookAppointment/BookAppointment.java
-/Users/user/terron backend/data/src/main/java/com/terron/models/appointment/Appointment.java
-/Users/user/terron backend/data/src/main/java/com/terron/models/assessment/Suggestions.java
-/Users/user/terron backend/data/src/main/java/com/terron/DataConfig.java
-/Users/user/terron backend/data/src/main/java/com/terron/models/assessment/Assessment.java
+/Users/user/terronApi/data/src/main/java/com/terron/models/user/Users.java
+/Users/user/terronApi/data/src/main/java/com/terron/models/company/CompanyType.java
+/Users/user/terronApi/data/src/main/java/com/terron/models/user/UserRole.java
+/Users/user/terronApi/data/src/main/java/com/terron/dto/UpdatePasswordDto.java
+/Users/user/terronApi/data/src/main/java/com/terron/repository/user/UserRepository.java
+/Users/user/terronApi/data/src/main/java/com/terron/dto/UpdateProfileDto.java
+/Users/user/terronApi/data/src/main/java/com/terron/dto/UserRegistrationDto.java
+/Users/user/terronApi/data/src/main/java/com/terron/dto/OnboardCompanyDto.java
+/Users/user/terronApi/data/src/main/java/com/terron/repository/company/CompanyRepository.java
+/Users/user/terronApi/data/src/main/java/com/terron/models/company/Company.java
+/Users/user/terronApi/data/src/main/java/com/terron/DataConfig.java

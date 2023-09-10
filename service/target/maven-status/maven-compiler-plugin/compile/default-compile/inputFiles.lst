@@ -1,17 +1,8 @@
-/Users/user/terron backend/service/src/main/java/com/terron/services/client/ClientServiceImpl.java
-/Users/user/terron backend/service/src/main/java/com/terron/exceptions/UserAlreadyExistException.java
-/Users/user/terron backend/service/src/main/java/com/terron/services/professional/ProfessionalServiceImpl.java
-/Users/user/terron backend/service/src/main/java/com/terron/services/client/ClientService.java
-/Users/user/terron backend/service/src/main/java/com/terron/services/professional/ScheduleServiceImpl.java
-/Users/user/terron backend/service/src/main/java/com/terron/services/user/UserService.java
-/Users/user/terron backend/service/src/main/java/com/terron/exceptions/UserNotFoundException.java
-/Users/user/terron backend/service/src/main/java/com/terron/services/user/UserServiceImpl.java
-/Users/user/terron backend/service/src/main/java/com/terron/services/email/EmailServiceImpl.java
-/Users/user/terron backend/service/src/main/java/com/terron/services/organization/OrganizationServiceImpl.java
-/Users/user/terron backend/service/src/main/java/com/terron/services/professional/ScheduleService.java
-/Users/user/terron backend/service/src/main/java/com/terron/services/organization/OrganizationService.java
-/Users/user/terron backend/service/src/main/java/com/terron/services/organization/OrganizationInviteeService.java
-/Users/user/terron backend/service/src/main/java/com/terron/services/email/EmailService.java
-/Users/user/terron backend/service/src/main/java/com/terron/services/utils/UrlConstant.java
-/Users/user/terron backend/service/src/main/java/com/terron/services/organization/OrganizationInviteeServiceImpl.java
-/Users/user/terron backend/service/src/main/java/com/terron/services/professional/ProfessionalService.java
+/Users/user/terronApi/service/src/main/java/com/terron/services/user/UserServiceImpl.java
+/Users/user/terronApi/service/src/main/java/com/terron/exceptions/UserAlreadyExistException.java
+/Users/user/terronApi/service/src/main/java/com/terron/services/email/EmailServiceImpl.java
+/Users/user/terronApi/service/src/main/java/com/terron/services/company/CompanyService.java
+/Users/user/terronApi/service/src/main/java/com/terron/services/utils/UrlConstant.java
+/Users/user/terronApi/service/src/main/java/com/terron/services/email/EmailService.java
+/Users/user/terronApi/service/src/main/java/com/terron/services/user/UserService.java
+/Users/user/terronApi/service/src/main/java/com/terron/exceptions/UserNotFoundException.java

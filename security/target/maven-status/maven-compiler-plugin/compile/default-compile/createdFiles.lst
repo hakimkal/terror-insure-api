@@ -1,4 +1,6 @@
-com/terron/security/CorsFilter.class
+com/terron/securityDto/ResponseDto.class
+com/terron/securityDto/UnsuccessfulLogin.class
+com/terron/securityDto/ResponseDto$ResponseDtoBuilder.class
 com/terron/security/JWTAuthenticationFilter.class
 com/terron/security/JWTAuthorizationFilter.class
 com/terron/security/SecurityConstant.class

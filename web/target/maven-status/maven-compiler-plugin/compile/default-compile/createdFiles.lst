@@ -1,6 +1,2 @@
-com/terron/controller/controllers/UserController.class
-com/terron/controller/controllers/ClientController.class
-com/terron/controller/controllers/OrganizationController.class
-com/terron/controller/controllers/ProfessionalController.class
 com/terron/TerronApplication.class
-com/terron/controller/controllers/ScheduleController.class
+com/terron/controller/controllers/UserController.class
