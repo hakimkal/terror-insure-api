@@ -21,6 +21,7 @@
 	<name>terron</name>
 	<description>Hotel Reservation Management</description>
 
+
 	<properties>
 		<java.version>11</java.version>
 		<maven.compiler.source>11</maven.compiler.source>
@@ -59,13 +60,6 @@
 			<version>2.0.1.Final</version>
 		</dependency>
 	</dependencies>
-
-	<build>
-		<plugins>
-
-
-		</plugins>
-	</build>
 
 
 </project>

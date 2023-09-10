@@ -1,6 +1,6 @@
 Procfile
 HELP.md
-target/
+#target/
 .mvn
 !**/src/main/**
 !**/src/test/**
