@@ -7,6 +7,7 @@ com/terron/models/company/Company.class
 com/terron/repository/company/CompanyRepository.class
 com/terron/models/user/Users.class
 com/terron/models/company/Company$CompanyBuilder.class
+com/terron/dto/RequestResetPasswordDto.class
 com/terron/models/user/Users$UsersBuilder.class
 com/terron/repository/user/UserRepository.class
 com/terron/DataConfig.class

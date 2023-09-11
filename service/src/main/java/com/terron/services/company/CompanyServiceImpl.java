@@ -9,10 +9,12 @@ import com.terron.repository.company.CompanyRepository;
 import com.terron.repository.user.UserRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.mapping.Component;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.validation.constraints.NotNull;
 
 @Slf4j
 @Service
@@ -28,19 +30,13 @@ public class CompanyServiceImpl implements CompanyService{
 
 
     @Override
-    public void onboardCompany(OnboardCompanyDto onboardCompanyDto) throws Exception {
-        Company company;
-        boolean userExists = userRepository
-                .existsById(onboardCompanyDto.getUserId());
-
-        if (!userExists) {
-            throw new UserAlreadyExistException(String.format("User with id: %s does not exists", onboardCompanyDto.getUserId()));
-        }
-
-        company = modelMapper.map(onboardCompanyDto, Company.class);
-        companyRepository.save(company);
-        Users user = userRepository.findById(onboardCompanyDto.getUserId()).get();
-        user.setCompany(company);
-        userRepository.save(user);
+    @Transactional
+    public Company onboardCompany(Long userId,OnboardCompanyDto onboardCompanyDto) throws UserAlreadyExistException {
+        Users user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserAlreadyExistException("User with id: " + userId + " does not exist"));
+        Company company = modelMapper.map(onboardCompanyDto, Company.class);
+        company.addUser(user);
+        return companyRepository.save(company);
     }
+
 }

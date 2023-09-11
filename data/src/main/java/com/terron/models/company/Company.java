@@ -1,5 +1,6 @@
 package com.terron.models.company;
 
+import com.terron.models.user.Users;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -7,6 +8,8 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Data
@@ -43,4 +46,13 @@ public class Company {
     private String address;
     private String contactPersonFirstname;
     private String contactPersonLastname;
+    @OneToMany(mappedBy = "company")
+    private List<Users> users;
+
+    public void addUser(Users user){
+        if(users == null){
+            users = new ArrayList<>();
+        }
+        users.add(user);
+    }
 }

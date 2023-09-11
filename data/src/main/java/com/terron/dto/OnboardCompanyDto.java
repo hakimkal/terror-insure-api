@@ -11,8 +11,6 @@ import javax.validation.constraints.NotNull;
 @Data
 public class OnboardCompanyDto {
 
-    @NotNull
-    private Long userId;
     private String officialEmailAddress;
     private String companyName;
     @Enumerated(value = EnumType.ORDINAL)

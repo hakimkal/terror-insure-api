@@ -1,4 +1,5 @@
 /Users/user/terronApi/data/src/main/java/com/terron/models/user/Users.java
+/Users/user/terronApi/data/src/main/java/com/terron/dto/RequestResetPasswordDto.java
 /Users/user/terronApi/data/src/main/java/com/terron/models/company/CompanyType.java
 /Users/user/terronApi/data/src/main/java/com/terron/models/user/UserRole.java
 /Users/user/terronApi/data/src/main/java/com/terron/dto/UpdatePasswordDto.java
