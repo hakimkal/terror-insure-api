@@ -40,9 +40,15 @@ public class Users {
     @Enumerated(value = EnumType.ORDINAL)
     private UserRole role;
 
-    private boolean active;
+    private String modifiedDate;
 
-    @OneToOne
+    private String registeredDate;
+
+    private Boolean isActive;
+
+    private Boolean isVerified;
+
+    @ManyToOne
+    @JoinColumn(name = "company_id")
     private Company company;
-
 }

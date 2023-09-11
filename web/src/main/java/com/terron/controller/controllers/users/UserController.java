@@ -1,14 +1,18 @@
 package com.terron.controller.controllers.users;
 
+import com.terron.dto.RequestResetPasswordDto;
 import com.terron.dto.UpdatePasswordDto;
 import com.terron.dto.UserRegistrationDto;
-import com.terron.exceptions.UserAlreadyExistException;
+import com.terron.models.user.Users;
+import com.terron.response.ResponseDetails;
+import com.terron.response.ResponseDetailsWithObject;
 import com.terron.services.user.UserServiceImpl;
-import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import javax.validation.Valid;
+import java.time.LocalDateTime;
 
 
 @RestController
@@ -21,25 +25,37 @@ public class UserController {
 
 
     @PostMapping("/")
-    public ResponseEntity<?> registerUser(@RequestBody UserRegistrationDto userRegistration) throws Exception {
+    public ResponseEntity<?> registerUser(@Valid @RequestBody UserRegistrationDto userRegistration) throws Exception {
         userServiceImpl.registerUser(userRegistration);
-        return new ResponseEntity<>("Registration successful. Please check your mail for confirmation", HttpStatus.OK);
+        ResponseDetails responseDetails = new ResponseDetails(LocalDateTime.now(), "Your account has been created successfully", "success");
+
+        return ResponseEntity.status(201).body(responseDetails);
     }
 
     @GetMapping("/confirm")
-    public ResponseEntity<?> confirmMail(@RequestParam("token") String token) throws NotFoundException {
+    public ResponseEntity<?> confirmMail(@RequestParam("token") String token) throws Exception {
         if(token == null){
             throw new IllegalStateException("Token can not be null");
         }else {
             userServiceImpl.confirmUser(token);
         }
 
-        return new ResponseEntity<>( "Verification successful", HttpStatus.OK);
+        ResponseDetails responseDetails = new ResponseDetails(LocalDateTime.now(), "Verification successful", "success");
+
+        return ResponseEntity.status(200).body(responseDetails);
+    }
+
+    @PostMapping ("/request-password-reset")
+    public ResponseEntity<?> RequestPasswordReset(@Valid @RequestBody RequestResetPasswordDto resetPasswordDto) throws Exception {
+        Users user = userServiceImpl.resetPassword(resetPasswordDto);
+        ResponseDetailsWithObject responseDetails = new ResponseDetailsWithObject(LocalDateTime.now(), "An email has been sent to you , reset your password",user.getVerificationToken(), "success");
+        return new ResponseEntity<>(responseDetails, HttpStatus.OK);
     }
 
     @PostMapping("/reset-password")
-    public ResponseEntity<?> confirmResetPasswordToken(@RequestParam("token") String token, @RequestBody UpdatePasswordDto updatePasswordDto) throws NotFoundException {
+    public ResponseEntity<?> confirmResetPasswordToken(@RequestParam("token") String token, @RequestBody UpdatePasswordDto updatePasswordDto) throws Exception {
         userServiceImpl.confirmResetPassword(token, updatePasswordDto);
-        return new ResponseEntity<>( "Password reset successfully", HttpStatus.OK);
+        ResponseDetails responseDetails = new ResponseDetails(LocalDateTime.now(), "Password rest successful", "success");
+        return new ResponseEntity<>(responseDetails, HttpStatus.OK);
     }
 }

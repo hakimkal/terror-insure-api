@@ -1,22 +1,17 @@
 package com.terron.services.user;
 
+import com.terron.dto.RequestResetPasswordDto;
 import com.terron.dto.UpdatePasswordDto;
-import com.terron.dto.UpdateProfileDto;
 import com.terron.dto.UserRegistrationDto;
-import com.terron.exceptions.UserAlreadyExistException;
-import com.terron.exceptions.UserNotFoundException;
-import javassist.NotFoundException;
-
-
-import javax.mail.MessagingException;
+import com.terron.models.user.Users;
 
 public interface UserService {
 
     void registerUser(UserRegistrationDto userRegistrationDto) throws Exception;
 
-    void confirmUser(String token) throws NotFoundException;
+    void confirmUser(String token) throws Exception;
 
-    void confirmResetPassword(String token, UpdatePasswordDto updatePasswordDto) throws NotFoundException;
+    void confirmResetPassword(String token, UpdatePasswordDto updatePasswordDto) throws Exception;
 
-    void resetPassword(UpdatePasswordDto passwordDto) throws MessagingException, NotFoundException;
+    Users resetPassword(RequestResetPasswordDto passwordDto) throws Exception;
 }

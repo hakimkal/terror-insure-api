@@ -5,4 +5,5 @@
 /Users/user/terronApi/service/src/main/java/com/terron/services/utils/UrlConstant.java
 /Users/user/terronApi/service/src/main/java/com/terron/services/email/EmailService.java
 /Users/user/terronApi/service/src/main/java/com/terron/services/user/UserService.java
+/Users/user/terronApi/service/src/main/java/com/terron/services/company/CompanyServiceImpl.java
 /Users/user/terronApi/service/src/main/java/com/terron/exceptions/UserNotFoundException.java

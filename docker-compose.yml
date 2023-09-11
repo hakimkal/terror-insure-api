@@ -10,7 +10,7 @@
 #    expose:
 #      - 5434
 #    ports:
-#      - "5434:5434"
+#      - "5434:5432"
 #    environment:
 #      - POSTGRES_PASSWORD=uwafe5983
 #      - POSTGRES_USER=postgres

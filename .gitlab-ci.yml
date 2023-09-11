@@ -1,0 +1,47 @@
+# Use the appropriate Docker image that includes the necessary build tools.
+image: docker:latest
+
+services:
+  - docker:dind
+
+stages:
+  - docker build
+  - docker push
+
+before_script:
+  # Login to Gitlab Container Registry using your credentials or tokens.
+  # Modify the login command according to your GitLab setup.
+  - echo $CI_JOB_TOKEN | docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+
+build:
+  stage: build
+  only:
+    refs:
+      - dev
+  script:
+    - docker build -t terronapi_img/terrorapi:latest .
+    - docker push terronapi_img/terronapi:latest
+
+deploy:
+  stage: deploy
+  only:
+    refs:
+      - dev
+  image: alpine
+  environment:
+    name: dev
+  before_script:
+    - apk add openssh-client
+    - eval $(ssh-agent -s)
+
+    # Set up SSH key for authentication during deployment.
+    # Replace 'your-private-key' with your actual private key.
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - echo -e "$CI_REGISTRY_PASSWORD" > ~/.ssh/id_rsa
+    - chmod 700 ~/.ssh/id_rsa
+    - echo "$CI_REGISTRY_PASSWORD" | tr -d '\r' | ssh-add -
+
+  script:
+    - |
+      ssh -o StrictHostKeyChecking=no "$DEPLOY_USER@$DEPLOY_HOST" "your-deployment-command"
