@@ -36,23 +36,17 @@ public class Company {
     private String companyName;
     @Enumerated(value = EnumType.ORDINAL)
     private CompanyType companyType;
+    private String contactPersonCountryCode;
+    private String companyLogo;
     private String branch;
     private String contactPersonPhoneNumber;
     @Column(unique = true)
     private String cacNumber;
-    private String registrationDate;
+    private String cacRegistrationDate;
     private String state;
     private String lga;
     private String address;
+    private String gpsCoordinate;
     private String contactPersonFirstname;
     private String contactPersonLastname;
-    @OneToMany(mappedBy = "company")
-    private List<Users> users;
-
-    public void addUser(Users user){
-        if(users == null){
-            users = new ArrayList<>();
-        }
-        users.add(user);
-    }
 }

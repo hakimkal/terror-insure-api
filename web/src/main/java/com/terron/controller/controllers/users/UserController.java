@@ -1,5 +1,6 @@
 package com.terron.controller.controllers.users;
 
+import com.terron.dto.ChangePasswordDto;
 import com.terron.dto.RequestResetPasswordDto;
 import com.terron.dto.UpdatePasswordDto;
 import com.terron.dto.UserRegistrationDto;
@@ -24,12 +25,12 @@ public class UserController {
 
 
 
-    @PostMapping("/")
-    public ResponseEntity<?> registerUser(@Valid @RequestBody UserRegistrationDto userRegistration) throws Exception {
-        userServiceImpl.registerUser(userRegistration);
-        ResponseDetails responseDetails = new ResponseDetails(LocalDateTime.now(), "Your account has been created successfully", "success");
+    @PatchMapping("/change-password")
+    public ResponseEntity<?> changePassword(@Valid @RequestBody ChangePasswordDto changePasswordDto) throws Exception {
+        userServiceImpl.changePassword(changePasswordDto);
+        ResponseDetails responseDetails = new ResponseDetails(LocalDateTime.now(), "You have successfully changed your password", "success");
 
-        return ResponseEntity.status(201).body(responseDetails);
+        return ResponseEntity.status(200).body(responseDetails);
     }
 
     @GetMapping("/confirm")

@@ -39,6 +39,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .permitAll()
                 .antMatchers(HttpMethod.GET, "/v1/users/confirm")
                 .permitAll()
+                .antMatchers(HttpMethod.PATCH, "/v1/users/change-password")
+                .permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .addFilter(new JWTAuthenticationFilter(authenticationManager(), context))

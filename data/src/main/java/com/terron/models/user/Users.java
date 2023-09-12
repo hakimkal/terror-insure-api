@@ -33,6 +33,12 @@ public class Users {
     @Column(unique = true)
     private String emailAddress;
 
+    private String firstName;
+
+    private String lastName;
+
+    private String phoneNumber;
+
     private String password;
 
     String verificationToken;
@@ -48,7 +54,5 @@ public class Users {
 
     private Boolean isVerified;
 
-    @ManyToOne
-    @JoinColumn(name = "company_id")
-    private Company company;
+    private Long companyId;
 }
