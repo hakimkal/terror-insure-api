@@ -11,4 +11,5 @@ com/terron/dto/RequestResetPasswordDto.class
 com/terron/models/user/Users$UsersBuilder.class
 com/terron/repository/user/UserRepository.class
 com/terron/DataConfig.class
+com/terron/dto/ChangePasswordDto.class
 com/terron/dto/UserRegistrationDto.class
