@@ -59,4 +59,11 @@ public class UserController {
         ResponseDetails responseDetails = new ResponseDetails(LocalDateTime.now(), "Password rest successful", "success");
         return new ResponseEntity<>(responseDetails, HttpStatus.OK);
     }
+
+    @GetMapping ("/{userId}")
+    public ResponseEntity<?> getSingleUser(@PathVariable Long userId) throws Exception {
+        Users user = userServiceImpl.getUserById(userId);
+        ResponseDetailsWithObject responseDetails = new ResponseDetailsWithObject(LocalDateTime.now(), "User gotten successfully",user, "success");
+        return new ResponseEntity<>(responseDetails, HttpStatus.OK);
+    }
 }

@@ -123,4 +123,9 @@ public class UserServiceImpl implements UserService {
         return user;
     }
 
+    public Users getUserById(Long id) throws NotFoundException {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(String.format("User with this id: %s does not exist", id)));
+    }
+
 }
