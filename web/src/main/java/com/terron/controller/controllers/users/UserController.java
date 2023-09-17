@@ -53,6 +53,13 @@ public class UserController {
         return new ResponseEntity<>(responseDetails, HttpStatus.OK);
     }
 
+    @PostMapping ("/register")
+    public ResponseEntity<?> registerUser(@Valid @RequestBody UserRegistrationDto userRegistrationDto) throws Exception {
+        Users user = userServiceImpl.registerUser(userRegistrationDto);
+        ResponseDetailsWithObject responseDetails = new ResponseDetailsWithObject(LocalDateTime.now(), "Registration successful",user, "success");
+        return new ResponseEntity<>(responseDetails, HttpStatus.CREATED);
+    }
+
     @PostMapping("/reset-password")
     public ResponseEntity<?> confirmResetPasswordToken(@RequestParam("token") String token, @RequestBody UpdatePasswordDto updatePasswordDto) throws Exception {
         userServiceImpl.confirmResetPassword(token, updatePasswordDto);
@@ -64,6 +71,13 @@ public class UserController {
     public ResponseEntity<?> getSingleUser(@PathVariable Long userId) throws Exception {
         Users user = userServiceImpl.getUserById(userId);
         ResponseDetailsWithObject responseDetails = new ResponseDetailsWithObject(LocalDateTime.now(), "User gotten successfully",user, "success");
+        return new ResponseEntity<>(responseDetails, HttpStatus.OK);
+    }
+
+    @GetMapping ("/")
+    public ResponseEntity<?> getUser(@RequestParam("token") String token) throws Exception {
+        Users user = userServiceImpl.getUserByToken(token);
+        ResponseDetailsWithObject responseDetails = new ResponseDetailsWithObject(LocalDateTime.now(), "User gotten successfully", user, "success");
         return new ResponseEntity<>(responseDetails, HttpStatus.OK);
     }
 }

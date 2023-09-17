@@ -1,4 +1,4 @@
-package com.terron.response;
+package com.terron.exception;
 
 public class TerronException extends Exception{
     public TerronException() {

@@ -2,7 +2,6 @@ package com.terron.exception;
 
 import com.terron.response.InputValidationErrorDetails;
 import com.terron.response.ResponseDetails;
-import com.terron.response.TerronException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

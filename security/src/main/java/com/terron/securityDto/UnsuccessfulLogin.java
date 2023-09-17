@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class UnsuccessfulLogin {
 
-    private LocalDateTime date;
+    private String date;
 
     private String message;
 
