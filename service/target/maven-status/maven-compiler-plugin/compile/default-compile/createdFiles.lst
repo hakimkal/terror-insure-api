@@ -1,4 +1,5 @@
 com/terron/exceptions/UserAlreadyExistException.class
+com/terron/services/utils/PaginationModel.class
 com/terron/services/utils/UrlConstant.class
 com/terron/services/email/EmailService.class
 com/terron/services/company/CompanyServiceImpl.class

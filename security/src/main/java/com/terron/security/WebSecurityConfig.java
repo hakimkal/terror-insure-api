@@ -1,5 +1,6 @@
 package com.terron.security;
 
+import com.terron.models.user.UserRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
