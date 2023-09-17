@@ -1,5 +1,6 @@
 package com.terron.dto;
 
+import com.terron.models.user.UserRole;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,4 +17,6 @@ public class UserRegistrationDto {
     private String emailAddress;
     @NotBlank
     private String password;
+
+    private UserRole role;
 }

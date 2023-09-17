@@ -1,6 +1,13 @@
 package com.terron.services.user;
 
+import com.auth0.jwt.JWT;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.terron.dto.*;
+import com.terron.exceptions.UserAlreadyExistException;
+import com.terron.models.company.Company;
+import com.terron.models.user.UserRole;
 import com.terron.models.user.Users;
 import com.terron.repository.user.UserRepository;
 import com.terron.services.email.EmailServiceImpl;
@@ -14,10 +21,14 @@ import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Base64;
 import java.util.Random;
 import java.util.UUID;
+
+import static com.terron.security.SecurityConstant.SECRET;
 
 @Slf4j
 @Service
@@ -128,4 +139,36 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new NotFoundException(String.format("User with this id: %s does not exist", id)));
     }
 
+    public Users getUserByToken(String token) throws NotFoundException {
+        String[] chunks = token.split("\\.");
+        Base64.Decoder decoder = Base64.getUrlDecoder();
+
+        String payload = new String(decoder.decode(chunks[1]));
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode jsonNode = null;
+        try {
+            jsonNode = objectMapper.readTree(payload);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        String subject = jsonNode.get("sub").asText();
+        return userRepository.findByEmailAddress(subject)
+                .orElseThrow(() -> new NotFoundException(String.format("User with this id: %s does not exist", subject)));
+    }
+
+    public Users registerUser(UserRegistrationDto userRegistrationDto) throws Exception {
+        Boolean userExists = userRepository.existsByEmailAddress(userRegistrationDto.getEmailAddress());
+        if (userExists) {
+            throw new UserAlreadyExistException(String.format("User with email address: %s already exists", userRegistrationDto.getEmailAddress()));
+
+        }
+        Users user = modelMapper.map(userRegistrationDto, Users.class);
+        user.setPassword(encoder.encode(userRegistrationDto.getPassword()));
+        user.setIsVerified(true);
+        user.setIsActive(true);
+        user.setModifiedDate(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy hh:mm:ss")));
+        user.setRegisteredDate(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy hh:mm:ss")));
+        user = userRepository.save(user);
+        return user;
+    }
 }
