@@ -36,7 +36,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers(HttpMethod.POST, "/v1/users/",
                         "/v1/users/request-password-reset",
-                        "/v1/users/reset-password", "/register")
+                        "/v1/users/reset-password", "/register", "/v1/company/onboard")
                 .permitAll()
                 .antMatchers(HttpMethod.GET, "/v1/users/confirm")
                 .permitAll()
