@@ -49,4 +49,5 @@ public class Company {
     private String gpsCoordinate;
     private String contactPersonFirstname;
     private String contactPersonLastname;
+    private String registeredDate;
 }
