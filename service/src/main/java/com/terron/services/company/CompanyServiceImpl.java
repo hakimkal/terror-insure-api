@@ -57,6 +57,11 @@ public class CompanyServiceImpl implements CompanyService{
             throw new UserAlreadyExistException(String.format("Company with email address: %s already exists", onboardCompanyDto.getOfficialEmailAddress()));
 
         }
+        Boolean companyExistsByCac = companyRepository.existsByCacNumber(onboardCompanyDto.getCacNumber());
+        if (companyExistsByCac) {
+            throw new UserAlreadyExistException(String.format("Company with cac number: %s already exists", onboardCompanyDto.getCacNumber()));
+
+        }
         Company company = modelMapper.map(onboardCompanyDto, Company.class);
         company.setRegisteredDate(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy hh:mm:ss")));
         company = companyRepository.save(company);
