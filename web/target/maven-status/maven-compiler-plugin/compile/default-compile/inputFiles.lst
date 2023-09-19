@@ -1,5 +1,6 @@
 /Users/user/terronApi/web/src/main/java/com/terron/response/ResponseDetails.java
 /Users/user/terronApi/web/src/main/java/com/terron/response/InputValidationErrorDetails.java
+/Users/user/terronApi/web/src/main/java/com/terron/config/SwaggerConfig.java
 /Users/user/terronApi/web/src/main/java/com/terron/controller/controllers/users/UserController.java
 /Users/user/terronApi/web/src/main/java/com/terron/exception/GeneralExceptionHandler.java
 /Users/user/terronApi/web/src/main/java/com/terron/response/ResponseDetailsWithObject.java

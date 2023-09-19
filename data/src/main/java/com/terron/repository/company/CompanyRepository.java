@@ -14,6 +14,8 @@ import java.util.List;
 public interface CompanyRepository extends JpaRepository<Company, Integer> {
     Boolean existsByOfficialEmailAddress(String email);
 
+    Boolean existsByCacNumber(String cacNumber);
+
     Page<Company> findByCompanyTypeAndCompanyNameContainingOrCacNumberContaining(CompanyType companyType,String name, String cacNumber, Pageable pagination);
 
     Page<Company> findByCompanyTypeAndState(CompanyType companyType,String state, Pageable pagination);
