@@ -16,6 +16,7 @@ import org.springframework.security.core.userdetails.User;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -33,20 +34,13 @@ public class AppUserDetailService implements UserDetailsService {
         } catch (NotFoundException e) {
             throw new UsernameNotFoundException("Invalid credentials");
         }
+        Object test = new User(user.getEmailAddress(), user.getPassword(), getAuthorities(user.getRole()));
+        log.info("User -> {}",test );
         return new User(user.getEmailAddress(), user.getPassword(), getAuthorities(user.getRole()));
 
     }
 
-    private Collection<GrantedAuthority> getGrantedAuthorities(UserRole role) {
-
-        List<GrantedAuthority> grantedAuthorities = new ArrayList<>();
-
-        grantedAuthorities.add(new SimpleGrantedAuthority(String.valueOf(role)));
-
-        return grantedAuthorities;
-    }
-
-    public Collection<? extends GrantedAuthority> getAuthorities(UserRole role){
-        return getGrantedAuthorities(role);
+    private Collection<? extends GrantedAuthority> getAuthorities(UserRole role) {
+        return Collections.singleton(new SimpleGrantedAuthority("ROLE_" + role.toString()));
     }
 }

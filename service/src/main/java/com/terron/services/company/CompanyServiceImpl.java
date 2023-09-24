@@ -9,7 +9,7 @@ import com.terron.models.user.Users;
 import com.terron.repository.company.CompanyRepository;
 import com.terron.repository.user.UserRepository;
 import com.terron.services.email.EmailServiceImpl;
-import com.terron.services.utils.PaginationModel;
+import com.terron.services.utils.HotelPaginationModel;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -27,8 +27,6 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
 @Slf4j
@@ -88,7 +86,7 @@ public class CompanyServiceImpl implements CompanyService{
        return company;
     }
 
-    public PaginationModel getAllHotels(Integer page, Integer pageSize, String searchField, String state){
+    public HotelPaginationModel getAllHotels(Integer page, Integer pageSize, String searchField, String state){
         Page<Company> companies = null;
         Pageable pagination = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.ASC, "registeredDate"));
         try {
@@ -98,15 +96,15 @@ public class CompanyServiceImpl implements CompanyService{
                     ? companyRepository.findByCompanyTypeAndState(CompanyType.hotel,state, pagination)
                     : companyRepository.findAllByCompanyType(CompanyType.hotel, pagination);
 
-            PaginationModel paginationModel = new PaginationModel();
-            paginationModel.setTotalCount(companies.getTotalElements());
-            paginationModel.setData(companies.getContent());
+            HotelPaginationModel hotelPaginationModel = new HotelPaginationModel();
+            hotelPaginationModel.setTotalCount(companies.getTotalElements());
+            hotelPaginationModel.setData(companies.getContent());
             Long hotelCount = companyRepository.countAllByCompanyType(CompanyType.hotel);
-            paginationModel.setTotalHotels(hotelCount);
+            hotelPaginationModel.setTotalHotels(hotelCount);
             Long usersCount = userRepository.count();
-            paginationModel.setTotalUsers(usersCount);
+            hotelPaginationModel.setTotalUsers(usersCount);
 
-            return paginationModel;
+            return hotelPaginationModel;
         } finally {
             if (companies != null && companies instanceof Closeable) {
                 try {

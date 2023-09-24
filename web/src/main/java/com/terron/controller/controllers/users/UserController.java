@@ -14,6 +14,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.time.LocalDateTime;
+import java.util.Objects;
+
+import static com.terron.utils.utility.decodeToken;
 
 
 @RestController
@@ -54,7 +57,13 @@ public class UserController {
     }
 
     @PostMapping ("/register")
-    public ResponseEntity<?> registerUser(@Valid @RequestBody UserRegistrationDto userRegistrationDto) throws Exception {
+    public ResponseEntity<?> registerUser(@Valid @RequestBody UserRegistrationDto userRegistrationDto, @RequestHeader(name = "Authorization") String token) throws Exception {
+        String role = decodeToken(token);
+        if (!Objects.equals(role, "ROLE_COMPANY_OWNER") && !Objects.equals(role, "ROLE_ADMIN")) {
+            ResponseDetails responseDetails = new ResponseDetails(LocalDateTime.now(), "Access is denied", "error");
+            return new ResponseEntity<>(responseDetails, HttpStatus.FORBIDDEN);
+        }
+
         Users user = userServiceImpl.registerUser(userRegistrationDto);
         ResponseDetailsWithObject responseDetails = new ResponseDetailsWithObject(LocalDateTime.now(), "Registration successful",user, "success");
         return new ResponseEntity<>(responseDetails, HttpStatus.CREATED);
