@@ -8,4 +8,5 @@
 /Users/user/terronApi/web/src/main/java/com/terron/exception/GeneralExceptionHandler.java
 /Users/user/terronApi/web/src/main/java/com/terron/response/ResponseDetailsWithObject.java
 /Users/user/terronApi/web/src/main/java/com/terron/exception/TerronException.java
+/Users/user/terronApi/web/src/main/java/com/terron/controller/controllers/watchList/WatchListController.java
 /Users/user/terronApi/web/src/main/java/com/terron/TerronApplication.java

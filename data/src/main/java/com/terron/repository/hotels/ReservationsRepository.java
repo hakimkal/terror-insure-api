@@ -14,4 +14,10 @@ public interface ReservationsRepository extends JpaRepository<Reservations, Long
     Page<Reservations> findAllByCompanyIdAndCountryOfDeparture(Long companyId, String country, Pageable pagination);
 
     Page<Reservations> findAllByCompanyId(Long companyId, Pageable pagination);
+
+    Long countAllByCompanyId(Long companyId);
+
+    Page<Reservations> findByFirstNameContainingOrLastNameContainingOrReservationNumberContaining(String firstName, String lastName, String reservationNumber, Pageable pagination);
+
+    Page<Reservations> findAllByCountryOfDeparture( String country, Pageable pagination);
 }

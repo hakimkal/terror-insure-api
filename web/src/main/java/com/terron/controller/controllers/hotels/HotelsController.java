@@ -4,10 +4,13 @@ import com.terron.dto.CreateReservationDto;
 import com.terron.exceptions.UserAlreadyExistException;
 import com.terron.models.hotels.GuestInsurance;
 import com.terron.models.hotels.Reservations;
+import com.terron.models.user.Users;
 import com.terron.repository.user.UserRepository;
 import com.terron.response.ResponseDetails;
 import com.terron.response.ResponseDetailsWithObject;
 import com.terron.services.hotels.HotelsServiceImpl;
+import com.terron.services.utils.CompanyPaginatedModel;
+import com.terron.services.utils.HotelPaginationModel;
 import com.terron.services.utils.PaginationModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -89,5 +92,71 @@ public class HotelsController {
 
         PaginationModel guestInsurance = hotelsService.getAllGuestInsurance(page, pageSize, searchField, companyId);
         return new ResponseEntity<>(guestInsurance, HttpStatus.OK);
+    }
+
+    @GetMapping("/users/{companyId}")
+    public ResponseEntity<?> getUsers(
+            @RequestParam(value = "page", defaultValue = "1", required = false) int page,
+            @RequestParam(value = "pageSize", defaultValue = "100", required = false) int pageSize,
+            @RequestParam(value = "searchField", defaultValue = "", required = false) String searchField,
+            @RequestHeader(name = "Authorization") String token,
+            @PathVariable Long companyId
+    ) {
+        String role = decodeToken(token);
+        if (!Objects.equals(role, "ROLE_COMPANY_OWNER") && !Objects.equals(role, "ROLE_ADMIN")) {
+            ResponseDetails responseDetails = new ResponseDetails(LocalDateTime.now(), "Access is denied", "error");
+            return new ResponseEntity<>(responseDetails, HttpStatus.FORBIDDEN);
+        }
+
+        PaginationModel users = hotelsService.getAllUsers(page, pageSize, searchField, companyId);
+        return new ResponseEntity<>(users, HttpStatus.OK);
+    }
+
+    @GetMapping ("/details/{companyId}")
+    public ResponseEntity<?> getHotel(@RequestHeader(name = "Authorization") String token, @PathVariable Long companyId) throws Exception {
+        String role = decodeToken(token);
+        if (!Objects.equals(role, "ROLE_COMPANY_OWNER") && !Objects.equals(role, "ROLE_ADMIN")) {
+            ResponseDetails responseDetails = new ResponseDetails(LocalDateTime.now(), "Access is denied", "error");
+            return new ResponseEntity<>(responseDetails, HttpStatus.FORBIDDEN);
+        }
+        CompanyPaginatedModel hotel = hotelsService.getSingleHotel(companyId);
+        return new ResponseEntity<>(hotel, HttpStatus.OK);
+    }
+
+    @GetMapping("/guest-insurances")
+    public ResponseEntity<?> getAllGuestInsurances(
+            @RequestParam(value = "page", defaultValue = "1", required = false) int page,
+            @RequestParam(value = "pageSize", defaultValue = "100", required = false) int pageSize,
+            @RequestParam(value = "searchField", defaultValue = "", required = false) String searchField,
+            @RequestParam(value = "companyName", defaultValue = "", required = false) String filter,
+            @RequestHeader(name = "Authorization") String token
+    ) {
+        String role = decodeToken(token);
+        if (!Objects.equals(role, "ROLE_DSS") && !Objects.equals(role, "ROLE_ADMIN")) {
+            ResponseDetails responseDetails = new ResponseDetails(LocalDateTime.now(), "Access is denied", "error");
+            return new ResponseEntity<>(responseDetails, HttpStatus.FORBIDDEN);
+        }
+
+        PaginationModel guestInsurance = hotelsService.getGuestInsurances(page, pageSize, searchField, filter);
+        return new ResponseEntity<>(guestInsurance, HttpStatus.OK);
+    }
+
+    @GetMapping("/reservations")
+    public ResponseEntity<?> getAllReservations(
+            @RequestParam(value = "page", defaultValue = "1", required = false) int page,
+            @RequestParam(value = "pageSize", defaultValue = "100", required = false) int pageSize,
+            @RequestParam(value = "searchField", defaultValue = "", required = false) String searchField,
+            @RequestParam(value = "companyName", defaultValue = "", required = false) String filter,
+            @RequestParam(value = "country", defaultValue = "", required = false) String country,
+            @RequestHeader(name = "Authorization") String token
+    ) {
+        String role = decodeToken(token);
+        if (!Objects.equals(role, "ROLE_DSS") && !Objects.equals(role, "ROLE_ADMIN")) {
+            ResponseDetails responseDetails = new ResponseDetails(LocalDateTime.now(), "Access is denied", "error");
+            return new ResponseEntity<>(responseDetails, HttpStatus.FORBIDDEN);
+        }
+
+        PaginationModel reservations = hotelsService.getReservations(page, pageSize, searchField, country, filter);
+        return new ResponseEntity<>(reservations, HttpStatus.OK);
     }
 }

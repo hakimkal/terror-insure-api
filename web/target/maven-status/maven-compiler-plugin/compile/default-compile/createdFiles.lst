@@ -1,3 +1,4 @@
+com/terron/controller/controllers/watchList/WatchListController.class
 com/terron/config/SwaggerConfig.class
 com/terron/controller/controllers/company/CompanyController.class
 com/terron/response/ResponseDetailsWithObject.class

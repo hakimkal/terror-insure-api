@@ -1,7 +1,10 @@
+/Users/user/terronApi/service/src/main/java/com/terron/services/watchList/WatchlistServiceImpl.java
 /Users/user/terronApi/service/src/main/java/com/terron/exceptions/UserAlreadyExistException.java
 /Users/user/terronApi/service/src/main/java/com/terron/services/email/EmailServiceImpl.java
+/Users/user/terronApi/service/src/main/java/com/terron/services/utils/CompanyPaginatedModel.java
 /Users/user/terronApi/service/src/main/java/com/terron/services/utils/HotelPaginationModel.java
 /Users/user/terronApi/service/src/main/java/com/terron/services/utils/PaginationModel.java
+/Users/user/terronApi/service/src/main/java/com/terron/services/watchList/WatchListService.java
 /Users/user/terronApi/service/src/main/java/com/terron/services/company/CompanyServiceImpl.java
 /Users/user/terronApi/service/src/main/java/com/terron/services/hotels/HotelsServiceImpl.java
 /Users/user/terronApi/service/src/main/java/com/terron/services/user/UserServiceImpl.java
