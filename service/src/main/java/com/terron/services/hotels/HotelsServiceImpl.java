@@ -6,10 +6,12 @@ import com.terron.exceptions.UserAlreadyExistException;
 import com.terron.models.company.Company;
 import com.terron.models.hotels.GuestInsurance;
 import com.terron.models.hotels.Reservations;
+import com.terron.models.payment.Payment;
 import com.terron.models.user.Users;
 import com.terron.repository.company.CompanyRepository;
 import com.terron.repository.hotels.GuestInsuranceRepository;
 import com.terron.repository.hotels.ReservationsRepository;
+import com.terron.repository.payment.PaymentRepository;
 import com.terron.repository.user.UserRepository;
 import com.terron.services.utils.CompanyPaginatedModel;
 import com.terron.services.utils.HotelPaginationModel;
@@ -27,6 +29,7 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.UUID;
 
 
@@ -42,6 +45,9 @@ public class HotelsServiceImpl implements HotelsService{
 
     @Autowired
     GuestInsuranceRepository guestInsuranceRepository;
+
+    @Autowired
+    PaymentRepository paymentRepository;
 
     @Autowired
     UserRepository userRepository;
@@ -117,6 +123,8 @@ public class HotelsServiceImpl implements HotelsService{
                 .idDocumentNumber(createGuestInsuranceDto.getIdDocumentNumber())
                 .height(createGuestInsuranceDto.getHeight())
                 .complexion(createGuestInsuranceDto.getComplexion())
+                .profilePicture(createGuestInsuranceDto.getProfilePicture())
+                .verificationDocument(createGuestInsuranceDto.getProfilePicture())
                 .facialMarks(createGuestInsuranceDto.getFacialMarks())
                 .createdDate(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy hh:mm:ss")))
                 .build();
@@ -203,16 +211,24 @@ public class HotelsServiceImpl implements HotelsService{
 
     @Override
     public CompanyPaginatedModel getSingleHotel(Long companyId) throws UserAlreadyExistException {
-        Company company = companyRepository.findById(companyId).orElseThrow( () -> new UserAlreadyExistException(String.format("Company with id: %s does not exist exists", companyId)));
+        Company company = companyRepository.findById(companyId).orElseThrow( () -> new UserAlreadyExistException(String.format("Company with id: %s does not exist", companyId)));
         Long totalGuest = guestInsuranceRepository.countAllByCompanyId(companyId);
         Long totalReservations = reservationsRepository.countAllByCompanyId(companyId);
         float totalReservationsPercentage = (totalReservations / (float) totalGuest) * 100;
+        List<Payment> payments = paymentRepository.findAllByCompanyId(companyId);
+        double totalAmountPaid = payments.stream()
+                .mapToDouble(Payment::getAmountPaid)
+                .sum();
 
+        double totalAmountInsured = totalGuest * 690.0;
         CompanyPaginatedModel companyPaginatedModel = new CompanyPaginatedModel();
         companyPaginatedModel.setData(company);
         companyPaginatedModel.setTotalGuest(totalGuest);
         companyPaginatedModel.setTotalReservations(totalReservations);
         companyPaginatedModel.setTotalReservationsPercentage(totalReservationsPercentage);
+        companyPaginatedModel.setTotalAmountInsured(totalAmountInsured);
+        companyPaginatedModel.setAmountPaid(totalAmountPaid);
+        companyPaginatedModel.setOutstandingAmount(totalAmountInsured - totalAmountPaid);
         return companyPaginatedModel;
     }
 
@@ -277,5 +293,15 @@ public class HotelsServiceImpl implements HotelsService{
                 }
             }
         }
+    }
+
+    public Reservations getSingleReservations(Long reservationId) throws UserAlreadyExistException {
+        return reservationsRepository.findById(reservationId).
+                orElseThrow( () -> new UserAlreadyExistException(String.format("Reservation with id: %s does not exist", reservationId)));
+    }
+
+    public GuestInsurance getSingleGuestInsurance(Long guestInsuranceId) throws UserAlreadyExistException {
+        return guestInsuranceRepository.findById(guestInsuranceId).
+                orElseThrow( () -> new UserAlreadyExistException(String.format("Guest insurance with id: %s does not exist", guestInsuranceId)));
     }
 }

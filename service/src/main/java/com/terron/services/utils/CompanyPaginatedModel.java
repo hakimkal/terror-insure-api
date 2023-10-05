@@ -16,4 +16,7 @@ public class CompanyPaginatedModel {
     private float totalReservationsPercentage;
     private long totalGuest;
     private float totalGuestsPercentage;
+    private double totalAmountInsured;
+    private double outstandingAmount;
+    private double amountPaid;
 }

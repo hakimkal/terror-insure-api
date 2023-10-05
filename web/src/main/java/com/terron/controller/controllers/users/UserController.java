@@ -1,9 +1,6 @@
 package com.terron.controller.controllers.users;
 
-import com.terron.dto.ChangePasswordDto;
-import com.terron.dto.RequestResetPasswordDto;
-import com.terron.dto.UpdatePasswordDto;
-import com.terron.dto.UserRegistrationDto;
+import com.terron.dto.*;
 import com.terron.models.user.Users;
 import com.terron.response.ResponseDetails;
 import com.terron.response.ResponseDetailsWithObject;
@@ -84,9 +81,16 @@ public class UserController {
     }
 
     @GetMapping ("/")
-    public ResponseEntity<?> getUser(@RequestParam("token") String token) throws Exception {
+    public ResponseEntity<?> getUser(@RequestHeader(name = "Authorization") String token) throws Exception {
         Users user = userServiceImpl.getUserByToken(token);
         ResponseDetailsWithObject responseDetails = new ResponseDetailsWithObject(LocalDateTime.now(), "User gotten successfully", user, "success");
+        return new ResponseEntity<>(responseDetails, HttpStatus.OK);
+    }
+
+    @PatchMapping ("/{userId}")
+    public ResponseEntity<?> updateUser(@RequestBody UpdateProfileDto updateProfileDto, @PathVariable Long userId,@RequestParam(value = "companyId", defaultValue = "0", required = false) Long companyId) throws Exception {
+        Users user = userServiceImpl.updateUser(updateProfileDto, userId, companyId);
+        ResponseDetailsWithObject responseDetails = new ResponseDetailsWithObject(LocalDateTime.now(), "User updated successfully", user, "success");
         return new ResponseEntity<>(responseDetails, HttpStatus.OK);
     }
 }

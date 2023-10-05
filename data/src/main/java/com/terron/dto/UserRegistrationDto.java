@@ -19,4 +19,6 @@ public class UserRegistrationDto {
     private String password;
 
     private UserRole role;
+
+    private Long companyId;
 }
