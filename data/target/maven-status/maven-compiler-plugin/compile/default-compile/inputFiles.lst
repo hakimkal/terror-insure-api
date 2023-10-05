@@ -1,9 +1,11 @@
 /Users/user/terronApi/data/src/main/java/com/terron/repository/hotels/GuestInsuranceRepository.java
+/Users/user/terronApi/data/src/main/java/com/terron/models/payment/Payment.java
 /Users/user/terronApi/data/src/main/java/com/terron/repository/user/UserRepository.java
 /Users/user/terronApi/data/src/main/java/com/terron/dto/UpdateProfileDto.java
 /Users/user/terronApi/data/src/main/java/com/terron/dto/UserRegistrationDto.java
 /Users/user/terronApi/data/src/main/java/com/terron/models/hotels/PaymentMode.java
 /Users/user/terronApi/data/src/main/java/com/terron/dto/CreateGuestInsuranceDto.java
+/Users/user/terronApi/data/src/main/java/com/terron/dto/BankTransferRequest.java
 /Users/user/terronApi/data/src/main/java/com/terron/repository/hotels/ReservationsRepository.java
 /Users/user/terronApi/data/src/main/java/com/terron/models/user/Users.java
 /Users/user/terronApi/data/src/main/java/com/terron/models/watchList/SuspiciousBehaviour.java
@@ -11,11 +13,15 @@
 /Users/user/terronApi/data/src/main/java/com/terron/models/company/CompanyType.java
 /Users/user/terronApi/data/src/main/java/com/terron/dto/CreateReservationDto.java
 /Users/user/terronApi/data/src/main/java/com/terron/dto/MissingPersonsDto.java
+/Users/user/terronApi/data/src/main/java/com/terron/dto/CardPaymentRequest.java
 /Users/user/terronApi/data/src/main/java/com/terron/repository/watchList/MissingPersonsRepository.java
 /Users/user/terronApi/data/src/main/java/com/terron/repository/company/CompanyRepository.java
+/Users/user/terronApi/data/src/main/java/com/terron/repository/payment/PaymentRepository.java
 /Users/user/terronApi/data/src/main/java/com/terron/dto/KeywordOfInterestDto.java
 /Users/user/terronApi/data/src/main/java/com/terron/models/watchList/KeywordOfInterest.java
+/Users/user/terronApi/data/src/main/java/com/terron/dto/ChargeData.java
 /Users/user/terronApi/data/src/main/java/com/terron/dto/PersonOfInterestDto.java
+/Users/user/terronApi/data/src/main/java/com/terron/dto/PaymentResponse.java
 /Users/user/terronApi/data/src/main/java/com/terron/models/hotels/DocumentType.java
 /Users/user/terronApi/data/src/main/java/com/terron/repository/watchList/KeywordOfInterestRepository.java
 /Users/user/terronApi/data/src/main/java/com/terron/models/user/UserRole.java

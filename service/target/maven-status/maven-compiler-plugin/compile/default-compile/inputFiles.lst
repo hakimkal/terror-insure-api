@@ -10,7 +10,10 @@
 /Users/user/terronApi/service/src/main/java/com/terron/services/user/UserServiceImpl.java
 /Users/user/terronApi/service/src/main/java/com/terron/services/company/CompanyService.java
 /Users/user/terronApi/service/src/main/java/com/terron/services/utils/UrlConstant.java
+/Users/user/terronApi/service/src/main/java/com/terron/services/payment/PaymentConfig.java
+/Users/user/terronApi/service/src/main/java/com/terron/exceptions/NotFoundException.java
 /Users/user/terronApi/service/src/main/java/com/terron/services/hotels/HotelsService.java
+/Users/user/terronApi/service/src/main/java/com/terron/services/payment/PaymentService.java
 /Users/user/terronApi/service/src/main/java/com/terron/services/email/EmailService.java
 /Users/user/terronApi/service/src/main/java/com/terron/services/user/UserService.java
 /Users/user/terronApi/service/src/main/java/com/terron/exceptions/UserNotFoundException.java

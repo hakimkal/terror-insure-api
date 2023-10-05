@@ -9,11 +9,13 @@ import com.terron.exceptions.UserAlreadyExistException;
 import com.terron.models.company.Company;
 import com.terron.models.user.UserRole;
 import com.terron.models.user.Users;
+import com.terron.repository.company.CompanyRepository;
 import com.terron.repository.user.UserRepository;
 import com.terron.services.email.EmailServiceImpl;
 import javassist.NotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.Conditions;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -38,6 +40,8 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
     private final PasswordEncoder encoder;
+
+    private final CompanyRepository companyRepository;
 
     @Autowired
     ModelMapper modelMapper;
@@ -168,6 +172,31 @@ public class UserServiceImpl implements UserService {
         user.setIsActive(true);
         user.setModifiedDate(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy hh:mm:ss")));
         user.setRegisteredDate(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy hh:mm:ss")));
+        user = userRepository.save(user);
+        return user;
+    }
+
+    public Users updateUser(UpdateProfileDto updateProfileDto, Long userId,Long companyId) throws Exception {
+        boolean userExists = userRepository.existsById(userId);
+        if (!userExists) {
+            throw new UserAlreadyExistException(String.format("User with id: %s does not exist", userId));
+
+        }
+
+        Users user = userRepository.findById(userId).get();
+        ModelMapper mapper = new ModelMapper();
+        mapper.getConfiguration().setPropertyCondition(Conditions.isNotNull());
+        mapper.map(updateProfileDto, user);
+        if(companyId != 0){
+            boolean companyExists = companyRepository.existsById(companyId);
+            if (!companyExists) {
+                throw new UserAlreadyExistException(String.format("Company with id: %s does not exist", companyId));
+
+            }
+            user.setCompanyId(companyId);
+        }
+
+        user.setModifiedDate(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy hh:mm:ss")));
         user = userRepository.save(user);
         return user;
     }

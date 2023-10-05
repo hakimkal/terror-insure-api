@@ -31,6 +31,8 @@ public class CreateGuestInsuranceDto {
     private String bvn;
     private DocumentType idDocument;
     private String idDocumentNumber;
+    private String profilePicture;
+    private String verificationDocument;
     private String height;
     private String complexion;
     private String facialMarks;

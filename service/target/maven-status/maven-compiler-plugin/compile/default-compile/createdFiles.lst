@@ -1,3 +1,9 @@
+com/terron/services/payment/PaymentService.class
+com/terron/services/company/CompanyServiceImpl.class
+com/terron/services/email/EmailServiceImpl.class
+com/terron/exceptions/UserNotFoundException.class
+com/terron/services/user/UserService.class
+com/terron/services/payment/PaymentConfig.class
 com/terron/exceptions/UserAlreadyExistException.class
 com/terron/services/watchList/WatchListService.class
 com/terron/services/utils/CompanyPaginatedModel.class
@@ -5,12 +11,9 @@ com/terron/services/hotels/HotelsService.class
 com/terron/services/utils/PaginationModel.class
 com/terron/services/utils/UrlConstant.class
 com/terron/services/email/EmailService.class
-com/terron/services/company/CompanyServiceImpl.class
-com/terron/services/email/EmailServiceImpl.class
-com/terron/exceptions/UserNotFoundException.class
+com/terron/exceptions/NotFoundException.class
 com/terron/services/utils/HotelPaginationModel.class
 com/terron/services/company/CompanyService.class
 com/terron/services/user/UserServiceImpl.class
-com/terron/services/user/UserService.class
 com/terron/services/watchList/WatchlistServiceImpl.class
 com/terron/services/hotels/HotelsServiceImpl.class
