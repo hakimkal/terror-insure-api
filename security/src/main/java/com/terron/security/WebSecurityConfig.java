@@ -1,6 +1,5 @@
 package com.terron.security;
 
-import com.terron.models.user.UserRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -13,7 +12,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.core.GrantedAuthorityDefaults;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.authority.mapping.SimpleAuthorityMapper;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.cors.CorsConfiguration;
@@ -52,7 +50,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         "/v1/users/request-password-reset",
                         "/v1/users/reset-password", "/register", "/v1/company/onboard")
                 .permitAll()
-                .antMatchers(HttpMethod.GET, "/v1/users/confirm")
+                .antMatchers(HttpMethod.GET, "/v1/users/confirm", "/v1/company/insurance-companies")
                 .permitAll()
                 .antMatchers(HttpMethod.PATCH, "/v1/users/change-password")
                 .permitAll()
