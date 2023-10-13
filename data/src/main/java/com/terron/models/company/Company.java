@@ -46,6 +46,7 @@ public class Company {
     private String state;
     private String lga;
     private String address;
+    private String insuranceCompany;
     private String gpsCoordinate;
     private String contactPersonFirstname;
     private String contactPersonLastname;

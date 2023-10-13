@@ -1,5 +1,6 @@
 package com.terron.models.hotels;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.terron.models.company.CompanyType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -8,6 +9,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import java.util.Date;
 
 @Entity
 @Data
@@ -58,6 +60,7 @@ public class GuestInsurance {
     private String height;
     private String complexion;
     private String facialMarks;
-    private String createdDate;
+    @JsonFormat(pattern="dd.MM.yyyy")
+    private Date createdDate;
 }
 

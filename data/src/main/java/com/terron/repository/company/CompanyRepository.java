@@ -24,5 +24,11 @@ public interface CompanyRepository extends JpaRepository<Company, Long> {
 
     Page<Company> findAllByCompanyType(CompanyType companyType, Pageable pagination);
 
+    List<Company> findAllByCompanyType(CompanyType companyType);
+
     Company findByCompanyName(String companyName);
+
+    Long countAllByInsuranceCompany(String insuranceCompany);
+
+    List<Company> getCompaniesByInsuranceCompany(String insuranceCompany);
 }
