@@ -1,7 +1,6 @@
 package com.terron.repository.user;
 
 import com.terron.models.hotels.GuestInsurance;
-import com.terron.models.user.UserRole;
 import com.terron.models.user.Users;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,7 +21,5 @@ public interface UserRepository extends JpaRepository<Users, Long> {
     Page<Users> findByCompanyIdAndFirstNameContainingOrLastNameContainingOrPhoneNumberContaining(Long companyId, String firstName, String lastName, String phoneNumber, Pageable pagination);
 
     Page<Users> findAllByCompanyId(Long companyId, Pageable pagination);
-
-    Long countAllByRoleAndCompanyId(UserRole role,Long companyId);
 
 }

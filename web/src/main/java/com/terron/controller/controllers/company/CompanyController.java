@@ -2,14 +2,11 @@ package com.terron.controller.controllers.company;
 
 import com.terron.dto.OnboardCompanyDto;
 import com.terron.models.company.Company;
-import com.terron.models.company.VirtualAccount;
 import com.terron.models.user.Users;
 import com.terron.repository.user.UserRepository;
 import com.terron.response.ResponseDetails;
 import com.terron.response.ResponseDetailsWithObject;
 import com.terron.services.company.CompanyServiceImpl;
-import com.terron.services.utils.CompanyPaginatedModel;
-import com.terron.services.utils.GuestInsuranceResponseDto;
 import com.terron.services.utils.HotelPaginationModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Objects;
 
 import static com.terron.utils.utility.decodeToken;
@@ -72,31 +68,4 @@ public class CompanyController {
         return new ResponseEntity<>(company, HttpStatus.OK);
     }
 
-    @GetMapping("/insurance-companies")
-    public ResponseEntity<?> getInsuranceCompanies() {
-        List<Company> companies = companyService.getAllInsuranceCompanies();
-        return new ResponseEntity<>(companies, HttpStatus.OK);
-    }
-
-    @GetMapping ("/{companyId}/account-details")
-    public ResponseEntity<?> getCompanyAccountDetails(@RequestHeader(name = "Authorization") String token, @PathVariable Long companyId) throws Exception {
-        String role = decodeToken(token);
-        if (!Objects.equals(role, "ROLE_INSURANCE_USER") && !Objects.equals(role, "ROLE_COMPANY_OWNER") && !Objects.equals(role, "ROLE_ADMIN")) {
-            ResponseDetails responseDetails = new ResponseDetails(LocalDateTime.now(), "Access is denied", "error");
-            return new ResponseEntity<>(responseDetails, HttpStatus.FORBIDDEN);
-        }
-        VirtualAccount virtualAccount = companyService.getCompanyAccountDetails(companyId);
-        return new ResponseEntity<>(virtualAccount, HttpStatus.OK);
-    }
-
-    @GetMapping ("/insurance/general-report/{companyId}")
-    public ResponseEntity<?> insuranceCompanyGeneralReport(@RequestHeader(name = "Authorization") String token, @PathVariable Long companyId) throws Exception {
-        String role = decodeToken(token);
-        if (!Objects.equals(role, "ROLE_INSURANCE_USER") && !Objects.equals(role, "ROLE_ADMIN")) {
-            ResponseDetails responseDetails = new ResponseDetails(LocalDateTime.now(), "Access is denied", "error");
-            return new ResponseEntity<>(responseDetails, HttpStatus.FORBIDDEN);
-        }
-        GuestInsuranceResponseDto guestInsuranceResponseDto = companyService.insuranceCompanyGeneralReport(companyId);
-        return new ResponseEntity<>(guestInsuranceResponseDto, HttpStatus.OK);
-    }
 }

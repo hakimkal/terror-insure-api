@@ -29,7 +29,6 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -127,7 +126,7 @@ public class HotelsServiceImpl implements HotelsService{
                 .profilePicture(createGuestInsuranceDto.getProfilePicture())
                 .verificationDocument(createGuestInsuranceDto.getProfilePicture())
                 .facialMarks(createGuestInsuranceDto.getFacialMarks())
-                .createdDate(new Date())
+                .createdDate(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy hh:mm:ss")))
                 .build();
         guestInsurance = guestInsuranceRepository.save(guestInsurance);
         return guestInsurance;

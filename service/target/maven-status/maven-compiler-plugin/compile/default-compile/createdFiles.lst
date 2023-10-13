@@ -1,4 +1,3 @@
-com/terron/services/utils/UserDetailsDto.class
 com/terron/services/payment/PaymentService.class
 com/terron/services/company/CompanyServiceImpl.class
 com/terron/services/email/EmailServiceImpl.class
@@ -6,10 +5,8 @@ com/terron/exceptions/UserNotFoundException.class
 com/terron/services/user/UserService.class
 com/terron/services/payment/PaymentConfig.class
 com/terron/exceptions/UserAlreadyExistException.class
-com/terron/services/utils/UserDetailsDto$UserDetailsDtoBuilder.class
 com/terron/services/watchList/WatchListService.class
 com/terron/services/utils/CompanyPaginatedModel.class
-com/terron/services/utils/GuestInsuranceResponseDto.class
 com/terron/services/hotels/HotelsService.class
 com/terron/services/utils/PaginationModel.class
 com/terron/services/utils/UrlConstant.class

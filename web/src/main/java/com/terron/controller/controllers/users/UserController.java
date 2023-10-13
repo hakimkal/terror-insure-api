@@ -5,7 +5,6 @@ import com.terron.models.user.Users;
 import com.terron.response.ResponseDetails;
 import com.terron.response.ResponseDetailsWithObject;
 import com.terron.services.user.UserServiceImpl;
-import com.terron.services.utils.UserDetailsDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -76,14 +75,14 @@ public class UserController {
 
     @GetMapping ("/{userId}")
     public ResponseEntity<?> getSingleUser(@PathVariable Long userId) throws Exception {
-        UserDetailsDto user = userServiceImpl.getUserById(userId);
+        Users user = userServiceImpl.getUserById(userId);
         ResponseDetailsWithObject responseDetails = new ResponseDetailsWithObject(LocalDateTime.now(), "User gotten successfully",user, "success");
         return new ResponseEntity<>(responseDetails, HttpStatus.OK);
     }
 
     @GetMapping ("/")
     public ResponseEntity<?> getUser(@RequestHeader(name = "Authorization") String token) throws Exception {
-        UserDetailsDto user = userServiceImpl.getUserByToken(token);
+        Users user = userServiceImpl.getUserByToken(token);
         ResponseDetailsWithObject responseDetails = new ResponseDetailsWithObject(LocalDateTime.now(), "User gotten successfully", user, "success");
         return new ResponseEntity<>(responseDetails, HttpStatus.OK);
     }

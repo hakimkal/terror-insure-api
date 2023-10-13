@@ -1,8 +1,6 @@
 /Users/user/terronApi/data/src/main/java/com/terron/repository/hotels/GuestInsuranceRepository.java
 /Users/user/terronApi/data/src/main/java/com/terron/models/payment/Payment.java
 /Users/user/terronApi/data/src/main/java/com/terron/repository/user/UserRepository.java
-/Users/user/terronApi/data/src/main/java/com/terron/models/company/VirtualAccount.java
-/Users/user/terronApi/data/src/main/java/com/terron/repository/company/VirtualAccountRepository.java
 /Users/user/terronApi/data/src/main/java/com/terron/dto/UpdateProfileDto.java
 /Users/user/terronApi/data/src/main/java/com/terron/dto/UserRegistrationDto.java
 /Users/user/terronApi/data/src/main/java/com/terron/models/hotels/PaymentMode.java
@@ -10,7 +8,6 @@
 /Users/user/terronApi/data/src/main/java/com/terron/dto/BankTransferRequest.java
 /Users/user/terronApi/data/src/main/java/com/terron/repository/hotels/ReservationsRepository.java
 /Users/user/terronApi/data/src/main/java/com/terron/models/user/Users.java
-/Users/user/terronApi/data/src/main/java/com/terron/dto/VirtualAccountResponse.java
 /Users/user/terronApi/data/src/main/java/com/terron/models/watchList/SuspiciousBehaviour.java
 /Users/user/terronApi/data/src/main/java/com/terron/dto/RequestResetPasswordDto.java
 /Users/user/terronApi/data/src/main/java/com/terron/models/company/CompanyType.java
@@ -38,4 +35,3 @@
 /Users/user/terronApi/data/src/main/java/com/terron/DataConfig.java
 /Users/user/terronApi/data/src/main/java/com/terron/dto/ChangePasswordDto.java
 /Users/user/terronApi/data/src/main/java/com/terron/dto/OnboardCompanyDto.java
-/Users/user/terronApi/data/src/main/java/com/terron/dto/FixedVirtualAccountRequest.java

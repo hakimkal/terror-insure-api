@@ -1,7 +1,10 @@
 package com.terron.services.payment;
 
 import com.google.gson.Gson;
-import com.terron.dto.*;
+import com.terron.dto.BankTransferRequest;
+import com.terron.dto.CardPaymentRequest;
+import com.terron.dto.ChargeData;
+import com.terron.dto.PaymentResponse;
 import com.terron.exceptions.NotFoundException;
 import com.terron.models.payment.Payment;
 import com.terron.repository.payment.PaymentRepository;
@@ -9,7 +12,6 @@ import io.netty.handler.codec.http.HttpUtil;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
@@ -72,30 +74,7 @@ public class PaymentService {
             log.info("Got here");
             log.info("Error -> {}", ex.getLocalizedMessage());
             throw new ServiceUnavailableException(ex.getMessage());
-        }
-    }
 
-    public VirtualAccountResponse createFixedVirtualAccount(FixedVirtualAccountRequest request) throws ServiceUnavailableException {
-        try {
-            URI targetUri = UriComponentsBuilder.fromHttpUrl("https://sandbox.payonus.com/pay/api/v1")
-                    .path("/create-fixed-virtual-account")
-                    .build().toUri();
-
-            VirtualAccountResponse response = webClient.post()
-                    .uri(targetUri)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .header("Authorization", "Bearer sk_test_RUHBQBSRSRTKABNQVY0DFC2QDJLX")
-                    .body(BodyInserters.fromValue(request))
-                    .retrieve()
-                    .bodyToMono(VirtualAccountResponse.class)
-                    .block();
-
-            return response;
-        } catch (WebClientRequestException ex) {
-            log.error(ex.getMessage());
-            log.info("Got here");
-            log.info("Error -> {}", ex.getLocalizedMessage());
-            throw new ServiceUnavailableException(ex.getMessage());
         }
     }
 
