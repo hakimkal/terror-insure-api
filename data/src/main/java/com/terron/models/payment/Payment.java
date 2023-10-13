@@ -31,6 +31,7 @@ public class Payment {
     private Long id;
     private String reference;
     private String status;
+    private String insuranceCompany;
     private String datePaid;
     private double amountPaid;
     private Long companyId;

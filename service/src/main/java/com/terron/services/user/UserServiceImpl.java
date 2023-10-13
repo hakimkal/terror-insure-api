@@ -7,11 +7,18 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.terron.dto.*;
 import com.terron.exceptions.UserAlreadyExistException;
 import com.terron.models.company.Company;
+import com.terron.models.payment.Payment;
 import com.terron.models.user.UserRole;
 import com.terron.models.user.Users;
 import com.terron.repository.company.CompanyRepository;
+import com.terron.repository.hotels.GuestInsuranceRepository;
+import com.terron.repository.hotels.ReservationsRepository;
+import com.terron.repository.payment.PaymentRepository;
 import com.terron.repository.user.UserRepository;
 import com.terron.services.email.EmailServiceImpl;
+import com.terron.services.utils.CompanyPaginatedModel;
+import com.terron.services.utils.GuestInsuranceResponseDto;
+import com.terron.services.utils.UserDetailsDto;
 import javassist.NotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,9 +33,7 @@ import org.thymeleaf.context.Context;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Base64;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 
 import static com.terron.security.SecurityConstant.SECRET;
 
@@ -42,6 +47,15 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder encoder;
 
     private final CompanyRepository companyRepository;
+
+    @Autowired
+    ReservationsRepository reservationsRepository;
+
+    @Autowired
+    GuestInsuranceRepository guestInsuranceRepository;
+
+    @Autowired
+    PaymentRepository paymentRepository;
 
     @Autowired
     ModelMapper modelMapper;
@@ -138,12 +152,17 @@ public class UserServiceImpl implements UserService {
         return user;
     }
 
-    public Users getUserById(Long id) throws NotFoundException {
-        return userRepository.findById(id)
+    public UserDetailsDto getUserById(Long id) throws NotFoundException {
+        Users user = userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(String.format("User with this id: %s does not exist", id)));
+        Company company = companyRepository.findById(user.getCompanyId()).get();
+        return UserDetailsDto.builder()
+                .user(user)
+                .company(company)
+                .build();
     }
 
-    public Users getUserByToken(String token) throws NotFoundException {
+    public UserDetailsDto getUserByToken(String token) throws NotFoundException {
         String[] chunks = token.split("\\.");
         Base64.Decoder decoder = Base64.getUrlDecoder();
 
@@ -156,8 +175,13 @@ public class UserServiceImpl implements UserService {
             e.printStackTrace();
         }
         String subject = jsonNode.get("sub").asText();
-        return userRepository.findByEmailAddress(subject)
+        Users user = userRepository.findByEmailAddress(subject)
                 .orElseThrow(() -> new NotFoundException(String.format("User with this id: %s does not exist", subject)));
+        Company company = companyRepository.findById(user.getCompanyId()).get();
+        return UserDetailsDto.builder()
+                .user(user)
+                .company(company)
+                .build();
     }
 
     public Users registerUser(UserRegistrationDto userRegistrationDto) throws Exception {
@@ -176,7 +200,7 @@ public class UserServiceImpl implements UserService {
         return user;
     }
 
-    public Users updateUser(UpdateProfileDto updateProfileDto, Long userId,Long companyId) throws Exception {
+    public Users updateUser(UpdateProfileDto updateProfileDto, Long userId, Long companyId) throws Exception {
         boolean userExists = userRepository.existsById(userId);
         if (!userExists) {
             throw new UserAlreadyExistException(String.format("User with id: %s does not exist", userId));
@@ -187,7 +211,7 @@ public class UserServiceImpl implements UserService {
         ModelMapper mapper = new ModelMapper();
         mapper.getConfiguration().setPropertyCondition(Conditions.isNotNull());
         mapper.map(updateProfileDto, user);
-        if(companyId != 0){
+        if (companyId != 0) {
             boolean companyExists = companyRepository.existsById(companyId);
             if (!companyExists) {
                 throw new UserAlreadyExistException(String.format("Company with id: %s does not exist", companyId));
