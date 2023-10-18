@@ -10,6 +10,7 @@ import java.util.List;
 public class CompanyPaginatedModel {
 
     private long newGuest;
+    private long returnGuest;
     private float newGuestsPercentage;
     private Object data;
     private long totalReservations;

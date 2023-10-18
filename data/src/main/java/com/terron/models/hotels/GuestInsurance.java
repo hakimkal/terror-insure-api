@@ -31,6 +31,7 @@ public class GuestInsurance {
     )
     private Long id;
     private String certificateNumber;
+    private String receiptNumber;
     private Long companyId;
     private String lastName;
     private String firstName;

@@ -3,15 +3,13 @@ package com.terron.services.hotels;
 import com.terron.dto.CreateGuestInsuranceDto;
 import com.terron.dto.CreateReservationDto;
 import com.terron.exceptions.UserAlreadyExistException;
-import com.terron.models.company.Company;
 import com.terron.models.hotels.GuestInsurance;
-import com.terron.models.hotels.Reservations;
 import com.terron.services.utils.CompanyPaginatedModel;
 import com.terron.services.utils.PaginationModel;
 
 public interface HotelsService {
 
-    Reservations createReservation(CreateReservationDto createReservationDto, Long companyId) throws UserAlreadyExistException;
+    void createReservation(CreateReservationDto createReservationDto, Long companyId) throws UserAlreadyExistException;
 
     GuestInsurance createGuestInsurance(CreateGuestInsuranceDto createGuestInsuranceDto, Long companyId) throws UserAlreadyExistException;
 
@@ -21,5 +19,5 @@ public interface HotelsService {
 
     PaginationModel getAllUsers(Integer page, Integer pageSize, String searchField, Long companyId);
 
-    CompanyPaginatedModel getSingleHotel(Long companyId) throws UserAlreadyExistException;
+    CompanyPaginatedModel getSingleCompany(Long companyId) throws UserAlreadyExistException;
 }

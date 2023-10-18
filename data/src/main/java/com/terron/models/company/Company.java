@@ -33,6 +33,7 @@ public class Company {
 
     @Column(unique = true)
     private String officialEmailAddress;
+    @Column(unique = true)
     private String companyName;
     @Enumerated(value = EnumType.ORDINAL)
     private CompanyType companyType;

@@ -17,5 +17,6 @@ public class MissingPersonsDto {
     private String nationality;
     private String reasonForInterest;
     private String remark;
+    private String image;
     private String alertContact;
 }

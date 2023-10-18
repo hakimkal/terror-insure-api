@@ -38,5 +38,6 @@ public class MissingPersons {
     private String reasonForInterest;
     private String remark;
     private String alertContact;
+    private String image;
     private String createdDate;
 }

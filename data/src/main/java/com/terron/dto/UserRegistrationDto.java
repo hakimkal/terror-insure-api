@@ -21,4 +21,14 @@ public class UserRegistrationDto {
     private UserRole role;
 
     private Long companyId;
+
+    private String firstName;
+
+    private String lastName;
+
+    private String staffNo;
+
+    private String govtAgency;
+
+    private String phoneNumber;
 }

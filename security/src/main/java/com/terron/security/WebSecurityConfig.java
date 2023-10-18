@@ -50,7 +50,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         "/v1/users/request-password-reset",
                         "/v1/users/reset-password", "/register", "/v1/company/onboard")
                 .permitAll()
-                .antMatchers(HttpMethod.GET, "/v1/users/confirm", "/v1/company/insurance-companies")
+                .antMatchers(HttpMethod.GET, "/v1/users/confirm", "/v1/company/all-insurance-companies","/v1/nigeria/**" )
                 .permitAll()
                 .antMatchers(HttpMethod.PATCH, "/v1/users/change-password")
                 .permitAll()

@@ -7,18 +7,22 @@ import com.terron.exceptions.UserAlreadyExistException;
 import com.terron.models.company.Company;
 import com.terron.models.company.CompanyType;
 import com.terron.models.company.VirtualAccount;
+import com.terron.models.hotels.GuestInsurance;
 import com.terron.models.payment.Payment;
 import com.terron.models.user.UserRole;
 import com.terron.models.user.Users;
 import com.terron.repository.company.CompanyRepository;
 import com.terron.repository.company.VirtualAccountRepository;
 import com.terron.repository.hotels.GuestInsuranceRepository;
+import com.terron.repository.hotels.ReservationsRepository;
 import com.terron.repository.payment.PaymentRepository;
 import com.terron.repository.user.UserRepository;
 import com.terron.services.email.EmailServiceImpl;
 import com.terron.services.payment.PaymentService;
+import com.terron.services.utils.CompanyPaginatedModel;
 import com.terron.services.utils.GuestInsuranceResponseDto;
 import com.terron.services.utils.HotelPaginationModel;
+import com.terron.services.utils.InsuranceCompanyPaginatedModel;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -37,9 +41,7 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -59,6 +61,9 @@ public class CompanyServiceImpl implements CompanyService{
 
     @Autowired
     GuestInsuranceRepository guestInsuranceRepository;
+
+    @Autowired
+    ReservationsRepository reservationsRepository;
 
     @Autowired
     ModelMapper modelMapper;
@@ -83,7 +88,25 @@ public class CompanyServiceImpl implements CompanyService{
 
         }
 
-        Company company = modelMapper.map(onboardCompanyDto, Company.class);
+        Company insuranceCompany = companyRepository.findById(onboardCompanyDto.getInsuranceCompany()).
+                orElseThrow( () -> new UserAlreadyExistException(String.format("Insurance company with id: %s does not exist", onboardCompanyDto.getInsuranceCompany())));
+        Company company = new Company();
+        company.setCompanyLogo(onboardCompanyDto.getCompanyLogo());
+        company.setCompanyName(company.getCompanyName());
+        company.setCompanyType(onboardCompanyDto.getCompanyType());
+        company.setInsuranceCompany(insuranceCompany.getCompanyName());
+        company.setAddress(onboardCompanyDto.getAddress());
+        company.setBranch(onboardCompanyDto.getBranch());
+        company.setCacNumber(onboardCompanyDto.getCacNumber());
+        company.setCacRegistrationDate(onboardCompanyDto.getCacRegistrationDate());
+        company.setContactPersonCountryCode(onboardCompanyDto.getContactPersonCountryCode());
+        company.setContactPersonFirstname(onboardCompanyDto.getContactPersonFirstname());
+        company.setContactPersonLastname(onboardCompanyDto.getContactPersonLastname());
+        company.setGpsCoordinate(onboardCompanyDto.getGpsCoordinate());
+        company.setOfficialEmailAddress(onboardCompanyDto.getOfficialEmailAddress());
+        company.setLga(onboardCompanyDto.getLga());
+        company.setState(onboardCompanyDto.getState());
+        company.setContactPersonPhoneNumber(onboardCompanyDto.getContactPersonPhoneNumber());
         company.setRegisteredDate(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy hh:mm:ss")));
         company = companyRepository.save(company);
         String verificationToken = String.format("%04d", random.nextInt(10000));
@@ -148,24 +171,83 @@ public class CompanyServiceImpl implements CompanyService{
        return company;
     }
 
+    public InsuranceCompanyPaginatedModel getAllInsuranceCompany(Integer page, Integer pageSize, String searchField, String state){
+        Page<Company> companies = null;
+        Long totalGuest = guestInsuranceRepository.count();
+        Pageable pagination = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.ASC, "registeredDate"));
+        try {
+            companies = searchField.length() > 0
+                    ? companyRepository.findAllByCompanyTypeAndCompanyNameContainingOrCacNumberContaining(CompanyType.insurance, searchField, searchField, pagination)
+                    : state.length() > 0
+                    ? companyRepository.findAllByCompanyTypeAndState(CompanyType.insurance,state, pagination)
+                    : companyRepository.findAllByCompanyType(CompanyType.insurance, pagination);
+
+            InsuranceCompanyPaginatedModel insuranceCompanyPaginatedModel = new InsuranceCompanyPaginatedModel();
+            insuranceCompanyPaginatedModel.setTotalCount(companies.getTotalElements());
+            insuranceCompanyPaginatedModel.setData(companies.getContent());
+            Long insuranceCompaniesCount = companyRepository.countAllByCompanyType(CompanyType.insurance);
+            insuranceCompanyPaginatedModel.setTotalInsuranceCompanies(insuranceCompaniesCount);
+            List<Payment> payments = paymentRepository.findAll();
+            double totalAmountPaid = payments.stream()
+                    .mapToDouble(Payment::getAmountPaid)
+                    .sum();
+            double totalAmountInsured = totalGuest * 690.0;
+            insuranceCompanyPaginatedModel.setTotalAmountInsured(totalAmountInsured);
+            insuranceCompanyPaginatedModel.setAmountPaid(totalAmountPaid);
+            insuranceCompanyPaginatedModel.setOutstandingAmount(totalAmountInsured - totalAmountPaid);
+            return insuranceCompanyPaginatedModel;
+        } finally {
+            if (companies != null && companies instanceof Closeable) {
+                try {
+                    ((Closeable) companies).close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
     public HotelPaginationModel getAllHotels(Integer page, Integer pageSize, String searchField, String state){
         Page<Company> companies = null;
         Pageable pagination = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.ASC, "registeredDate"));
         try {
             companies = searchField.length() > 0
-                    ? companyRepository.findByCompanyTypeAndCompanyNameContainingOrCacNumberContaining(CompanyType.hotel, searchField, searchField, pagination)
+                    ? companyRepository.findAllByCompanyTypeAndCompanyNameContainingOrCacNumberContaining(CompanyType.hotel, searchField, searchField, pagination)
                     : state.length() > 0
-                    ? companyRepository.findByCompanyTypeAndState(CompanyType.hotel,state, pagination)
+                    ? companyRepository.findAllByCompanyTypeAndState(CompanyType.hotel,state, pagination)
                     : companyRepository.findAllByCompanyType(CompanyType.hotel, pagination);
 
             HotelPaginationModel hotelPaginationModel = new HotelPaginationModel();
             hotelPaginationModel.setTotalCount(companies.getTotalElements());
             hotelPaginationModel.setData(companies.getContent());
             Long hotelCount = companyRepository.countAllByCompanyType(CompanyType.hotel);
-            hotelPaginationModel.setTotalHotels(hotelCount);
-            Long usersCount = userRepository.count();
-            hotelPaginationModel.setTotalUsers(usersCount);
 
+            hotelPaginationModel.setTotalReservations(reservationsRepository.count());
+            hotelPaginationModel.setTotalGuest(guestInsuranceRepository.count());
+            List<GuestInsurance> guestInsurances = guestInsuranceRepository.findAll();
+            Map<String, Integer> emailCounts = new HashMap<>();
+
+            for (GuestInsurance guestInsurance : guestInsurances) {
+                String email = guestInsurance.getEmailAddress();
+                if (emailCounts.containsKey(email)) {
+                    emailCounts.put(email, emailCounts.get(email) + 1);
+                } else {
+                    emailCounts.put(email, 1);
+                }
+            }
+
+            int uniqueEmailCount = 0;
+            int duplicateEmailCount = 0;
+            for (Map.Entry<String, Integer> entry : emailCounts.entrySet()) {
+                if (entry.getValue() == 1) {
+                    uniqueEmailCount++;
+                } else {
+                    duplicateEmailCount++;
+                }
+            }
+            hotelPaginationModel.setTotalHotels(hotelCount);
+            hotelPaginationModel.setNewGuests(uniqueEmailCount);
+            hotelPaginationModel.setReturnGuest(duplicateEmailCount);
             return hotelPaginationModel;
         } finally {
             if (companies != null && companies instanceof Closeable) {

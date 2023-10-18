@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ReservationsRepository extends JpaRepository<Reservations, Long> {
 
-    Page<Reservations> findByCompanyIdAndFirstNameContainingOrLastNameContainingOrReservationNumberContaining(Long companyId, String firstName, String lastName, String reservationNumber, Pageable pagination);
+    Page<Reservations> findAllByCompanyIdAndFirstNameContainingOrLastNameContainingOrReservationNumberContaining(Long companyId, String firstName, String lastName, String reservationNumber, Pageable pagination);
 
     Page<Reservations> findAllByCompanyIdAndCountryOfDeparture(Long companyId, String country, Pageable pagination);
 

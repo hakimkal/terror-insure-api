@@ -81,7 +81,7 @@ public class UserController {
         return new ResponseEntity<>(responseDetails, HttpStatus.OK);
     }
 
-    @GetMapping ("/")
+    @GetMapping ("/profile")
     public ResponseEntity<?> getUser(@RequestHeader(name = "Authorization") String token) throws Exception {
         UserDetailsDto user = userServiceImpl.getUserByToken(token);
         ResponseDetailsWithObject responseDetails = new ResponseDetailsWithObject(LocalDateTime.now(), "User gotten successfully", user, "success");

@@ -8,9 +8,8 @@ import com.terron.repository.user.UserRepository;
 import com.terron.response.ResponseDetails;
 import com.terron.response.ResponseDetailsWithObject;
 import com.terron.services.company.CompanyServiceImpl;
-import com.terron.services.utils.CompanyPaginatedModel;
-import com.terron.services.utils.GuestInsuranceResponseDto;
-import com.terron.services.utils.HotelPaginationModel;
+import com.terron.services.hotels.HotelsServiceImpl;
+import com.terron.services.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +28,9 @@ public class CompanyController {
 
     @Autowired
     CompanyServiceImpl companyService;
+
+    @Autowired
+    HotelsServiceImpl hotelsService;
 
     @Autowired
     UserRepository userRepository;
@@ -64,7 +66,7 @@ public class CompanyController {
             @RequestHeader(name = "Authorization") String token
     ) {
         String role = decodeToken(token);
-        if(!Objects.equals(role, "ROLE_ADMIN")){
+        if(!Objects.equals(role, "ROLE_ADMIN") && !Objects.equals(role, "ROLE_NTDC")){
             ResponseDetails responseDetails = new ResponseDetails(LocalDateTime.now(), "Access is denied", "error");
             return new ResponseEntity<>(responseDetails, HttpStatus.FORBIDDEN);
         }
@@ -73,9 +75,55 @@ public class CompanyController {
     }
 
     @GetMapping("/insurance-companies")
+    public ResponseEntity<?> getInsuranceCompanies(
+            @RequestParam(value = "page", defaultValue = "1", required = false) int page,
+            @RequestParam(value = "pageSize", defaultValue = "100", required = false) int pageSize,
+            @RequestParam(value = "searchField", defaultValue = "", required = false) String searchField,
+            @RequestParam(value = "state", defaultValue = "", required = false) String state,
+            @RequestHeader(name = "Authorization") String token
+    ) {
+        String role = decodeToken(token);
+        if(!Objects.equals(role, "ROLE_ADMIN") && !Objects.equals(role, "ROLE_NTDC")){
+            ResponseDetails responseDetails = new ResponseDetails(LocalDateTime.now(), "Access is denied", "error");
+            return new ResponseEntity<>(responseDetails, HttpStatus.FORBIDDEN);
+        }
+        InsuranceCompanyPaginatedModel insuranceCompanyPaginatedModel = companyService.getAllInsuranceCompany(page, pageSize, searchField, state);
+        return new ResponseEntity<>(insuranceCompanyPaginatedModel, HttpStatus.OK);
+    }
+
+    @GetMapping("/all-insurance-companies")
     public ResponseEntity<?> getInsuranceCompanies() {
         List<Company> companies = companyService.getAllInsuranceCompanies();
         return new ResponseEntity<>(companies, HttpStatus.OK);
+    }
+
+    @GetMapping ("/details/{companyId}")
+    public ResponseEntity<?> getInsuranceCompany(@RequestHeader(name = "Authorization") String token, @PathVariable Long companyId) throws Exception {
+        String role = decodeToken(token);
+        if (!Objects.equals(role, "ROLE_INSURANCE_USER") && !Objects.equals(role, "ROLE_ADMIN")) {
+            ResponseDetails responseDetails = new ResponseDetails(LocalDateTime.now(), "Access is denied", "error");
+            return new ResponseEntity<>(responseDetails, HttpStatus.FORBIDDEN);
+        }
+        CompanyPaginatedModel hotel = hotelsService.getSingleCompany(companyId);
+        return new ResponseEntity<>(hotel, HttpStatus.OK);
+    }
+
+    @GetMapping("/users/{companyId}")
+    public ResponseEntity<?> getUsers(
+            @RequestParam(value = "page", defaultValue = "1", required = false) int page,
+            @RequestParam(value = "pageSize", defaultValue = "100", required = false) int pageSize,
+            @RequestParam(value = "searchField", defaultValue = "", required = false) String searchField,
+            @RequestHeader(name = "Authorization") String token,
+            @PathVariable Long companyId
+    ) {
+        String role = decodeToken(token);
+        if (!Objects.equals(role, "ROLE_INSURANCE_USER") && !Objects.equals(role, "ROLE_ADMIN")) {
+            ResponseDetails responseDetails = new ResponseDetails(LocalDateTime.now(), "Access is denied", "error");
+            return new ResponseEntity<>(responseDetails, HttpStatus.FORBIDDEN);
+        }
+
+        PaginationModel users = hotelsService.getAllUsers(page, pageSize, searchField, companyId);
+        return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
     @GetMapping ("/{companyId}/account-details")
