@@ -137,6 +137,7 @@ public class WatchlistServiceImpl implements WatchListService{
                 .lastName(missingPersonsDto.getLastName())
                 .firstName(missingPersonsDto.getFirstName())
                 .idDocument(missingPersonsDto.getIdDocument())
+                .image(missingPersonsDto.getImage())
                 .idDocumentNumber(missingPersonsDto.getIdDocumentNumber())
                 .nationality(missingPersonsDto.getNationality())
                 .reasonForInterest(missingPersonsDto.getReasonForInterest())

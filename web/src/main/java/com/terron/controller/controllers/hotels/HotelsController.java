@@ -2,16 +2,14 @@ package com.terron.controller.controllers.hotels;
 import com.terron.dto.CreateGuestInsuranceDto;
 import com.terron.dto.CreateReservationDto;
 import com.terron.exceptions.UserAlreadyExistException;
+import com.terron.models.hotels.GroupBookings;
 import com.terron.models.hotels.GuestInsurance;
 import com.terron.models.hotels.Reservations;
-import com.terron.models.user.Users;
 import com.terron.repository.user.UserRepository;
 import com.terron.response.ResponseDetails;
 import com.terron.response.ResponseDetailsWithObject;
 import com.terron.services.hotels.HotelsServiceImpl;
-import com.terron.services.utils.CompanyPaginatedModel;
-import com.terron.services.utils.HotelPaginationModel;
-import com.terron.services.utils.PaginationModel;
+import com.terron.services.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -40,8 +38,8 @@ public class HotelsController {
             ResponseDetails responseDetails = new ResponseDetails(LocalDateTime.now(), "Access is denied", "error");
             return new ResponseEntity<>(responseDetails, HttpStatus.FORBIDDEN);
         }
-        Reservations reservation = hotelsService.createReservation(createReservationDto, companyId);
-        ResponseDetailsWithObject responseDetails = new ResponseDetailsWithObject(LocalDateTime.now(), "Reservation added successfully", reservation, "success");
+        hotelsService.createReservation(createReservationDto, companyId);
+        ResponseDetails responseDetails = new ResponseDetails(LocalDateTime.now(), "Reservation added successfully", "success");
         return new ResponseEntity<>(responseDetails, HttpStatus.OK);
     }
 
@@ -61,6 +59,24 @@ public class HotelsController {
         }
         PaginationModel reservations = hotelsService.getAllReservations(page, pageSize, searchField, country, companyId);
         return new ResponseEntity<>(reservations, HttpStatus.OK);
+    }
+
+    @GetMapping("/group-bookings/{companyId}")
+    public ResponseEntity<?> getGroupBookings(
+            @RequestParam(value = "page", defaultValue = "1", required = false) int page,
+            @RequestParam(value = "pageSize", defaultValue = "100", required = false) int pageSize,
+            @RequestParam(value = "searchField", defaultValue = "", required = false) String searchField,
+            @RequestParam(value = "country", defaultValue = "", required = false) String country,
+            @RequestHeader(name = "Authorization") String token,
+            @PathVariable Long companyId
+    ) {
+        String role = decodeToken(token);
+        if (!Objects.equals(role, "ROLE_COMPANY_OWNER") && !Objects.equals(role, "ROLE_ADMIN")) {
+            ResponseDetails responseDetails = new ResponseDetails(LocalDateTime.now(), "Access is denied", "error");
+            return new ResponseEntity<>(responseDetails, HttpStatus.FORBIDDEN);
+        }
+        PaginationModel groupBookings = hotelsService.getAllGroupBookings(page, pageSize, searchField, country, companyId);
+        return new ResponseEntity<>(groupBookings, HttpStatus.OK);
     }
 
     @PostMapping("/guest-insurances/{companyId}")
@@ -119,7 +135,7 @@ public class HotelsController {
             ResponseDetails responseDetails = new ResponseDetails(LocalDateTime.now(), "Access is denied", "error");
             return new ResponseEntity<>(responseDetails, HttpStatus.FORBIDDEN);
         }
-        CompanyPaginatedModel hotel = hotelsService.getSingleHotel(companyId);
+        CompanyPaginatedModel hotel = hotelsService.getSingleCompany(companyId);
         return new ResponseEntity<>(hotel, HttpStatus.OK);
     }
 
@@ -160,6 +176,25 @@ public class HotelsController {
         return new ResponseEntity<>(reservations, HttpStatus.OK);
     }
 
+    @GetMapping("/group-bookings")
+    public ResponseEntity<?> getAllGroupBookings(
+            @RequestParam(value = "page", defaultValue = "1", required = false) int page,
+            @RequestParam(value = "pageSize", defaultValue = "100", required = false) int pageSize,
+            @RequestParam(value = "searchField", defaultValue = "", required = false) String searchField,
+            @RequestParam(value = "companyName", defaultValue = "", required = false) String filter,
+            @RequestParam(value = "country", defaultValue = "", required = false) String country,
+            @RequestHeader(name = "Authorization") String token
+    ) {
+        String role = decodeToken(token);
+        if (!Objects.equals(role, "ROLE_DSS") && !Objects.equals(role, "ROLE_ADMIN")) {
+            ResponseDetails responseDetails = new ResponseDetails(LocalDateTime.now(), "Access is denied", "error");
+            return new ResponseEntity<>(responseDetails, HttpStatus.FORBIDDEN);
+        }
+
+        PaginationModel groupBookings = hotelsService.getGroupBookings(page, pageSize, searchField, country, filter);
+        return new ResponseEntity<>(groupBookings, HttpStatus.OK);
+    }
+
     @GetMapping ("/reservations/details/{reservationId}")
     public ResponseEntity<?> getReservation(@RequestHeader(name = "Authorization") String token, @PathVariable Long reservationId) throws Exception {
         String role = decodeToken(token);
@@ -167,7 +202,7 @@ public class HotelsController {
             ResponseDetails responseDetails = new ResponseDetails(LocalDateTime.now(), "Access is denied", "error");
             return new ResponseEntity<>(responseDetails, HttpStatus.FORBIDDEN);
         }
-        Reservations reservation = hotelsService.getSingleReservations(reservationId);
+        ReservationDetailsDto reservation = hotelsService.getSingleReservations(reservationId);
         return new ResponseEntity<>(reservation, HttpStatus.OK);
     }
 
@@ -178,7 +213,18 @@ public class HotelsController {
             ResponseDetails responseDetails = new ResponseDetails(LocalDateTime.now(), "Access is denied", "error");
             return new ResponseEntity<>(responseDetails, HttpStatus.FORBIDDEN);
         }
-        GuestInsurance guestInsurance = hotelsService.getSingleGuestInsurance(guestInsuranceId);
+        GuestInsuranceDto guestInsurance = hotelsService.getSingleGuestInsurance(guestInsuranceId);
         return new ResponseEntity<>(guestInsurance, HttpStatus.OK);
+    }
+
+    @GetMapping ("/group-bookings/details/{groupBookingId}")
+    public ResponseEntity<?> getGroupBooking(@RequestHeader(name = "Authorization") String token, @PathVariable Long groupBookingId) throws Exception {
+        String role = decodeToken(token);
+        if (!Objects.equals(role, "ROLE_COMPANY_OWNER") && !Objects.equals(role, "ROLE_DSS") && !Objects.equals(role, "ROLE_ADMIN")) {
+            ResponseDetails responseDetails = new ResponseDetails(LocalDateTime.now(), "Access is denied", "error");
+            return new ResponseEntity<>(responseDetails, HttpStatus.FORBIDDEN);
+        }
+        GroupBookingDetailsDto groupBooking = hotelsService.getSingleGroupBooking(groupBookingId);
+        return new ResponseEntity<>(groupBooking, HttpStatus.OK);
     }
 }

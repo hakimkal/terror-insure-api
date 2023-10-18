@@ -13,13 +13,14 @@ public class CreateReservationDto {
     private String emailAddress;
     private String dateOfArrival;
     private String dateOfDeparture;
-    private String noOfRooms;
-    private String noOfPersons;
-    private String noOfNights;
-    private String roomNumber;
+    private int noOfRooms;
+    private int noOfPersons;
+    private int noOfNights;
+    private int roomNumber;
     private String roomType;
     private String countryOfDeparture;
     private DocumentType idDocument;
     private String idDocumentNumber;
     private Long companyId;
+    private String groupName;
 }

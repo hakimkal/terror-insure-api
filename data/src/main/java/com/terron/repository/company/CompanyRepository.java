@@ -16,9 +16,9 @@ public interface CompanyRepository extends JpaRepository<Company, Long> {
 
     Boolean existsByCacNumber(String cacNumber);
 
-    Page<Company> findByCompanyTypeAndCompanyNameContainingOrCacNumberContaining(CompanyType companyType,String name, String cacNumber, Pageable pagination);
+    Page<Company> findAllByCompanyTypeAndCompanyNameContainingOrCacNumberContaining(CompanyType companyType,String name, String cacNumber, Pageable pagination);
 
-    Page<Company> findByCompanyTypeAndState(CompanyType companyType,String state, Pageable pagination);
+    Page<Company> findAllByCompanyTypeAndState(CompanyType companyType,String state, Pageable pagination);
 
     Long countAllByCompanyType(CompanyType companyType);
 

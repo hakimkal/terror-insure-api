@@ -4,18 +4,18 @@ import com.terron.dto.CreateGuestInsuranceDto;
 import com.terron.dto.CreateReservationDto;
 import com.terron.exceptions.UserAlreadyExistException;
 import com.terron.models.company.Company;
+import com.terron.models.hotels.GroupBookings;
 import com.terron.models.hotels.GuestInsurance;
 import com.terron.models.hotels.Reservations;
 import com.terron.models.payment.Payment;
 import com.terron.models.user.Users;
 import com.terron.repository.company.CompanyRepository;
+import com.terron.repository.hotels.GroupBookingsRepository;
 import com.terron.repository.hotels.GuestInsuranceRepository;
 import com.terron.repository.hotels.ReservationsRepository;
 import com.terron.repository.payment.PaymentRepository;
 import com.terron.repository.user.UserRepository;
-import com.terron.services.utils.CompanyPaginatedModel;
-import com.terron.services.utils.HotelPaginationModel;
-import com.terron.services.utils.PaginationModel;
+import com.terron.services.utils.*;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,9 +29,7 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 
 @Service
@@ -43,6 +41,9 @@ public class HotelsServiceImpl implements HotelsService{
 
     @Autowired
     ReservationsRepository reservationsRepository;
+
+    @Autowired
+    GroupBookingsRepository groupBookingsRepository;
 
     @Autowired
     GuestInsuranceRepository guestInsuranceRepository;
@@ -57,34 +58,62 @@ public class HotelsServiceImpl implements HotelsService{
     CompanyRepository companyRepository;
 
     @Override
-    public Reservations createReservation(CreateReservationDto createReservationDto, Long companyId) throws UserAlreadyExistException {
+    public void createReservation(CreateReservationDto createReservationDto, Long companyId) throws UserAlreadyExistException {
         boolean companyExists = companyRepository.existsById(companyId);
         if (!companyExists) {
             throw new UserAlreadyExistException(String.format("Company with id: %s does not exist exists", companyId));
 
         }
-        Reservations reservation = Reservations.builder()
-                .reservationNumber(UUID.randomUUID().toString())
-                .companyId(companyId)
-                .lastName(createReservationDto.getLastName())
-                .firstName(createReservationDto.getFirstName())
-                .gender(createReservationDto.getGender())
-                .phoneNumber(createReservationDto.getPhoneNumber())
-                .emailAddress(createReservationDto.getEmailAddress())
-                .dateOfArrival(createReservationDto.getDateOfArrival())
-                .dateOfDeparture(createReservationDto.getDateOfDeparture())
-                .noOfRooms(createReservationDto.getNoOfRooms())
-                .noOfPersons(createReservationDto.getNoOfPersons())
-                .noOfNights(createReservationDto.getNoOfNights())
-                .roomNumber(createReservationDto.getRoomNumber())
-                .roomType(createReservationDto.getRoomType())
-                .countryOfDeparture(createReservationDto.getCountryOfDeparture())
-                .idDocument(createReservationDto.getIdDocument())
-                .idDocumentNumber(createReservationDto.getIdDocumentNumber())
-                .createdDate(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy hh:mm:ss")))
-                .build();
-        reservation = reservationsRepository.save(reservation);
-        return reservation;
+        Reservations reservation;
+        GroupBookings groupBookings;
+        if(createReservationDto.getNoOfRooms() <= 1){
+             reservation = Reservations.builder()
+                    .reservationNumber(UUID.randomUUID().toString())
+                    .companyId(companyId)
+                    .lastName(createReservationDto.getLastName())
+                    .firstName(createReservationDto.getFirstName())
+                    .gender(createReservationDto.getGender())
+                    .phoneNumber(createReservationDto.getPhoneNumber())
+                    .emailAddress(createReservationDto.getEmailAddress())
+                    .dateOfArrival(createReservationDto.getDateOfArrival())
+                    .dateOfDeparture(createReservationDto.getDateOfDeparture())
+                    .noOfRooms(createReservationDto.getNoOfRooms())
+                    .noOfPersons(createReservationDto.getNoOfPersons())
+                    .noOfNights(createReservationDto.getNoOfNights())
+                    .roomNumber(createReservationDto.getRoomNumber())
+                    .roomType(createReservationDto.getRoomType())
+                    .countryOfDeparture(createReservationDto.getCountryOfDeparture())
+                    .idDocument(createReservationDto.getIdDocument())
+                    .idDocumentNumber(createReservationDto.getIdDocumentNumber())
+                    .createdDate(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy hh:mm:ss")))
+                    .build();
+             reservationsRepository.save(reservation);
+        }
+        else {
+            groupBookings = GroupBookings.builder()
+                    .reservationNumber(UUID.randomUUID().toString())
+                    .companyId(companyId)
+                    .groupName(createReservationDto.getGroupName())
+                    .groupLeader(createReservationDto.getFirstName() + " " + createReservationDto.getLastName())
+                    .lastName(createReservationDto.getLastName())
+                    .firstName(createReservationDto.getFirstName())
+                    .gender(createReservationDto.getGender())
+                    .phoneNumber(createReservationDto.getPhoneNumber())
+                    .emailAddress(createReservationDto.getEmailAddress())
+                    .dateOfArrival(createReservationDto.getDateOfArrival())
+                    .dateOfDeparture(createReservationDto.getDateOfDeparture())
+                    .noOfRooms(createReservationDto.getNoOfRooms())
+                    .noOfPersons(createReservationDto.getNoOfPersons())
+                    .noOfNights(createReservationDto.getNoOfNights())
+                    .roomNumber(createReservationDto.getRoomNumber())
+                    .roomType(createReservationDto.getRoomType())
+                    .countryOfDeparture(createReservationDto.getCountryOfDeparture())
+                    .idDocument(createReservationDto.getIdDocument())
+                    .idDocumentNumber(createReservationDto.getIdDocumentNumber())
+                    .createdDate(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy hh:mm:ss")))
+                    .build();
+            groupBookingsRepository.save(groupBookings);
+        }
     }
 
     @Override
@@ -95,9 +124,11 @@ public class HotelsServiceImpl implements HotelsService{
 
         }
         String token = UUID.randomUUID().toString();
+        String token2 = UUID.randomUUID().toString();
 
         GuestInsurance guestInsurance = GuestInsurance.builder()
                 .certificateNumber(token)
+                .receiptNumber(token2)
                 .companyId(companyId)
                 .lastName(createGuestInsuranceDto.getLastName())
                 .firstName(createGuestInsuranceDto.getFirstName())
@@ -125,7 +156,7 @@ public class HotelsServiceImpl implements HotelsService{
                 .height(createGuestInsuranceDto.getHeight())
                 .complexion(createGuestInsuranceDto.getComplexion())
                 .profilePicture(createGuestInsuranceDto.getProfilePicture())
-                .verificationDocument(createGuestInsuranceDto.getProfilePicture())
+                .verificationDocument(createGuestInsuranceDto.getVerificationDocument())
                 .facialMarks(createGuestInsuranceDto.getFacialMarks())
                 .createdDate(new Date())
                 .build();
@@ -139,7 +170,7 @@ public class HotelsServiceImpl implements HotelsService{
         Pageable pagination = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.ASC, "createdDate"));
         try {
             reservations = searchField.length() > 0
-                    ? reservationsRepository.findByCompanyIdAndFirstNameContainingOrLastNameContainingOrReservationNumberContaining(companyId, searchField, searchField, searchField, pagination)
+                    ? reservationsRepository.findAllByCompanyIdAndFirstNameContainingOrLastNameContainingOrReservationNumberContaining(companyId, searchField, searchField, searchField, pagination)
                     : country.length() > 0
                     ? reservationsRepository.findAllByCompanyIdAndCountryOfDeparture(companyId,country, pagination)
                     : reservationsRepository.findAllByCompanyId(companyId, pagination);
@@ -153,6 +184,32 @@ public class HotelsServiceImpl implements HotelsService{
             if (reservations != null && reservations instanceof Closeable) {
                 try {
                     ((Closeable) reservations).close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    public PaginationModel getAllGroupBookings(Integer page, Integer pageSize, String searchField, String country, Long companyId) {
+        Page<GroupBookings> groupBookings = null;
+        Pageable pagination = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.ASC, "createdDate"));
+        try {
+            groupBookings = searchField.length() > 0
+                    ? groupBookingsRepository.findAllByCompanyIdAndFirstNameContainingOrLastNameContainingOrReservationNumberContaining(companyId, searchField, searchField, searchField, pagination)
+                    : country.length() > 0
+                    ? groupBookingsRepository.findAllByCompanyIdAndCountryOfDeparture(companyId,country, pagination)
+                    : groupBookingsRepository.findAllByCompanyId(companyId, pagination);
+
+            PaginationModel paginationModel = new PaginationModel();
+            paginationModel.setTotalCount(groupBookings.getTotalElements());
+            paginationModel.setData(groupBookings.getContent());
+
+            return paginationModel;
+        } finally {
+            if (groupBookings != null && groupBookings instanceof Closeable) {
+                try {
+                    ((Closeable) groupBookings).close();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -211,7 +268,7 @@ public class HotelsServiceImpl implements HotelsService{
     }
 
     @Override
-    public CompanyPaginatedModel getSingleHotel(Long companyId) throws UserAlreadyExistException {
+    public CompanyPaginatedModel getSingleCompany(Long companyId) throws UserAlreadyExistException {
         Company company = companyRepository.findById(companyId).orElseThrow( () -> new UserAlreadyExistException(String.format("Company with id: %s does not exist", companyId)));
         Long totalGuest = guestInsuranceRepository.countAllByCompanyId(companyId);
         Long totalReservations = reservationsRepository.countAllByCompanyId(companyId);
@@ -221,10 +278,33 @@ public class HotelsServiceImpl implements HotelsService{
                 .mapToDouble(Payment::getAmountPaid)
                 .sum();
 
+        List<GuestInsurance> guestInsurances = guestInsuranceRepository.findAllByCompanyId(companyId);
+        Map<String, Integer> emailCounts = new HashMap<>();
+
+        for (GuestInsurance guestInsurance : guestInsurances) {
+            String email = guestInsurance.getEmailAddress();
+            if (emailCounts.containsKey(email)) {
+                emailCounts.put(email, emailCounts.get(email) + 1);
+            } else {
+                emailCounts.put(email, 1);
+            }
+        }
+
+        int uniqueEmailCount = 0;
+        int duplicateEmailCount = 0;
+        for (Map.Entry<String, Integer> entry : emailCounts.entrySet()) {
+            if (entry.getValue() == 1) {
+                uniqueEmailCount++;
+            } else {
+                duplicateEmailCount++;
+            }
+        }
         double totalAmountInsured = totalGuest * 690.0;
         CompanyPaginatedModel companyPaginatedModel = new CompanyPaginatedModel();
         companyPaginatedModel.setData(company);
         companyPaginatedModel.setTotalGuest(totalGuest);
+        companyPaginatedModel.setNewGuest(uniqueEmailCount);
+        companyPaginatedModel.setReturnGuest(duplicateEmailCount);
         companyPaginatedModel.setTotalReservations(totalReservations);
         companyPaginatedModel.setTotalReservationsPercentage(totalReservationsPercentage);
         companyPaginatedModel.setTotalAmountInsured(totalAmountInsured);
@@ -266,6 +346,38 @@ public class HotelsServiceImpl implements HotelsService{
         }
     }
 
+    public PaginationModel getGroupBookings(Integer page, Integer pageSize, String searchField, String country, String filter) {
+        Page<GroupBookings> groupBookings = null;
+        Pageable pagination = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.ASC, "createdDate"));
+        Company company = new Company();
+        if(filter != null && !filter.isEmpty()){
+            company = companyRepository.findByCompanyName(filter);
+        }
+        try {
+            groupBookings = searchField.length() > 0
+                    ? groupBookingsRepository.findAllByFirstNameContainingOrLastNameContainingOrReservationNumberContaining(searchField, searchField, searchField, pagination)
+                    : country.length() > 0
+                    ? groupBookingsRepository.findAllByCountryOfDeparture(country, pagination)
+                    : filter.length() > 0
+                    ? groupBookingsRepository.findAllByCompanyId(company.getId(), pagination)
+                    : groupBookingsRepository.findAll(pagination);
+
+            PaginationModel paginationModel = new PaginationModel();
+            paginationModel.setTotalCount(groupBookings.getTotalElements());
+            paginationModel.setData(groupBookings.getContent());
+
+            return paginationModel;
+        } finally {
+            if (groupBookings != null && groupBookings instanceof Closeable) {
+                try {
+                    ((Closeable) groupBookings).close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
     public PaginationModel getGuestInsurances(Integer page, Integer pageSize, String searchField, String filter) {
         Page<GuestInsurance> guestInsurances = null;
         Pageable pagination = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.ASC, "createdDate"));
@@ -296,13 +408,34 @@ public class HotelsServiceImpl implements HotelsService{
         }
     }
 
-    public Reservations getSingleReservations(Long reservationId) throws UserAlreadyExistException {
-        return reservationsRepository.findById(reservationId).
+    public ReservationDetailsDto getSingleReservations(Long reservationId) throws UserAlreadyExistException {
+        Reservations reservation = reservationsRepository.findById(reservationId).
                 orElseThrow( () -> new UserAlreadyExistException(String.format("Reservation with id: %s does not exist", reservationId)));
+        Company company = companyRepository.findById(reservation.getCompanyId()).get();
+        return ReservationDetailsDto.builder()
+                .reservation(reservation)
+                .company(company)
+                .build();
     }
 
-    public GuestInsurance getSingleGuestInsurance(Long guestInsuranceId) throws UserAlreadyExistException {
-        return guestInsuranceRepository.findById(guestInsuranceId).
+    public GroupBookingDetailsDto getSingleGroupBooking(Long groupBookingId) throws UserAlreadyExistException {
+        GroupBookings groupBooking = groupBookingsRepository.findById(groupBookingId).
+                orElseThrow( () -> new UserAlreadyExistException(String.format("GroupBooking with id: %s does not exist", groupBookingId)));
+        Company company = companyRepository.findById(groupBooking.getCompanyId()).get();
+        return GroupBookingDetailsDto.builder()
+                .groupBooking(groupBooking)
+                .company(company)
+                .build();
+    }
+
+    public GuestInsuranceDto getSingleGuestInsurance(Long guestInsuranceId) throws UserAlreadyExistException {
+        GuestInsurance guestInsurance = guestInsuranceRepository.findById(guestInsuranceId).
                 orElseThrow( () -> new UserAlreadyExistException(String.format("Guest insurance with id: %s does not exist", guestInsuranceId)));
+
+        Company company = companyRepository.findById(guestInsurance.getCompanyId()).get();
+        return GuestInsuranceDto.builder()
+                .guestInsurance(guestInsurance)
+                .company(company)
+                .build();
     }
 }

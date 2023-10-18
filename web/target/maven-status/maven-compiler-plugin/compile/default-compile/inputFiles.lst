@@ -2,6 +2,7 @@
 /Users/user/terronApi/web/src/main/java/com/terron/response/InputValidationErrorDetails.java
 /Users/user/terronApi/web/src/main/java/com/terron/config/SwaggerConfig.java
 /Users/user/terronApi/web/src/main/java/com/terron/controller/controllers/hotels/HotelsController.java
+/Users/user/terronApi/web/src/main/java/com/terron/controller/controllers/NigerianStateController.java
 /Users/user/terronApi/web/src/main/java/com/terron/exception/GeneralExceptionHandler.java
 /Users/user/terronApi/web/src/main/java/com/terron/controller/controllers/watchList/WatchListController.java
 /Users/user/terronApi/web/src/main/java/com/terron/TerronApplication.java

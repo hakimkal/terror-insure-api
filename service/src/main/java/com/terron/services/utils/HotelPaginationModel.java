@@ -11,5 +11,8 @@ public class HotelPaginationModel {
     private long totalCount;
     private List<?> data;
     private long totalHotels;
-    private long totalUsers;
+    private long totalGuest;
+    private long totalReservations;
+    private long newGuests;
+    private long returnGuest;
 }

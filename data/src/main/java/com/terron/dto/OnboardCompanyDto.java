@@ -16,7 +16,7 @@ public class OnboardCompanyDto {
     @Enumerated(value = EnumType.ORDINAL)
     private CompanyType companyType;
     private String branch;
-    private String insuranceCompany;
+    private Long insuranceCompany;
     private String contactPersonCountryCode;
     private String companyLogo;
     private String contactPersonPhoneNumber;
