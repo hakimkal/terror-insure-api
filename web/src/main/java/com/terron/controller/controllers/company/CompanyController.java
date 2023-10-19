@@ -3,6 +3,7 @@ package com.terron.controller.controllers.company;
 import com.terron.dto.OnboardCompanyDto;
 import com.terron.models.company.Company;
 import com.terron.models.company.VirtualAccount;
+import com.terron.models.user.UserRole;
 import com.terron.models.user.Users;
 import com.terron.repository.user.UserRepository;
 import com.terron.response.ResponseDetails;
@@ -123,6 +124,24 @@ public class CompanyController {
         }
 
         PaginationModel users = hotelsService.getAllUsers(page, pageSize, searchField, companyId);
+        return new ResponseEntity<>(users, HttpStatus.OK);
+    }
+
+    @GetMapping("/manage-users/{userRole}")
+    public ResponseEntity<?> manageUsers(
+            @RequestParam(value = "page", defaultValue = "1", required = false) int page,
+            @RequestParam(value = "pageSize", defaultValue = "100", required = false) int pageSize,
+            @RequestParam(value = "searchField", defaultValue = "", required = false) String searchField,
+            @RequestHeader(name = "Authorization") String token,
+            @PathVariable String userRole
+    ) {
+        String role = decodeToken(token);
+        if (!Objects.equals(role, "ROLE_NTDC") && !Objects.equals(role, "ROLE_ADMIN")) {
+            ResponseDetails responseDetails = new ResponseDetails(LocalDateTime.now(), "Access is denied", "error");
+            return new ResponseEntity<>(responseDetails, HttpStatus.FORBIDDEN);
+        }
+
+        PaginationModel users = hotelsService.getAllUsersByCompanyType(page, pageSize, searchField, UserRole.valueOf(userRole));
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 

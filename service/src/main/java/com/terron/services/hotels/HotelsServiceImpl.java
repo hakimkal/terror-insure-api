@@ -4,10 +4,12 @@ import com.terron.dto.CreateGuestInsuranceDto;
 import com.terron.dto.CreateReservationDto;
 import com.terron.exceptions.UserAlreadyExistException;
 import com.terron.models.company.Company;
+import com.terron.models.company.CompanyType;
 import com.terron.models.hotels.GroupBookings;
 import com.terron.models.hotels.GuestInsurance;
 import com.terron.models.hotels.Reservations;
 import com.terron.models.payment.Payment;
+import com.terron.models.user.UserRole;
 import com.terron.models.user.Users;
 import com.terron.repository.company.CompanyRepository;
 import com.terron.repository.hotels.GroupBookingsRepository;
@@ -17,6 +19,7 @@ import com.terron.repository.payment.PaymentRepository;
 import com.terron.repository.user.UserRepository;
 import com.terron.services.utils.*;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.usertype.UserType;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -250,6 +253,30 @@ public class HotelsServiceImpl implements HotelsService{
             users = searchField.length() > 0
                     ? userRepository.findByCompanyIdAndFirstNameContainingOrLastNameContainingOrPhoneNumberContaining(companyId, searchField, searchField, searchField, pagination)
                     : userRepository.findAllByCompanyId(companyId, pagination);
+
+            PaginationModel paginationModel = new PaginationModel();
+            paginationModel.setTotalCount(users.getTotalElements());
+            paginationModel.setData(users.getContent());
+
+            return paginationModel;
+        } finally {
+            if (users != null && users instanceof Closeable) {
+                try {
+                    ((Closeable) users).close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    public PaginationModel getAllUsersByCompanyType(Integer page, Integer pageSize, String searchField, UserRole userType) {
+        Page<Users> users = null;
+        Pageable pagination = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.ASC, "registeredDate"));
+        try {
+            users = searchField.length() > 0
+                    ? userRepository.findByRoleAndFirstNameContainingOrLastNameContainingOrPhoneNumberContaining(userType, searchField, searchField, searchField, pagination)
+                    : userRepository.findAllByRole(userType, pagination);
 
             PaginationModel paginationModel = new PaginationModel();
             paginationModel.setTotalCount(users.getTotalElements());
