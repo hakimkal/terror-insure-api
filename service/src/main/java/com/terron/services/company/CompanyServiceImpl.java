@@ -87,14 +87,16 @@ public class CompanyServiceImpl implements CompanyService{
             throw new UserAlreadyExistException(String.format("Company with cac number: %s already exists", onboardCompanyDto.getCacNumber()));
 
         }
-
-        Company insuranceCompany = companyRepository.findById(onboardCompanyDto.getInsuranceCompany()).
-                orElseThrow( () -> new UserAlreadyExistException(String.format("Insurance company with id: %s does not exist", onboardCompanyDto.getInsuranceCompany())));
         Company company = new Company();
+        if(onboardCompanyDto.getInsuranceCompany() != null){
+            Company insuranceCompany = companyRepository.findById(onboardCompanyDto.getInsuranceCompany()).
+                    orElseThrow( () -> new UserAlreadyExistException(String.format("Insurance company with id: %s does not exist", onboardCompanyDto.getInsuranceCompany())));
+            company.setInsuranceCompany(insuranceCompany.getCompanyName());
+        }
+
         company.setCompanyLogo(onboardCompanyDto.getCompanyLogo());
-        company.setCompanyName(company.getCompanyName());
+        company.setCompanyName(onboardCompanyDto.getCompanyName());
         company.setCompanyType(onboardCompanyDto.getCompanyType());
-        company.setInsuranceCompany(insuranceCompany.getCompanyName());
         company.setAddress(onboardCompanyDto.getAddress());
         company.setBranch(onboardCompanyDto.getBranch());
         company.setCacNumber(onboardCompanyDto.getCacNumber());

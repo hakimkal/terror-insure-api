@@ -61,7 +61,6 @@ public class GuestInsurance {
     private String height;
     private String complexion;
     private String facialMarks;
-    @JsonFormat(pattern="dd.MM.yyyy")
     private Date createdDate;
 }
 

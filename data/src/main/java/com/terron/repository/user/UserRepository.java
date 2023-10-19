@@ -21,7 +21,11 @@ public interface UserRepository extends JpaRepository<Users, Long> {
 
     Page<Users> findByCompanyIdAndFirstNameContainingOrLastNameContainingOrPhoneNumberContaining(Long companyId, String firstName, String lastName, String phoneNumber, Pageable pagination);
 
+    Page<Users> findByRoleAndFirstNameContainingOrLastNameContainingOrPhoneNumberContaining(UserRole role, String firstName, String lastName, String phoneNumber, Pageable pagination);
+
     Page<Users> findAllByCompanyId(Long companyId, Pageable pagination);
+
+    Page<Users> findAllByRole(UserRole role, Pageable pagination);
 
     Long countAllByRoleAndCompanyId(UserRole role,Long companyId);
 
