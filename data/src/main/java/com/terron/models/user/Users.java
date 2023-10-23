@@ -59,4 +59,6 @@ public class Users {
     private Boolean isVerified;
 
     private Long companyId;
+
+    private String profilePic;
 }

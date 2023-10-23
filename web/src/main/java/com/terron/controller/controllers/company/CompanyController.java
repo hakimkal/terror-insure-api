@@ -156,14 +156,25 @@ public class CompanyController {
         return new ResponseEntity<>(virtualAccount, HttpStatus.OK);
     }
 
-    @GetMapping ("/insurance/general-report/{companyId}")
-    public ResponseEntity<?> insuranceCompanyGeneralReport(@RequestHeader(name = "Authorization") String token, @PathVariable Long companyId) throws Exception {
+    @GetMapping ("/general-report")
+    public ResponseEntity<?> insuranceCompanyGeneralReport(@RequestHeader(name = "Authorization") String token) throws Exception {
         String role = decodeToken(token);
-        if (!Objects.equals(role, "ROLE_INSURANCE_USER") && !Objects.equals(role, "ROLE_ADMIN")) {
+        if (!Objects.equals(role, "ROLE_ADMIN")) {
             ResponseDetails responseDetails = new ResponseDetails(LocalDateTime.now(), "Access is denied", "error");
             return new ResponseEntity<>(responseDetails, HttpStatus.FORBIDDEN);
         }
-        GuestInsuranceResponseDto guestInsuranceResponseDto = companyService.insuranceCompanyGeneralReport(companyId);
+        GuestInsuranceResponseDto guestInsuranceResponseDto = companyService.dashboard();
+        return new ResponseEntity<>(guestInsuranceResponseDto, HttpStatus.OK);
+    }
+
+    @GetMapping ("/general-report/{companyId}")
+    public ResponseEntity<?> insuranceCompanyGeneralReport(@RequestHeader(name = "Authorization") String token, @PathVariable Long companyId) throws Exception {
+        String role = decodeToken(token);
+        if (!Objects.equals(role, "ROLE_ADMIN") && !Objects.equals(role, "ROLE_INSURANCE_USER") && !Objects.equals(role, "ROLE_COMPANY_OWNER")) {
+            ResponseDetails responseDetails = new ResponseDetails(LocalDateTime.now(), "Access is denied", "error");
+            return new ResponseEntity<>(responseDetails, HttpStatus.FORBIDDEN);
+        }
+        GuestInsuranceResponseDto guestInsuranceResponseDto = companyService.companyDashboard(companyId);
         return new ResponseEntity<>(guestInsuranceResponseDto, HttpStatus.OK);
     }
 }

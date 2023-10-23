@@ -176,7 +176,7 @@ public class CompanyServiceImpl implements CompanyService{
     public InsuranceCompanyPaginatedModel getAllInsuranceCompany(Integer page, Integer pageSize, String searchField, String state){
         Page<Company> companies = null;
         Long totalGuest = guestInsuranceRepository.count();
-        Pageable pagination = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.ASC, "registeredDate"));
+        Pageable pagination = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.DESC, "registeredDate"));
         try {
             companies = searchField.length() > 0
                     ? companyRepository.findAllByCompanyTypeAndCompanyNameContainingOrCacNumberContaining(CompanyType.insurance, searchField, searchField, pagination)
@@ -211,7 +211,7 @@ public class CompanyServiceImpl implements CompanyService{
 
     public HotelPaginationModel getAllHotels(Integer page, Integer pageSize, String searchField, String state){
         Page<Company> companies = null;
-        Pageable pagination = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.ASC, "registeredDate"));
+        Pageable pagination = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.DESC, "registeredDate"));
         try {
             companies = searchField.length() > 0
                     ? companyRepository.findAllByCompanyTypeAndCompanyNameContainingOrCacNumberContaining(CompanyType.hotel, searchField, searchField, pagination)
@@ -283,24 +283,44 @@ public class CompanyServiceImpl implements CompanyService{
         new EmailServiceImpl().sendNotification(fromAddress, senderName, toAddress, subject, verifyURL, content);
     }
 
-    public GuestInsuranceResponseDto insuranceCompanyGeneralReport(Long companyId) throws UserAlreadyExistException {
+    public GuestInsuranceResponseDto dashboard() {
+        long users = userRepository.count();
+
+        long hotelUsersCount = userRepository.countAllByRole(UserRole.COMPANY_OWNER);
+        long insuranceUsersCount = userRepository.countAllByRole(UserRole.INSURANCE_USER);
+        long ntdcUsersCount = userRepository.countAllByRole(UserRole.NTDC);
+        long guestCount = guestInsuranceRepository.count();
+        long companiesCount = companyRepository.count();
+
+        List<Payment> payments = paymentRepository.findAll();
+        double totalAmountPaid = payments.stream()
+                .mapToDouble(Payment::getAmountPaid)
+                .sum();
+
+        double totalAmountInsured = guestCount * 690.0;
+        GuestInsuranceResponseDto guestInsuranceResponseDto = new GuestInsuranceResponseDto();
+        guestInsuranceResponseDto.setTotalAmountInsured(totalAmountInsured);
+        guestInsuranceResponseDto.setAmountPaid(totalAmountPaid);
+        guestInsuranceResponseDto.setOutstandingAmount(totalAmountInsured - totalAmountPaid);
+        guestInsuranceResponseDto.setUsersCount(users);
+        guestInsuranceResponseDto.setInsuredVolume(guestCount);
+        guestInsuranceResponseDto.setCompanyCount(companiesCount);
+        guestInsuranceResponseDto.setInsuranceUsers(insuranceUsersCount);
+        guestInsuranceResponseDto.setHotelUser(hotelUsersCount);
+        guestInsuranceResponseDto.setNtdcUsers(ntdcUsersCount);
+        return guestInsuranceResponseDto;
+    }
+
+    public GuestInsuranceResponseDto companyDashboard(Long companyId) throws UserAlreadyExistException {
         Company company = companyRepository.findById(companyId).orElseThrow( () -> new UserAlreadyExistException(String.format("Company with id: %s does not exist", companyId)));
         long users = userRepository.count();
         List<Company> companies = companyRepository.getCompaniesByInsuranceCompany(company.getCompanyName());
-        long ntdcUsersCount = 0L;
-        long hotelUsersCount = 0L;
-        long insuranceUsersCount = 0L;
-        long guestCount = 0L;
-        for(Company company1 : companies){
-            Long totalHotelUsers = userRepository.countAllByRoleAndCompanyId(UserRole.COMPANY_OWNER,company1.getId());
-            Long totalInsuranceUsers = userRepository.countAllByRoleAndCompanyId(UserRole.INSURANCE_USER,company1.getId());
-            Long totalNtdcUsers = userRepository.countAllByRoleAndCompanyId(UserRole.NTDC,company1.getId());
-            Long totalGuest = guestInsuranceRepository.countAllByCompanyId(company1.getId());
-            hotelUsersCount = hotelUsersCount + totalHotelUsers;
-            ntdcUsersCount = ntdcUsersCount + totalNtdcUsers;
-            insuranceUsersCount = insuranceUsersCount + totalInsuranceUsers;
-            guestCount = guestCount + totalGuest;
-        }
+
+        long hotelUsersCount = userRepository.countAllByRoleAndCompanyId(UserRole.COMPANY_OWNER,companyId);
+        long insuranceUsersCount = userRepository.countAllByRoleAndCompanyId(UserRole.INSURANCE_USER,companyId);
+        long ntdcUsersCount = userRepository.countAllByRoleAndCompanyId(UserRole.NTDC,companyId);
+        long guestCount = guestInsuranceRepository.countAllByCompanyId(companyId);
+
         Long companiesCount = companyRepository.countAllByInsuranceCompany(company.getCompanyName());
 
         List<Payment> payments = paymentRepository.findAllByInsuranceCompany(company.getCompanyName());
