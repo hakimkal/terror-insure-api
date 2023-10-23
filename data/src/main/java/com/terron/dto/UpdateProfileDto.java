@@ -14,13 +14,20 @@ public class UpdateProfileDto {
 
     private String emailAddress;
 
+    private String phoneNumber;
+
+    private String profilePic;
+
+    private UserRole role;
+
+    private Long companyId;
+
     private String firstName;
 
     private String lastName;
 
-    private String phoneNumber;
+    private String staffNo;
 
-    @Enumerated(value = EnumType.ORDINAL)
-    private UserRole role;
+    private String govtAgency;
 
 }

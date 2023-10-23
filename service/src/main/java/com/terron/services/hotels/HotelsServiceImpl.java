@@ -8,6 +8,7 @@ import com.terron.models.company.CompanyType;
 import com.terron.models.hotels.GroupBookings;
 import com.terron.models.hotels.GuestInsurance;
 import com.terron.models.hotels.Reservations;
+import com.terron.models.hotels.ReturnGuests;
 import com.terron.models.payment.Payment;
 import com.terron.models.user.UserRole;
 import com.terron.models.user.Users;
@@ -15,6 +16,7 @@ import com.terron.repository.company.CompanyRepository;
 import com.terron.repository.hotels.GroupBookingsRepository;
 import com.terron.repository.hotels.GuestInsuranceRepository;
 import com.terron.repository.hotels.ReservationsRepository;
+import com.terron.repository.hotels.ReturnGuestRepository;
 import com.terron.repository.payment.PaymentRepository;
 import com.terron.repository.user.UserRepository;
 import com.terron.services.utils.*;
@@ -44,6 +46,9 @@ public class HotelsServiceImpl implements HotelsService{
 
     @Autowired
     ReservationsRepository reservationsRepository;
+
+    @Autowired
+    ReturnGuestRepository returnGuestRepository;
 
     @Autowired
     GroupBookingsRepository groupBookingsRepository;
@@ -117,6 +122,36 @@ public class HotelsServiceImpl implements HotelsService{
                     .build();
             groupBookingsRepository.save(groupBookings);
         }
+
+        Long isReturnGuest = reservationsRepository.countAllByEmailAddress(createReservationDto.getEmailAddress());
+
+        if(isReturnGuest >= 1){
+            createReturnGuest(createReservationDto, companyId);
+        }
+    }
+
+    public void createReturnGuest(CreateReservationDto createReservationDto, Long companyId){
+        ReturnGuests returnGuests = ReturnGuests.builder()
+                .reservationNumber(UUID.randomUUID().toString())
+                .companyId(companyId)
+                .lastName(createReservationDto.getLastName())
+                .firstName(createReservationDto.getFirstName())
+                .gender(createReservationDto.getGender())
+                .phoneNumber(createReservationDto.getPhoneNumber())
+                .emailAddress(createReservationDto.getEmailAddress())
+                .dateOfArrival(createReservationDto.getDateOfArrival())
+                .dateOfDeparture(createReservationDto.getDateOfDeparture())
+                .noOfRooms(createReservationDto.getNoOfRooms())
+                .noOfPersons(createReservationDto.getNoOfPersons())
+                .noOfNights(createReservationDto.getNoOfNights())
+                .roomNumber(createReservationDto.getRoomNumber())
+                .roomType(createReservationDto.getRoomType())
+                .countryOfDeparture(createReservationDto.getCountryOfDeparture())
+                .idDocument(createReservationDto.getIdDocument())
+                .idDocumentNumber(createReservationDto.getIdDocumentNumber())
+                .createdDate(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy hh:mm:ss")))
+                .build();
+        returnGuestRepository.save(returnGuests);
     }
 
     @Override
@@ -170,7 +205,7 @@ public class HotelsServiceImpl implements HotelsService{
     @Override
     public PaginationModel getAllReservations(Integer page, Integer pageSize, String searchField, String country, Long companyId) {
         Page<Reservations> reservations = null;
-        Pageable pagination = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.ASC, "createdDate"));
+        Pageable pagination = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.DESC, "createdDate"));
         try {
             reservations = searchField.length() > 0
                     ? reservationsRepository.findAllByCompanyIdAndFirstNameContainingOrLastNameContainingOrReservationNumberContaining(companyId, searchField, searchField, searchField, pagination)
@@ -196,7 +231,7 @@ public class HotelsServiceImpl implements HotelsService{
 
     public PaginationModel getAllGroupBookings(Integer page, Integer pageSize, String searchField, String country, Long companyId) {
         Page<GroupBookings> groupBookings = null;
-        Pageable pagination = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.ASC, "createdDate"));
+        Pageable pagination = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.DESC, "createdDate"));
         try {
             groupBookings = searchField.length() > 0
                     ? groupBookingsRepository.findAllByCompanyIdAndFirstNameContainingOrLastNameContainingOrReservationNumberContaining(companyId, searchField, searchField, searchField, pagination)
@@ -220,10 +255,36 @@ public class HotelsServiceImpl implements HotelsService{
         }
     }
 
+    public PaginationModel getAllReturnGuest(Integer page, Integer pageSize, String searchField, String country, Long companyId) {
+        Page<ReturnGuests> returnGuests = null;
+        Pageable pagination = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.DESC, "createdDate"));
+        try {
+            returnGuests = searchField.length() > 0
+                    ? returnGuestRepository.findAllByCompanyIdAndFirstNameContainingOrLastNameContainingOrReservationNumberContaining(companyId, searchField, searchField, searchField, pagination)
+                    : country.length() > 0
+                    ? returnGuestRepository.findAllByCompanyIdAndCountryOfDeparture(companyId,country, pagination)
+                    : returnGuestRepository.findAllByCompanyId(companyId, pagination);
+
+            PaginationModel paginationModel = new PaginationModel();
+            paginationModel.setTotalCount(returnGuests.getTotalElements());
+            paginationModel.setData(returnGuests.getContent());
+
+            return paginationModel;
+        } finally {
+            if (returnGuests != null && returnGuests instanceof Closeable) {
+                try {
+                    ((Closeable) returnGuests).close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
     @Override
     public PaginationModel getAllGuestInsurance(Integer page, Integer pageSize, String searchField, Long companyId) {
         Page<GuestInsurance> guestInsurances = null;
-        Pageable pagination = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.ASC, "createdDate"));
+        Pageable pagination = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.DESC, "createdDate"));
         try {
             guestInsurances = searchField.length() > 0
                     ? guestInsuranceRepository.findByCompanyIdAndFirstNameContainingOrLastNameContainingOrCertificateNumberContaining(companyId,searchField, searchField, searchField, pagination)
@@ -248,7 +309,7 @@ public class HotelsServiceImpl implements HotelsService{
     @Override
     public PaginationModel getAllUsers(Integer page, Integer pageSize, String searchField, Long companyId) {
         Page<Users> users = null;
-        Pageable pagination = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.ASC, "registeredDate"));
+        Pageable pagination = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.DESC, "registeredDate"));
         try {
             users = searchField.length() > 0
                     ? userRepository.findByCompanyIdAndFirstNameContainingOrLastNameContainingOrPhoneNumberContaining(companyId, searchField, searchField, searchField, pagination)
@@ -272,7 +333,7 @@ public class HotelsServiceImpl implements HotelsService{
 
     public PaginationModel getAllUsersByCompanyType(Integer page, Integer pageSize, String searchField, UserRole userType) {
         Page<Users> users = null;
-        Pageable pagination = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.ASC, "registeredDate"));
+        Pageable pagination = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.DESC, "registeredDate"));
         try {
             users = searchField.length() > 0
                     ? userRepository.findByRoleAndFirstNameContainingOrLastNameContainingOrPhoneNumberContaining(userType, searchField, searchField, searchField, pagination)
@@ -343,7 +404,7 @@ public class HotelsServiceImpl implements HotelsService{
 
     public PaginationModel getReservations(Integer page, Integer pageSize, String searchField, String country, String filter) {
         Page<Reservations> reservations = null;
-        Pageable pagination = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.ASC, "createdDate"));
+        Pageable pagination = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.DESC, "createdDate"));
         Company company = new Company();
         if(filter != null && !filter.isEmpty()){
             company = companyRepository.findByCompanyName(filter);
@@ -375,7 +436,7 @@ public class HotelsServiceImpl implements HotelsService{
 
     public PaginationModel getGroupBookings(Integer page, Integer pageSize, String searchField, String country, String filter) {
         Page<GroupBookings> groupBookings = null;
-        Pageable pagination = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.ASC, "createdDate"));
+        Pageable pagination = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.DESC, "createdDate"));
         Company company = new Company();
         if(filter != null && !filter.isEmpty()){
             company = companyRepository.findByCompanyName(filter);
@@ -407,7 +468,7 @@ public class HotelsServiceImpl implements HotelsService{
 
     public PaginationModel getGuestInsurances(Integer page, Integer pageSize, String searchField, String filter) {
         Page<GuestInsurance> guestInsurances = null;
-        Pageable pagination = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.ASC, "createdDate"));
+        Pageable pagination = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.DESC, "createdDate"));
         Company company = new Company();
         if(filter != null && !filter.isEmpty()){
             company = companyRepository.findByCompanyName(filter);

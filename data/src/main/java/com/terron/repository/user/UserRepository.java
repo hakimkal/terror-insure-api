@@ -29,4 +29,6 @@ public interface UserRepository extends JpaRepository<Users, Long> {
 
     Long countAllByRoleAndCompanyId(UserRole role,Long companyId);
 
+    Long countAllByRole(UserRole role);
+
 }

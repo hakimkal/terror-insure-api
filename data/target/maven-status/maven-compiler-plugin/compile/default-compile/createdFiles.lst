@@ -1,3 +1,4 @@
+com/terron/models/hotels/ReturnGuests.class
 com/terron/dto/UpdatePasswordDto.class
 com/terron/models/states/State.class
 com/terron/dto/UpdateProfileDto.class
@@ -16,8 +17,10 @@ com/terron/models/hotels/Reservations.class
 com/terron/models/company/VirtualAccount.class
 com/terron/repository/user/UserRepository.class
 com/terron/repository/watchList/KeywordOfInterestRepository.class
+com/terron/repository/hotels/ReturnGuestRepository.class
 com/terron/dto/KeywordOfInterestDto$KeywordOfInterestDtoBuilder.class
 com/terron/models/hotels/GroupBookings.class
+com/terron/models/hotels/ReturnGuests$ReturnGuestsBuilder.class
 com/terron/dto/PersonOfInterestDto.class
 com/terron/models/watchList/MissingPersons.class
 com/terron/models/watchList/PersonOfInterest.class

@@ -155,7 +155,10 @@ public class UserServiceImpl implements UserService {
     public UserDetailsDto getUserById(Long id) throws NotFoundException {
         Users user = userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(String.format("User with this id: %s does not exist", id)));
-        Company company = companyRepository.findById(user.getCompanyId()).get();
+        Company company = new Company();
+        if(user.getCompanyId() != null){
+            company = companyRepository.findById(user.getCompanyId()).get();
+        }
         return UserDetailsDto.builder()
                 .user(user)
                 .company(company)

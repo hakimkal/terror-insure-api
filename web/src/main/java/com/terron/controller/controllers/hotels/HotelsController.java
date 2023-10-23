@@ -110,6 +110,25 @@ public class HotelsController {
         return new ResponseEntity<>(guestInsurance, HttpStatus.OK);
     }
 
+    @GetMapping("/return-guests/{companyId}")
+    public ResponseEntity<?> getReturnGuest(
+            @RequestParam(value = "page", defaultValue = "1", required = false) int page,
+            @RequestParam(value = "pageSize", defaultValue = "100", required = false) int pageSize,
+            @RequestParam(value = "searchField", defaultValue = "", required = false) String searchField,
+            @RequestParam(value = "country", defaultValue = "", required = false) String country,
+            @RequestHeader(name = "Authorization") String token,
+            @PathVariable Long companyId
+    ) {
+        String role = decodeToken(token);
+        if (!Objects.equals(role, "ROLE_COMPANY_OWNER") && !Objects.equals(role, "ROLE_ADMIN")) {
+            ResponseDetails responseDetails = new ResponseDetails(LocalDateTime.now(), "Access is denied", "error");
+            return new ResponseEntity<>(responseDetails, HttpStatus.FORBIDDEN);
+        }
+
+        PaginationModel guestInsurance = hotelsService.getAllReturnGuest(page, pageSize, searchField, country, companyId);
+        return new ResponseEntity<>(guestInsurance, HttpStatus.OK);
+    }
+
     @GetMapping("/users/{companyId}")
     public ResponseEntity<?> getUsers(
             @RequestParam(value = "page", defaultValue = "1", required = false) int page,

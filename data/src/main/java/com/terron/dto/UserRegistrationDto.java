@@ -20,6 +20,8 @@ public class UserRegistrationDto {
 
     private UserRole role;
 
+    private String profilePic;
+
     private Long companyId;
 
     private String firstName;
