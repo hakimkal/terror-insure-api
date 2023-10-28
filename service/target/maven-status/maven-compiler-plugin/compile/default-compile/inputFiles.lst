@@ -8,6 +8,7 @@
 /Users/user/terronApi/service/src/main/java/com/terron/services/utils/GuestInsuranceDto.java
 /Users/user/terronApi/service/src/main/java/com/terron/services/user/UserServiceImpl.java
 /Users/user/terronApi/service/src/main/java/com/terron/services/company/CompanyService.java
+/Users/user/terronApi/service/src/main/java/com/terron/services/utils/DSSDashboardDto.java
 /Users/user/terronApi/service/src/main/java/com/terron/services/payment/PaymentConfig.java
 /Users/user/terronApi/service/src/main/java/com/terron/services/hotels/HotelsService.java
 /Users/user/terronApi/service/src/main/java/com/terron/services/email/EmailService.java
@@ -16,6 +17,8 @@
 /Users/user/terronApi/service/src/main/java/com/terron/services/utils/CompanyPaginatedModel.java
 /Users/user/terronApi/service/src/main/java/com/terron/services/utils/HotelPaginationModel.java
 /Users/user/terronApi/service/src/main/java/com/terron/services/company/CompanyServiceImpl.java
+/Users/user/terronApi/service/src/main/java/com/terron/services/alerts/AlertService.java
+/Users/user/terronApi/service/src/main/java/com/terron/services/alerts/AlertServiceImpl.java
 /Users/user/terronApi/service/src/main/java/com/terron/services/utils/UrlConstant.java
 /Users/user/terronApi/service/src/main/java/com/terron/services/utils/ReservationDetailsDto.java
 /Users/user/terronApi/service/src/main/java/com/terron/exceptions/NotFoundException.java

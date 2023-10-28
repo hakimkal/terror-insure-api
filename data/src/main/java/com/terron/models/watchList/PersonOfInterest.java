@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -49,5 +50,6 @@ public class PersonOfInterest {
     private String remark;
     private String alertContact;
     private String image;
+    private String type;
     private String createdDate;
 }

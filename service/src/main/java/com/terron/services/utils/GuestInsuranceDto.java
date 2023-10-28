@@ -4,6 +4,7 @@ import com.terron.models.company.Company;
 import com.terron.models.hotels.GuestInsurance;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Builder
