@@ -7,6 +7,7 @@ com/terron/exception/GeneralExceptionHandler.class
 com/terron/response/InputValidationErrorDetails.class
 com/terron/controller/controllers/users/UserController.class
 com/terron/TerronApplication.class
+com/terron/controller/controllers/alerts/GeneralController.class
 com/terron/response/ResponseDetails.class
 com/terron/controller/controllers/PaymentController.class
 com/terron/utils/utility.class

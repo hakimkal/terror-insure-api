@@ -9,6 +9,7 @@ import com.terron.models.watchList.PersonOfInterest;
 import com.terron.repository.user.UserRepository;
 import com.terron.response.ResponseDetails;
 import com.terron.response.ResponseDetailsWithObject;
+import com.terron.services.utils.DSSDashboardDto;
 import com.terron.services.utils.PaginationModel;
 import com.terron.services.watchList.WatchlistServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 
 import static com.terron.utils.utility.decodeToken;

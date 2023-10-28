@@ -3,12 +3,18 @@ package com.terron.services.watchList;
 import com.terron.dto.KeywordOfInterestDto;
 import com.terron.dto.MissingPersonsDto;
 import com.terron.dto.PersonOfInterestDto;
+import com.terron.models.company.Company;
+import com.terron.models.hotels.GuestInsurance;
 import com.terron.models.watchList.KeywordOfInterest;
 import com.terron.models.watchList.MissingPersons;
 import com.terron.models.watchList.PersonOfInterest;
+import com.terron.repository.company.CompanyRepository;
+import com.terron.repository.hotels.GuestInsuranceRepository;
 import com.terron.repository.watchList.KeywordOfInterestRepository;
 import com.terron.repository.watchList.MissingPersonsRepository;
 import com.terron.repository.watchList.PersonOfInterestRepository;
+import com.terron.services.utils.DSSDashboardDto;
+import com.terron.services.utils.GuestInsuranceDto;
 import com.terron.services.utils.PaginationModel;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +28,8 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Service
@@ -36,6 +44,12 @@ public class WatchlistServiceImpl implements WatchListService{
 
             @Autowired
     KeywordOfInterestRepository keywordOfInterestRepository;
+
+            @Autowired
+    GuestInsuranceRepository guestInsuranceRepository;
+
+            @Autowired
+    CompanyRepository companyRepository;
 
 
     @Override
@@ -53,7 +67,7 @@ public class WatchlistServiceImpl implements WatchListService{
 
     @Override
     public PaginationModel getAllKeywordOfInterests(Integer page, Integer pageSize, String searchField) {
-        Pageable pagination = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.ASC, "createdDate"));
+        Pageable pagination = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.DESC, "createdDate"));
         Page<KeywordOfInterest> keywordOfInterests = null;
         try {
             keywordOfInterests = searchField.length() > 0
@@ -107,7 +121,7 @@ public class WatchlistServiceImpl implements WatchListService{
     @Override
     public PaginationModel getAllPersonOfInterests(Integer page, Integer pageSize, String searchField, String nationality) {
         Page<PersonOfInterest> personOfInterests = null;
-        Pageable pagination = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.ASC, "createdDate"));
+        Pageable pagination = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.DESC, "createdDate"));
         try {
             personOfInterests = searchField.length() > 0
                     ? personOfInterestRepository.findByFirstNameContainingOrLastNameContainingOrIdDocumentNumberContaining(searchField, searchField, searchField, pagination)
@@ -151,7 +165,7 @@ public class WatchlistServiceImpl implements WatchListService{
 
     @Override
     public PaginationModel getAllMissingPersons(Integer page, Integer pageSize, String searchField, String nationality) {
-        Pageable pagination = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.ASC, "createdDate"));
+        Pageable pagination = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.DESC, "createdDate"));
         Page<MissingPersons> missingPersons = null;
         try {
             missingPersons = searchField.length() > 0
@@ -175,4 +189,75 @@ public class WatchlistServiceImpl implements WatchListService{
             }
         }
     }
+
+    public List<Object> getAllWatchLists(String filter) {
+        List<MissingPersons> missingPersons = missingPersonsRepository.findAll();
+        List<KeywordOfInterest> keywordOfInterests = keywordOfInterestRepository.findAll();
+        List<PersonOfInterest> personOfInterests = personOfInterestRepository.findAll();
+
+        for (MissingPersons missingPerson : missingPersons){
+            missingPerson.setType("missingPersons");
+        }
+
+        for (KeywordOfInterest keywordOfInterest : keywordOfInterests){
+            keywordOfInterest.setType("keywordOfInterests");
+        }
+
+        for (PersonOfInterest personOfInterest : personOfInterests){
+            personOfInterest.setType("personOfInterests");
+        }
+
+        List<Object> combinedList = new ArrayList<>();
+        switch (filter) {
+            case "missingPersons":
+                combinedList.addAll(missingPersons);
+                break;
+            case "keywordOfInterests":
+                combinedList.addAll(keywordOfInterests);
+                break;
+            case "personOfInterests":
+                combinedList.addAll(personOfInterests);
+                break;
+            default:
+                combinedList.addAll(missingPersons);
+                combinedList.addAll(keywordOfInterests);
+                combinedList.addAll(personOfInterests);
+        }
+        return combinedList;
+    }
+
+    public DSSDashboardDto DSSDashboard(){
+        long missingPersonsCount = missingPersonsRepository.count();
+        long keywordOfInterestsCount = keywordOfInterestRepository.count();
+        long personOfInterestsCount = personOfInterestRepository.count();
+        List<GuestInsuranceDto> foundMissingPersons = new ArrayList<>();
+        List<PersonOfInterest> personOfInterests = personOfInterestRepository.findAll();
+        List<GuestInsurance> guestInsurances = guestInsuranceRepository.findAll();
+
+        for (PersonOfInterest poi : personOfInterests) {
+            for (GuestInsurance guestInsurance : guestInsurances) {
+                if (poi.getEmailAddress().equals(guestInsurance.getEmailAddress()) ||
+                        poi.getFirstName().equals(guestInsurance.getFirstName()) ||
+                        poi.getLastName().equals(guestInsurance.getLastName()) ||
+                        poi.getIdDocumentNumber().equals(guestInsurance.getIdDocumentNumber()) ||
+                        poi.getPhoneNumber().equals(guestInsurance.getPhoneNumber())) {
+                    Company company = companyRepository.findById(guestInsurance.getCompanyId()).get();
+                    GuestInsuranceDto guestInsuranceDto = GuestInsuranceDto.builder()
+                            .guestInsurance(guestInsurance)
+                            .company(company)
+                            .build();
+                    foundMissingPersons.add(guestInsuranceDto);
+                }
+            }
+        }
+
+        return DSSDashboardDto.builder()
+                .foundMissingPersons(foundMissingPersons)
+                .keywordOfInterestsCount(keywordOfInterestsCount)
+                .missingPersonsCount(missingPersonsCount)
+                .personOfInterestsCount(personOfInterestsCount)
+                .suspiciousBehaviourCount(0L)
+                .build();
+    }
+
 }

@@ -33,6 +33,7 @@ public class KeywordOfInterest {
     private String keyword;
     private String reasonForInterest;
     private String remark;
+    private String type;
     private String alertContact;
     private String createdDate;
 }
