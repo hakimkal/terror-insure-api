@@ -2,8 +2,8 @@ package com.terron.controller.controllers.alerts;
 
 import com.terron.dto.AlertContactDto;
 import com.terron.dto.OrganizationDto;
-import com.terron.models.alerts.AlertContact;
-import com.terron.models.alerts.Organization;
+import com.terron.models.alerts.AlertContacts;
+import com.terron.models.alerts.Organizations;
 import com.terron.response.ResponseDetails;
 import com.terron.response.ResponseDetailsWithObject;
 import com.terron.services.alerts.AlertServiceImpl;
@@ -43,8 +43,8 @@ public class GeneralController {
             ResponseDetails responseDetails = new ResponseDetails(LocalDateTime.now(), "Access is denied", "error");
             return new ResponseEntity<>(responseDetails, HttpStatus.FORBIDDEN);
         }
-        Organization organization = alertService.addOrganizations(organizationDto);
-        ResponseDetailsWithObject responseDetails = new ResponseDetailsWithObject(LocalDateTime.now(), "Organization added successfully", organization, "success");
+        Organizations organizations = alertService.addOrganizations(organizationDto);
+        ResponseDetailsWithObject responseDetails = new ResponseDetailsWithObject(LocalDateTime.now(), "Organization added successfully", organizations, "success");
         return new ResponseEntity<>(responseDetails, HttpStatus.OK);
     }
 
@@ -72,8 +72,8 @@ public class GeneralController {
             ResponseDetails responseDetails = new ResponseDetails(LocalDateTime.now(), "Access is denied", "error");
             return new ResponseEntity<>(responseDetails, HttpStatus.FORBIDDEN);
         }
-        AlertContact alertContact = alertService.addAlertContact(alertContactDto);
-        ResponseDetailsWithObject responseDetails = new ResponseDetailsWithObject(LocalDateTime.now(), "Alert contact added successfully", alertContact, "success");
+        AlertContacts alertContacts = alertService.addAlertContact(alertContactDto);
+        ResponseDetailsWithObject responseDetails = new ResponseDetailsWithObject(LocalDateTime.now(), "Alert contact added successfully", alertContacts, "success");
         return new ResponseEntity<>(responseDetails, HttpStatus.OK);
     }
 

@@ -17,9 +17,8 @@ public class AlertContactDto {
 
     private String lastName;
     private String firstName;
-    private DocumentType organization;
+    private String organization;
     private String jobTitle;
-    private String phoneNumer;
+    private String phoneNumber;
     private String email;
-    private String createdDate;
 }

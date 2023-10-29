@@ -1,9 +1,9 @@
 com/terron/dto/OrganizationDto$OrganizationDtoBuilder.class
 com/terron/models/hotels/ReturnGuests.class
 com/terron/dto/UpdatePasswordDto.class
+com/terron/models/alerts/AlertContacts.class
 com/terron/models/states/State.class
 com/terron/dto/UpdateProfileDto.class
-com/terron/models/alerts/Organization$OrganizationBuilder.class
 com/terron/repository/hotels/GuestInsuranceRepository.class
 com/terron/dto/KeywordOfInterestDto.class
 com/terron/dto/CreateReservationDto.class
@@ -28,6 +28,7 @@ com/terron/dto/KeywordOfInterestDto$KeywordOfInterestDtoBuilder.class
 com/terron/models/hotels/GroupBookings.class
 com/terron/models/hotels/ReturnGuests$ReturnGuestsBuilder.class
 com/terron/dto/PersonOfInterestDto.class
+com/terron/models/alerts/Organizations.class
 com/terron/models/watchList/MissingPersons.class
 com/terron/models/watchList/PersonOfInterest.class
 com/terron/repository/company/CompanyRepository.class
@@ -41,7 +42,9 @@ com/terron/models/watchList/SuspiciousBehaviour.class
 com/terron/dto/OnboardCompanyDto.class
 com/terron/models/watchList/KeywordOfInterest.class
 com/terron/dto/PersonOfInterestDto$PersonOfInterestDtoBuilder.class
+com/terron/models/alerts/AlertContacts$AlertContactsBuilder.class
 com/terron/models/payment/Payment$PaymentBuilder.class
+com/terron/models/alerts/Organizations$OrganizationsBuilder.class
 com/terron/dto/MissingPersonsDto.class
 com/terron/repository/states/StatesRepository.class
 com/terron/repository/watchList/PersonOfInterestRepository.class
@@ -50,7 +53,6 @@ com/terron/models/hotels/GuestInsurance$GuestInsuranceBuilder.class
 com/terron/models/payment/Payment.class
 com/terron/models/company/Company.class
 com/terron/dto/VirtualAccountResponse$Data.class
-com/terron/models/alerts/AlertContact.class
 com/terron/dto/RequestResetPasswordDto.class
 com/terron/models/states/LocalGovt$LocalGovtBuilder.class
 com/terron/repository/hotels/GroupBookingsRepository.class
@@ -61,7 +63,6 @@ com/terron/models/user/UserRole.class
 com/terron/dto/PaymentResponse.class
 com/terron/repository/company/VirtualAccountRepository.class
 com/terron/models/company/CompanyType.class
-com/terron/models/alerts/AlertContact$AlertContactBuilder.class
 com/terron/dto/ChargeData.class
 com/terron/models/watchList/PersonOfInterest$PersonOfInterestBuilder.class
 com/terron/dto/MissingPersonsDto$MissingPersonsDtoBuilder.class
@@ -73,6 +74,5 @@ com/terron/dto/UserRegistrationDto.class
 com/terron/repository/alerts/AlertContactRepository.class
 com/terron/models/hotels/PaymentMode.class
 com/terron/models/hotels/GroupBookings$GroupBookingsBuilder.class
-com/terron/models/alerts/Organization.class
 com/terron/models/hotels/DocumentType.class
 com/terron/models/states/LocalGovt.class

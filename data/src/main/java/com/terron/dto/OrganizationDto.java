@@ -17,11 +17,10 @@ public class OrganizationDto {
 
     private String organizationType;
     private String organizationName;
-    private DocumentType abbreviation;
+    private String abbreviation;
     private String state;
     private String address;
-    private String phoneNumer;
+    private String phoneNumber;
     private String email;
     private String logo;
-    private String createdDate;
 }

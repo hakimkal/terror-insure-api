@@ -2,12 +2,12 @@ package com.terron.services.alerts;
 
 import com.terron.dto.AlertContactDto;
 import com.terron.dto.OrganizationDto;
-import com.terron.models.alerts.AlertContact;
-import com.terron.models.alerts.Organization;
-import com.terron.models.watchList.MissingPersons;
+import com.terron.models.alerts.AlertContacts;
+import com.terron.models.alerts.Organizations;
 import com.terron.repository.alerts.AlertContactRepository;
 import com.terron.repository.alerts.OrganizationRepository;
 import com.terron.services.utils.PaginationModel;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -21,6 +21,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 @Service
+@Slf4j
 public class AlertServiceImpl implements AlertService{
 
     @Autowired
@@ -30,25 +31,26 @@ public class AlertServiceImpl implements AlertService{
     AlertContactRepository alertContactRepository;
 
     @Override
-    public AlertContact addAlertContact(AlertContactDto alertContactDto) {
+    public AlertContacts addAlertContact(AlertContactDto alertContactDto) {
 
-        AlertContact alertContact = AlertContact.builder()
+        AlertContacts alertContacts = AlertContacts.builder()
                 .lastName(alertContactDto.getLastName())
                 .firstName(alertContactDto.getFirstName())
                 .email(alertContactDto.getEmail())
-                .phoneNumer(alertContactDto.getPhoneNumer())
+                .phoneNumber(alertContactDto.getPhoneNumber())
                 .jobTitle(alertContactDto.getJobTitle())
                 .organization(alertContactDto.getOrganization())
                 .createdDate(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy hh:mm:ss")))
                 .build();
-        alertContactRepository.save(alertContact);
-        return alertContact;
+
+        alertContactRepository.save(alertContacts);
+        return alertContacts;
     }
 
     @Override
     public PaginationModel getAllAlertContacts(Integer page, Integer pageSize, String searchField, String organization) {
         Pageable pagination = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.DESC, "createdDate"));
-        Page<AlertContact> alertContacts = null;
+        Page<AlertContacts> alertContacts = null;
         try {
             alertContacts = searchField.length() > 0
                     ? alertContactRepository.findByLastNameContainingOrFirstNameContaining(searchField, searchField, pagination)
@@ -73,26 +75,26 @@ public class AlertServiceImpl implements AlertService{
     }
 
     @Override
-    public Organization addOrganizations(OrganizationDto organizationDto) {
-        Organization organization = Organization.builder()
+    public Organizations addOrganizations(OrganizationDto organizationDto) {
+        Organizations organizations = Organizations.builder()
                 .organizationName(organizationDto.getOrganizationName())
                 .organizationType(organizationDto.getOrganizationType())
                 .email(organizationDto.getEmail())
-                .phoneNumer(organizationDto.getPhoneNumer())
+                .phoneNumber(organizationDto.getPhoneNumber())
                 .address(organizationDto.getAddress())
                 .abbreviation(organizationDto.getAbbreviation())
                 .state(organizationDto.getState())
                 .logo(organizationDto.getLogo())
                 .createdDate(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy hh:mm:ss")))
                 .build();
-        organizationRepository.save(organization);
-        return organization;
+        organizationRepository.save(organizations);
+        return organizations;
     }
 
     @Override
     public PaginationModel getOrganizations(Integer page, Integer pageSize, String searchField, String organizationType) {
         Pageable pagination = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.DESC, "createdDate"));
-        Page<Organization> organizations = null;
+        Page<Organizations> organizations = null;
         try {
             organizations = searchField.length() > 0
                     ? organizationRepository.findByOrganizationNameContainingOrOrganizationTypeContaining(searchField, searchField, pagination)
