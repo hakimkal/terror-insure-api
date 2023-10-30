@@ -4,10 +4,12 @@ import com.terron.dto.AlertContactDto;
 import com.terron.dto.OrganizationDto;
 import com.terron.models.alerts.AlertContacts;
 import com.terron.models.alerts.Organizations;
+import com.terron.models.watchList.PersonOfInterest;
 import com.terron.response.ResponseDetails;
 import com.terron.response.ResponseDetailsWithObject;
 import com.terron.services.alerts.AlertServiceImpl;
 import com.terron.services.hotels.HotelsServiceImpl;
+import com.terron.services.utils.CompanyPaginatedModel;
 import com.terron.services.utils.DSSDashboardDto;
 import com.terron.services.utils.PaginationModel;
 import com.terron.services.watchList.WatchlistServiceImpl;
@@ -157,5 +159,16 @@ public class GeneralController {
         }
         DSSDashboardDto dssDashboardDto = watchlistService.DSSDashboard();
         return new ResponseEntity<>(dssDashboardDto, HttpStatus.OK);
+    }
+
+    @GetMapping ("/dss/watchlist/{id}")
+    public ResponseEntity<?> getSingleWatchlist(@RequestHeader(name = "Authorization") String token, @PathVariable Long id) throws Exception {
+        String role = decodeToken(token);
+        if (!Objects.equals(role, "ROLE_DSS") && !Objects.equals(role, "ROLE_ADMIN")) {
+            ResponseDetails responseDetails = new ResponseDetails(LocalDateTime.now(), "Access is denied", "error");
+            return new ResponseEntity<>(responseDetails, HttpStatus.FORBIDDEN);
+        }
+        PersonOfInterest personOfInterest = watchlistService.getSinglePersonOfInterest(id);
+        return new ResponseEntity<>(personOfInterest, HttpStatus.OK);
     }
 }

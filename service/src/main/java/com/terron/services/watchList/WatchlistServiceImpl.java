@@ -16,6 +16,7 @@ import com.terron.repository.watchList.PersonOfInterestRepository;
 import com.terron.services.utils.DSSDashboardDto;
 import com.terron.services.utils.GuestInsuranceDto;
 import com.terron.services.utils.PaginationModel;
+import javassist.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -245,6 +246,7 @@ public class WatchlistServiceImpl implements WatchListService{
                     GuestInsuranceDto guestInsuranceDto = GuestInsuranceDto.builder()
                             .guestInsurance(guestInsurance)
                             .company(company)
+                            .personOfInterest(poi)
                             .build();
                     foundMissingPersons.add(guestInsuranceDto);
                 }
@@ -258,6 +260,10 @@ public class WatchlistServiceImpl implements WatchListService{
                 .personOfInterestsCount(personOfInterestsCount)
                 .suspiciousBehaviourCount(0L)
                 .build();
+    }
+
+    public PersonOfInterest getSinglePersonOfInterest(Long id) throws NotFoundException {
+        return personOfInterestRepository.findById(id).orElseThrow(() -> new NotFoundException(String.format("Person of interest with this id: %s does not exist", id)));
     }
 
 }
