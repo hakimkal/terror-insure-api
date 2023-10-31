@@ -262,8 +262,16 @@ public class WatchlistServiceImpl implements WatchListService{
                 .build();
     }
 
-    public PersonOfInterest getSinglePersonOfInterest(Long id) throws NotFoundException {
-        return personOfInterestRepository.findById(id).orElseThrow(() -> new NotFoundException(String.format("Person of interest with this id: %s does not exist", id)));
+    public GuestInsuranceDto getSinglePersonOfInterest(Long personOfInterestId, Long guestInsuranceId) throws NotFoundException {
+        PersonOfInterest personOfInterest = personOfInterestRepository.findById(personOfInterestId).orElseThrow(() -> new NotFoundException(String.format("Person of interest with this id: %s does not exist", personOfInterestId)));
+     GuestInsurance guestInsurance = guestInsuranceRepository.findById(guestInsuranceId).orElseThrow(() -> new NotFoundException(String.format("Guest insurance with this id: %s does not exist", guestInsuranceId)));
+        Company company = companyRepository.findById(guestInsurance.getCompanyId()).get();
+        GuestInsuranceDto guestInsuranceDto = GuestInsuranceDto.builder()
+                .guestInsurance(guestInsurance)
+                .company(company)
+                .personOfInterest(personOfInterest)
+                .build();
+        return guestInsuranceDto;
     }
 
 }

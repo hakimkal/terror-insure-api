@@ -8,8 +8,10 @@ import com.terron.models.hotels.Reservations;
 import com.terron.repository.user.UserRepository;
 import com.terron.response.ResponseDetails;
 import com.terron.response.ResponseDetailsWithObject;
+import com.terron.services.company.CompanyServiceImpl;
 import com.terron.services.hotels.HotelsServiceImpl;
 import com.terron.services.utils.*;
+import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +29,9 @@ public class HotelsController {
 
     @Autowired
     HotelsServiceImpl hotelsService;
+
+    @Autowired
+    CompanyServiceImpl companyService;
 
     @Autowired
     UserRepository userRepository;
@@ -145,6 +150,24 @@ public class HotelsController {
 
         PaginationModel users = hotelsService.getAllUsers(page, pageSize, searchField, companyId);
         return new ResponseEntity<>(users, HttpStatus.OK);
+    }
+
+    @GetMapping("/payment/{companyId}")
+    public ResponseEntity<?> getInsuranceCompanyPayment(
+            @RequestParam(value = "page", defaultValue = "1", required = false) int page,
+            @RequestParam(value = "pageSize", defaultValue = "100", required = false) int pageSize,
+            @RequestParam(value = "startDate", defaultValue = "", required = false) String startDate,
+            @RequestParam(value = "endDate", defaultValue = "", required = false) String endDate,
+            @PathVariable Long companyId,
+            @RequestHeader(name = "Authorization") String token
+    ) {
+        String role = decodeToken(token);
+        if(!Objects.equals(role, "ROLE_ADMIN")  && !Objects.equals(role, "ROLE_COMPANY_OWNER") && !Objects.equals(role, "ROLE_NTDC")){
+            ResponseDetails responseDetails = new ResponseDetails(LocalDateTime.now(), "Access is denied", "error");
+            return new ResponseEntity<>(responseDetails, HttpStatus.FORBIDDEN);
+        }
+        PaginationModel insuranceCompanyPaginatedModel = companyService.getAllHotelPayments(companyId, startDate, endDate ,page, pageSize);
+        return new ResponseEntity<>(insuranceCompanyPaginatedModel, HttpStatus.OK);
     }
 
     @GetMapping ("/details/{companyId}")

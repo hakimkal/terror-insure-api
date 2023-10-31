@@ -3,7 +3,9 @@ package com.terron.services.payment;
 import com.google.gson.Gson;
 import com.terron.dto.*;
 import com.terron.exceptions.NotFoundException;
+import com.terron.models.company.Company;
 import com.terron.models.payment.Payment;
+import com.terron.repository.company.CompanyRepository;
 import com.terron.repository.payment.PaymentRepository;
 import io.netty.handler.codec.http.HttpUtil;
 import lombok.AllArgsConstructor;
@@ -38,6 +40,9 @@ public class PaymentService {
     @Autowired
     PaymentRepository paymentRepository;
 
+    @Autowired
+    CompanyRepository companyRepository;
+
     public PaymentResponse makeCardPayment(CardPaymentRequest request, Long companyId) throws ServiceUnavailableException {
         try {
 
@@ -58,10 +63,12 @@ public class PaymentService {
                     .bodyToMono(PaymentResponse.class)
                     .block();
 
+            Company company = companyRepository.findById(companyId).get();
             Payment payment = Payment.builder()
                     .reference(request.getReference())
                     .datePaid(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy hh:mm:ss")))
                     .status("pending")
+                    .insuranceCompany(company.getInsuranceCompany())
                     .amountPaid(request.getAmount())
                     .companyId(companyId)
                     .build();
