@@ -11,6 +11,7 @@ import com.terron.response.ResponseDetailsWithObject;
 import com.terron.services.company.CompanyServiceImpl;
 import com.terron.services.hotels.HotelsServiceImpl;
 import com.terron.services.utils.*;
+import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -89,6 +90,24 @@ public class CompanyController {
             return new ResponseEntity<>(responseDetails, HttpStatus.FORBIDDEN);
         }
         InsuranceCompanyPaginatedModel insuranceCompanyPaginatedModel = companyService.getAllInsuranceCompany(page, pageSize, searchField, state);
+        return new ResponseEntity<>(insuranceCompanyPaginatedModel, HttpStatus.OK);
+    }
+
+    @GetMapping("/payment/{insuranceCompanyId}")
+    public ResponseEntity<?> getInsuranceCompanyPayment(
+            @RequestParam(value = "page", defaultValue = "1", required = false) int page,
+            @RequestParam(value = "pageSize", defaultValue = "100", required = false) int pageSize,
+            @RequestParam(value = "startDate", defaultValue = "", required = false) String startDate,
+            @RequestParam(value = "endDate", defaultValue = "", required = false) String endDate,
+            @PathVariable Long insuranceCompanyId,
+            @RequestHeader(name = "Authorization") String token
+    ) throws NotFoundException {
+        String role = decodeToken(token);
+        if(!Objects.equals(role, "ROLE_ADMIN")  && !Objects.equals(role, "ROLE_INSURANCE_USER") && !Objects.equals(role, "ROLE_NTDC")){
+            ResponseDetails responseDetails = new ResponseDetails(LocalDateTime.now(), "Access is denied", "error");
+            return new ResponseEntity<>(responseDetails, HttpStatus.FORBIDDEN);
+        }
+        PaginationModel insuranceCompanyPaginatedModel = companyService.getAllInsuranceCompanyPayments(insuranceCompanyId, startDate, endDate ,page, pageSize);
         return new ResponseEntity<>(insuranceCompanyPaginatedModel, HttpStatus.OK);
     }
 

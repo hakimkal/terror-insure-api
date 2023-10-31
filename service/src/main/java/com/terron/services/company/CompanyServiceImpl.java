@@ -19,10 +19,8 @@ import com.terron.repository.payment.PaymentRepository;
 import com.terron.repository.user.UserRepository;
 import com.terron.services.email.EmailServiceImpl;
 import com.terron.services.payment.PaymentService;
-import com.terron.services.utils.CompanyPaginatedModel;
-import com.terron.services.utils.GuestInsuranceResponseDto;
-import com.terron.services.utils.HotelPaginationModel;
-import com.terron.services.utils.InsuranceCompanyPaginatedModel;
+import com.terron.services.utils.*;
+import javassist.NotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -171,6 +169,82 @@ public class CompanyServiceImpl implements CompanyService{
     public Company addHotel(OnboardCompanyDto onboardCompanyDto) throws Exception {
        Company company = onboardCompany(onboardCompanyDto);
        return company;
+    }
+
+    public PaginationModel getAllHotelPayments(Long companyId, String startDate, String endDate, Integer page, Integer pageSize){
+        Page<Payment> payments = null;
+        Pageable pagination = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.DESC, "datePaid"));
+
+        try {
+            payments = startDate.length() > 0 && endDate.length() > 0
+                    ? paymentRepository.findAllByCompanyIdAndDatePaidBetween(companyId, startDate, endDate, pagination)
+                    : paymentRepository.findAllByCompanyId(companyId, pagination);
+
+            PaginationModel paginationModel = new PaginationModel();
+            paginationModel.setTotalCount(payments.getTotalElements());
+            paginationModel.setData(payments.getContent());
+
+            return paginationModel;
+        } finally {
+            if (payments != null && payments instanceof Closeable) {
+                try {
+                    ((Closeable) payments).close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    public PaginationModel getAllPayments(String startDate, String endDate, Integer page, Integer pageSize){
+        Page<Payment> payments = null;
+        Pageable pagination = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.DESC, "datePaid"));
+
+        try {
+            payments = startDate.length() > 0 && endDate.length() > 0
+                    ? paymentRepository.findAllByDatePaidBetween(startDate, endDate, pagination)
+                    : paymentRepository.findAll(pagination);
+
+            PaginationModel paginationModel = new PaginationModel();
+            paginationModel.setTotalCount(payments.getTotalElements());
+            paginationModel.setData(payments.getContent());
+
+            return paginationModel;
+        } finally {
+            if (payments != null && payments instanceof Closeable) {
+                try {
+                    ((Closeable) payments).close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    public PaginationModel getAllInsuranceCompanyPayments(Long insuranceCompanyId,String startDate, String endDate, Integer page, Integer pageSize) throws NotFoundException {
+        Page<Payment> payments = null;
+        Pageable pagination = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.DESC, "datePaid"));
+
+        Company company = companyRepository.findById(insuranceCompanyId).orElseThrow(() -> new NotFoundException(String.format("Company with this id: %s does not exist", insuranceCompanyId)));
+        try {
+            payments = startDate.length() > 0 && endDate.length() > 0
+                    ? paymentRepository.findAllByInsuranceCompanyAndDatePaidBetween(company.getCompanyName(), startDate, endDate, pagination)
+                    : paymentRepository.findAllByInsuranceCompany(company.getCompanyName(),pagination);
+
+            PaginationModel paginationModel = new PaginationModel();
+            paginationModel.setTotalCount(payments.getTotalElements());
+            paginationModel.setData(payments.getContent());
+
+            return paginationModel;
+        } finally {
+            if (payments != null && payments instanceof Closeable) {
+                try {
+                    ((Closeable) payments).close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
     public InsuranceCompanyPaginatedModel getAllInsuranceCompany(Integer page, Integer pageSize, String searchField, String state){
