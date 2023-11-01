@@ -46,7 +46,7 @@ public class GeneralController {
     @PostMapping("/dss/organizations")
     public ResponseEntity<?> addOrganization(@Valid @RequestBody OrganizationDto organizationDto, @RequestHeader(name = "Authorization") String token) throws Exception {
         String role = decodeToken(token);
-        if (!Objects.equals(role, "ROLE_DSS") && !Objects.equals(role, "ROLE_ADMIN")) {
+        if (!Objects.equals(role, "ROLE_DSS") && !Objects.equals(role, "ROLE_INTERPOL")  && !Objects.equals(role, "ROLE_NSA") && !Objects.equals(role, "ROLE_ADMIN")) {
             ResponseDetails responseDetails = new ResponseDetails(LocalDateTime.now(), "Access is denied", "error");
             return new ResponseEntity<>(responseDetails, HttpStatus.FORBIDDEN);
         }
@@ -64,7 +64,7 @@ public class GeneralController {
             @RequestHeader(name = "Authorization") String token
     ) {
         String role = decodeToken(token);
-        if (!Objects.equals(role, "ROLE_DSS") && !Objects.equals(role, "ROLE_ADMIN")) {
+        if (!Objects.equals(role, "ROLE_DSS") && !Objects.equals(role, "ROLE_INTERPOL")  && !Objects.equals(role, "ROLE_NSA") && !Objects.equals(role, "ROLE_ADMIN")) {
             ResponseDetails responseDetails = new ResponseDetails(LocalDateTime.now(), "Access is denied", "error");
             return new ResponseEntity<>(responseDetails, HttpStatus.FORBIDDEN);
         }
@@ -75,7 +75,7 @@ public class GeneralController {
     @PostMapping("/dss/alert-contact")
     public ResponseEntity<?> addAlertContact(@Valid @RequestBody AlertContactDto alertContactDto, @RequestHeader(name = "Authorization") String token) throws Exception {
         String role = decodeToken(token);
-        if (!Objects.equals(role, "ROLE_DSS") && !Objects.equals(role, "ROLE_ADMIN")) {
+        if (!Objects.equals(role, "ROLE_DSS") && !Objects.equals(role, "ROLE_INTERPOL")  && !Objects.equals(role, "ROLE_NSA") && !Objects.equals(role, "ROLE_ADMIN")) {
             ResponseDetails responseDetails = new ResponseDetails(LocalDateTime.now(), "Access is denied", "error");
             return new ResponseEntity<>(responseDetails, HttpStatus.FORBIDDEN);
         }
@@ -93,7 +93,7 @@ public class GeneralController {
             @RequestHeader(name = "Authorization") String token
     ) {
         String role = decodeToken(token);
-        if (!Objects.equals(role, "ROLE_DSS") && !Objects.equals(role, "ROLE_ADMIN")) {
+        if (!Objects.equals(role, "ROLE_DSS") && !Objects.equals(role, "ROLE_INTERPOL")  && !Objects.equals(role, "ROLE_NSA") && !Objects.equals(role, "ROLE_ADMIN")) {
             ResponseDetails responseDetails = new ResponseDetails(LocalDateTime.now(), "Access is denied", "error");
             return new ResponseEntity<>(responseDetails, HttpStatus.FORBIDDEN);
         }
@@ -110,7 +110,7 @@ public class GeneralController {
             @RequestHeader(name = "Authorization") String token
     ) {
         String role = decodeToken(token);
-        if (!Objects.equals(role, "ROLE_DSS") && !Objects.equals(role, "ROLE_ADMIN")) {
+        if (!Objects.equals(role, "ROLE_DSS") && !Objects.equals(role, "ROLE_INTERPOL")  && !Objects.equals(role, "ROLE_NSA") && !Objects.equals(role, "ROLE_ADMIN")) {
             ResponseDetails responseDetails = new ResponseDetails(LocalDateTime.now(), "Access is denied", "error");
             return new ResponseEntity<>(responseDetails, HttpStatus.FORBIDDEN);
         }
@@ -129,7 +129,7 @@ public class GeneralController {
             @RequestHeader(name = "Authorization") String token
     ) {
         String role = decodeToken(token);
-        if (!Objects.equals(role, "ROLE_DSS") && !Objects.equals(role, "ROLE_ADMIN")) {
+        if (!Objects.equals(role, "ROLE_DSS") && !Objects.equals(role, "ROLE_INTERPOL")  && !Objects.equals(role, "ROLE_NSA") && !Objects.equals(role, "ROLE_ADMIN")) {
             ResponseDetails responseDetails = new ResponseDetails(LocalDateTime.now(), "Access is denied", "error");
             return new ResponseEntity<>(responseDetails, HttpStatus.FORBIDDEN);
         }
@@ -145,7 +145,7 @@ public class GeneralController {
             @RequestHeader(name = "Authorization") String token
     ) {
         String role = decodeToken(token);
-        if (!Objects.equals(role, "ROLE_DSS") && !Objects.equals(role, "ROLE_ADMIN") && !Objects.equals(role, "ROLE_NTDC")) {
+        if (!Objects.equals(role, "ROLE_DSS") && !Objects.equals(role, "ROLE_INTERPOL")  && !Objects.equals(role, "ROLE_NSA") && !Objects.equals(role, "ROLE_ADMIN") && !Objects.equals(role, "ROLE_NTDC")) {
             ResponseDetails responseDetails = new ResponseDetails(LocalDateTime.now(), "Access is denied", "error");
             return new ResponseEntity<>(responseDetails, HttpStatus.FORBIDDEN);
         }
@@ -158,7 +158,7 @@ public class GeneralController {
             @RequestHeader(name = "Authorization") String token
     ) {
         String role = decodeToken(token);
-        if (!Objects.equals(role, "ROLE_DSS") && !Objects.equals(role, "ROLE_ADMIN")) {
+        if (!Objects.equals(role, "ROLE_DSS") && !Objects.equals(role, "ROLE_INTERPOL")  && !Objects.equals(role, "ROLE_NSA") && !Objects.equals(role, "ROLE_ADMIN")) {
             ResponseDetails responseDetails = new ResponseDetails(LocalDateTime.now(), "Access is denied", "error");
             return new ResponseEntity<>(responseDetails, HttpStatus.FORBIDDEN);
         }
@@ -169,7 +169,7 @@ public class GeneralController {
     @GetMapping ("/dss/{guestInsuranceId}/watchlist/{personOfInterestId}")
     public ResponseEntity<?> getSingleWatchlist(@RequestHeader(name = "Authorization") String token, @PathVariable Long personOfInterestId, @PathVariable Long guestInsuranceId) throws Exception {
         String role = decodeToken(token);
-        if (!Objects.equals(role, "ROLE_DSS") && !Objects.equals(role, "ROLE_ADMIN")) {
+        if (!Objects.equals(role, "ROLE_DSS") && !Objects.equals(role, "ROLE_INTERPOL")  && !Objects.equals(role, "ROLE_NSA") && !Objects.equals(role, "ROLE_ADMIN")) {
             ResponseDetails responseDetails = new ResponseDetails(LocalDateTime.now(), "Access is denied", "error");
             return new ResponseEntity<>(responseDetails, HttpStatus.FORBIDDEN);
         }
@@ -178,7 +178,7 @@ public class GeneralController {
     }
 
     @GetMapping("/payments")
-    public ResponseEntity<?> getInsuranceCompanyPayment(
+    public ResponseEntity<?> getAllPayment(
             @RequestParam(value = "page", defaultValue = "1", required = false) int page,
             @RequestParam(value = "pageSize", defaultValue = "100", required = false) int pageSize,
             @RequestParam(value = "startDate", defaultValue = "", required = false) String startDate,
@@ -190,7 +190,24 @@ public class GeneralController {
             ResponseDetails responseDetails = new ResponseDetails(LocalDateTime.now(), "Access is denied", "error");
             return new ResponseEntity<>(responseDetails, HttpStatus.FORBIDDEN);
         }
-        PaginationModel insuranceCompanyPaginatedModel = companyService.getAllPayments(startDate, endDate ,page, pageSize);
-        return new ResponseEntity<>(insuranceCompanyPaginatedModel, HttpStatus.OK);
+        PaginationModel payments = companyService.getAllPayments(startDate, endDate ,page, pageSize);
+        return new ResponseEntity<>(payments, HttpStatus.OK);
+    }
+
+    @GetMapping("/transactions")
+    public ResponseEntity<?> getAllTransactions(
+            @RequestParam(value = "page", defaultValue = "1", required = false) int page,
+            @RequestParam(value = "pageSize", defaultValue = "100", required = false) int pageSize,
+            @RequestParam(value = "startDate", defaultValue = "", required = false) String startDate,
+            @RequestParam(value = "endDate", defaultValue = "", required = false) String endDate,
+            @RequestHeader(name = "Authorization") String token
+    ) {
+        String role = decodeToken(token);
+        if(!Objects.equals(role, "ROLE_ADMIN") && !Objects.equals(role, "ROLE_NTDC")){
+            ResponseDetails responseDetails = new ResponseDetails(LocalDateTime.now(), "Access is denied", "error");
+            return new ResponseEntity<>(responseDetails, HttpStatus.FORBIDDEN);
+        }
+        PaginationModel transactions = companyService.getAllTransactions(startDate, endDate ,page, pageSize);
+        return new ResponseEntity<>(transactions, HttpStatus.OK);
     }
 }

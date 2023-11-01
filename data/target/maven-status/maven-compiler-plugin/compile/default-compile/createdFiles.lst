@@ -4,6 +4,7 @@ com/terron/dto/UpdatePasswordDto.class
 com/terron/models/alerts/AlertContacts.class
 com/terron/models/states/State.class
 com/terron/dto/UpdateProfileDto.class
+com/terron/repository/payment/DailyTransactionRepository.class
 com/terron/repository/hotels/GuestInsuranceRepository.class
 com/terron/dto/KeywordOfInterestDto.class
 com/terron/dto/CreateReservationDto.class
@@ -63,6 +64,8 @@ com/terron/models/user/UserRole.class
 com/terron/dto/PaymentResponse.class
 com/terron/repository/company/VirtualAccountRepository.class
 com/terron/models/company/CompanyType.class
+com/terron/models/payment/DailyTransactions.class
+com/terron/models/payment/DailyTransactions$DailyTransactionsBuilder.class
 com/terron/dto/ChargeData.class
 com/terron/models/watchList/PersonOfInterest$PersonOfInterestBuilder.class
 com/terron/dto/MissingPersonsDto$MissingPersonsDtoBuilder.class

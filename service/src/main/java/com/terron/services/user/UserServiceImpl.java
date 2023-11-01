@@ -210,6 +210,14 @@ public class UserServiceImpl implements UserService {
 
         }
 
+        if(updateProfileDto.getEmailAddress() != null) {
+            boolean userExistsByEmail = userRepository.existsByEmailAddress(updateProfileDto.getEmailAddress());
+            if (!userExistsByEmail) {
+                throw new UserAlreadyExistException(String.format("User with email: %s already exist", updateProfileDto.getEmailAddress()));
+
+            }
+        }
+
         Users user = userRepository.findById(userId).get();
         ModelMapper mapper = new ModelMapper();
         mapper.getConfiguration().setPropertyCondition(Conditions.isNotNull());

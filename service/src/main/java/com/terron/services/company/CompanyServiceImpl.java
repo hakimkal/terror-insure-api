@@ -8,6 +8,7 @@ import com.terron.models.company.Company;
 import com.terron.models.company.CompanyType;
 import com.terron.models.company.VirtualAccount;
 import com.terron.models.hotels.GuestInsurance;
+import com.terron.models.payment.DailyTransactions;
 import com.terron.models.payment.Payment;
 import com.terron.models.user.UserRole;
 import com.terron.models.user.Users;
@@ -15,6 +16,7 @@ import com.terron.repository.company.CompanyRepository;
 import com.terron.repository.company.VirtualAccountRepository;
 import com.terron.repository.hotels.GuestInsuranceRepository;
 import com.terron.repository.hotels.ReservationsRepository;
+import com.terron.repository.payment.DailyTransactionRepository;
 import com.terron.repository.payment.PaymentRepository;
 import com.terron.repository.user.UserRepository;
 import com.terron.services.email.EmailServiceImpl;
@@ -56,6 +58,9 @@ public class CompanyServiceImpl implements CompanyService{
 
     @Autowired
     PaymentRepository paymentRepository;
+
+    @Autowired
+    DailyTransactionRepository dailyTransactionRepository;
 
     @Autowired
     GuestInsuranceRepository guestInsuranceRepository;
@@ -128,7 +133,7 @@ public class CompanyServiceImpl implements CompanyService{
         }
         userRepository.save(user);
 
-        if(onboardCompanyDto.getCompanyType() == CompanyType.insurance){
+        if(onboardCompanyDto.getCompanyType() == CompanyType.hotel){
            createVirtualAccount(onboardCompanyDto, company);
         }
         sendConfirmationMail(user, "localhost:3000");
@@ -140,7 +145,7 @@ public class CompanyServiceImpl implements CompanyService{
                 .customerEmail(onboardCompanyDto.getOfficialEmailAddress())
                 .customerMobile(onboardCompanyDto.getContactPersonPhoneNumber())
                 .customerName(onboardCompanyDto.getCompanyName())
-                .bvn(onboardCompanyDto.getBvn())
+                .bvn("00000000000")
                 .build();
 
         VirtualAccountResponse virtualAccountResponse = paymentService.createFixedVirtualAccount(fixedVirtualAccountRequest);
@@ -276,6 +281,84 @@ public class CompanyServiceImpl implements CompanyService{
             if (companies != null && companies instanceof Closeable) {
                 try {
                     ((Closeable) companies).close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+
+    public PaginationModel getAllHotelTransactions(Long companyId, String startDate, String endDate, Integer page, Integer pageSize){
+        Page<DailyTransactions> transactions = null;
+        Pageable pagination = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.DESC, "transactionDate"));
+
+        try {
+            transactions = startDate.length() > 0 && endDate.length() > 0
+                    ? dailyTransactionRepository.findAllByCompanyIdAndTransactionDateBetween(companyId, startDate, endDate, pagination)
+                    : dailyTransactionRepository.findAllByCompanyId(companyId, pagination);
+
+            PaginationModel paginationModel = new PaginationModel();
+            paginationModel.setTotalCount(transactions.getTotalElements());
+            paginationModel.setData(transactions.getContent());
+
+            return paginationModel;
+        } finally {
+            if (transactions != null && transactions instanceof Closeable) {
+                try {
+                    ((Closeable) transactions).close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    public PaginationModel getAllTransactions(String startDate, String endDate, Integer page, Integer pageSize){
+        Page<DailyTransactions> transactions = null;
+        Pageable pagination = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.DESC, "transactionDate"));
+
+        try {
+            transactions = startDate.length() > 0 && endDate.length() > 0
+                    ? dailyTransactionRepository.findAllByTransactionDateBetween(startDate, endDate, pagination)
+                    : dailyTransactionRepository.findAll(pagination);
+
+            PaginationModel paginationModel = new PaginationModel();
+            paginationModel.setTotalCount(transactions.getTotalElements());
+            paginationModel.setData(transactions.getContent());
+
+            return paginationModel;
+        } finally {
+            if (transactions != null && transactions instanceof Closeable) {
+                try {
+                    ((Closeable) transactions).close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+
+    public PaginationModel getAllInsuranceCompanyTransactions(Long insuranceCompanyId,String startDate, String endDate, Integer page, Integer pageSize) throws NotFoundException {
+        Page<DailyTransactions> transactions = null;
+        Pageable pagination = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.DESC, "transactionDate"));
+
+        Company company = companyRepository.findById(insuranceCompanyId).orElseThrow(() -> new NotFoundException(String.format("Company with this id: %s does not exist", insuranceCompanyId)));
+        try {
+            transactions = startDate.length() > 0 && endDate.length() > 0
+                    ? dailyTransactionRepository.findAllByInsuranceCompanyAndTransactionDateBetween(company.getCompanyName(), startDate, endDate, pagination)
+                    : dailyTransactionRepository.findAllByInsuranceCompany(company.getCompanyName(),pagination);
+
+            PaginationModel paginationModel = new PaginationModel();
+            paginationModel.setTotalCount(transactions.getTotalElements());
+            paginationModel.setData(transactions.getContent());
+
+            return paginationModel;
+        } finally {
+            if (transactions != null && transactions instanceof Closeable) {
+                try {
+                    ((Closeable) transactions).close();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

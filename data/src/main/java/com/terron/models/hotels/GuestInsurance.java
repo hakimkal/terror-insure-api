@@ -44,10 +44,10 @@ public class GuestInsurance {
     private String nextOfKinPhoneNumber;
     private String dateOfArrival;
     private String dateOfDeparture;
-    private String noOfRooms;
-    private String noOfPersons;
-    private String noOfNights;
-    private String roomNumber;
+    private int noOfRooms;
+    private int noOfPersons;
+    private int noOfNights;
+    private int roomNumber;
     private String roomType;
     private String arrivalFrom;
     private PaymentMode modeOfPayment;

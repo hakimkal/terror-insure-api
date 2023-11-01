@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import javax.persistence.TypedQuery;
 import java.util.List;
 
 @Repository
@@ -22,5 +23,6 @@ public interface GuestInsuranceRepository extends JpaRepository<GuestInsurance, 
     Long countAllByCompanyId(Long companyId);
 
     Page<GuestInsurance> findByFirstNameContainingOrLastNameContainingOrCertificateNumberContaining(String firstName, String lastName, String certificateNumber, Pageable pagination);
+
 
 }

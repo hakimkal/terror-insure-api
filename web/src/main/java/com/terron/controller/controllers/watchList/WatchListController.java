@@ -37,7 +37,7 @@ public class WatchListController {
     @PostMapping("/keyword-of-interests")
     public ResponseEntity<?> addKeywordOfInterest(@Valid @RequestBody KeywordOfInterestDto keywordOfInterestDto, @RequestHeader(name = "Authorization") String token) throws Exception {
         String role = decodeToken(token);
-        if (!Objects.equals(role, "ROLE_DSS") && !Objects.equals(role, "ROLE_ADMIN")) {
+        if (!Objects.equals(role, "ROLE_DSS") &&  !Objects.equals(role, "ROLE_ADMIN") && !Objects.equals(role, "ROLE_INTERPOL")  && !Objects.equals(role, "ROLE_NSA")) {
             ResponseDetails responseDetails = new ResponseDetails(LocalDateTime.now(), "Access is denied", "error");
             return new ResponseEntity<>(responseDetails, HttpStatus.FORBIDDEN);
         }
@@ -54,7 +54,7 @@ public class WatchListController {
             @RequestHeader(name = "Authorization") String token
     ) {
         String role = decodeToken(token);
-        if (!Objects.equals(role, "ROLE_DSS") && !Objects.equals(role, "ROLE_ADMIN")) {
+        if (!Objects.equals(role, "ROLE_DSS") && !Objects.equals(role, "ROLE_ADMIN") && !Objects.equals(role, "ROLE_INTERPOL")  && !Objects.equals(role, "ROLE_NSA")) {
             ResponseDetails responseDetails = new ResponseDetails(LocalDateTime.now(), "Access is denied", "error");
             return new ResponseEntity<>(responseDetails, HttpStatus.FORBIDDEN);
         }
@@ -65,7 +65,7 @@ public class WatchListController {
     @PostMapping("/person-of-interests")
     public ResponseEntity<?> addPersonOfInterest(@Valid @RequestBody PersonOfInterestDto personOfInterestDto, @RequestHeader(name = "Authorization") String token) throws Exception {
         String role = decodeToken(token);
-        if (!Objects.equals(role, "ROLE_DSS") && !Objects.equals(role, "ROLE_ADMIN")) {
+        if (!Objects.equals(role, "ROLE_DSS") && !Objects.equals(role, "ROLE_ADMIN") && !Objects.equals(role, "ROLE_INTERPOL")  && !Objects.equals(role, "ROLE_NSA")) {
             ResponseDetails responseDetails = new ResponseDetails(LocalDateTime.now(), "Access is denied", "error");
             return new ResponseEntity<>(responseDetails, HttpStatus.FORBIDDEN);
         }
@@ -83,7 +83,7 @@ public class WatchListController {
             @RequestHeader(name = "Authorization") String token
     ) {
         String role = decodeToken(token);
-        if (!Objects.equals(role, "ROLE_DSS") && !Objects.equals(role, "ROLE_ADMIN")) {
+        if (!Objects.equals(role, "ROLE_DSS") && !Objects.equals(role, "ROLE_ADMIN") && !Objects.equals(role, "ROLE_INTERPOL")  && !Objects.equals(role, "ROLE_NSA")) {
             ResponseDetails responseDetails = new ResponseDetails(LocalDateTime.now(), "Access is denied", "error");
             return new ResponseEntity<>(responseDetails, HttpStatus.FORBIDDEN);
         }
@@ -94,7 +94,7 @@ public class WatchListController {
     @PostMapping("/missing-persons")
     public ResponseEntity<?> addMissingPersons(@Valid @RequestBody MissingPersonsDto missingPersonsDto, @RequestHeader(name = "Authorization") String token) throws Exception {
         String role = decodeToken(token);
-        if (!Objects.equals(role, "ROLE_DSS") && !Objects.equals(role, "ROLE_ADMIN")) {
+        if (!Objects.equals(role, "ROLE_DSS") && !Objects.equals(role, "ROLE_ADMIN") && !Objects.equals(role, "ROLE_INTERPOL")  && !Objects.equals(role, "ROLE_NSA")) {
             ResponseDetails responseDetails = new ResponseDetails(LocalDateTime.now(), "Access is denied", "error");
             return new ResponseEntity<>(responseDetails, HttpStatus.FORBIDDEN);
         }
@@ -112,7 +112,7 @@ public class WatchListController {
             @RequestHeader(name = "Authorization") String token
     ) {
         String role = decodeToken(token);
-        if (!Objects.equals(role, "ROLE_DSS") && !Objects.equals(role, "ROLE_ADMIN")) {
+        if (!Objects.equals(role, "ROLE_DSS") && !Objects.equals(role, "ROLE_ADMIN") && !Objects.equals(role, "ROLE_INTERPOL")  && !Objects.equals(role, "ROLE_NSA")) {
             ResponseDetails responseDetails = new ResponseDetails(LocalDateTime.now(), "Access is denied", "error");
             return new ResponseEntity<>(responseDetails, HttpStatus.FORBIDDEN);
         }

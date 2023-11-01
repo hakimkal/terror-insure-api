@@ -20,6 +20,7 @@
 /Users/user/terronApi/data/src/main/java/com/terron/models/company/Company.java
 /Users/user/terronApi/data/src/main/java/com/terron/repository/watchList/PersonOfInterestRepository.java
 /Users/user/terronApi/data/src/main/java/com/terron/repository/hotels/GroupBookingsRepository.java
+/Users/user/terronApi/data/src/main/java/com/terron/models/payment/DailyTransactions.java
 /Users/user/terronApi/data/src/main/java/com/terron/models/alerts/Organizations.java
 /Users/user/terronApi/data/src/main/java/com/terron/dto/ChangePasswordDto.java
 /Users/user/terronApi/data/src/main/java/com/terron/dto/FixedVirtualAccountRequest.java
@@ -34,6 +35,7 @@
 /Users/user/terronApi/data/src/main/java/com/terron/models/hotels/PaymentMode.java
 /Users/user/terronApi/data/src/main/java/com/terron/models/states/LocalGovt.java
 /Users/user/terronApi/data/src/main/java/com/terron/dto/CreateGuestInsuranceDto.java
+/Users/user/terronApi/data/src/main/java/com/terron/repository/payment/DailyTransactionRepository.java
 /Users/user/terronApi/data/src/main/java/com/terron/repository/hotels/ReservationsRepository.java
 /Users/user/terronApi/data/src/main/java/com/terron/models/alerts/AlertContacts.java
 /Users/user/terronApi/data/src/main/java/com/terron/dto/VirtualAccountResponse.java
