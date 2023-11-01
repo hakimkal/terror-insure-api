@@ -56,7 +56,7 @@ public class PaymentService {
             log.info(chargeData);
             PaymentResponse response = webClient.post()
                     .uri(targetUri)
-                    .contentType(MediaType.APPLICATION_JSON) // Set the Content-Type header
+                    .contentType(MediaType.APPLICATION_JSON)
                     .header("Authorization", "Bearer sk_test_RUHBQBSRSRTKABNQVY0DFC2QDJLX")
                     .body(BodyInserters.fromValue("{\"chargeData\":\"" + chargeData + "\"}"))
                     .retrieve()

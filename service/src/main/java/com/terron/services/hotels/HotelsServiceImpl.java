@@ -9,6 +9,7 @@ import com.terron.models.hotels.GroupBookings;
 import com.terron.models.hotels.GuestInsurance;
 import com.terron.models.hotels.Reservations;
 import com.terron.models.hotels.ReturnGuests;
+import com.terron.models.payment.DailyTransactions;
 import com.terron.models.payment.Payment;
 import com.terron.models.user.UserRole;
 import com.terron.models.user.Users;
@@ -17,9 +18,11 @@ import com.terron.repository.hotels.GroupBookingsRepository;
 import com.terron.repository.hotels.GuestInsuranceRepository;
 import com.terron.repository.hotels.ReservationsRepository;
 import com.terron.repository.hotels.ReturnGuestRepository;
+import com.terron.repository.payment.DailyTransactionRepository;
 import com.terron.repository.payment.PaymentRepository;
 import com.terron.repository.user.UserRepository;
 import com.terron.services.utils.*;
+import javassist.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.usertype.UserType;
 import org.modelmapper.ModelMapper;
@@ -58,6 +61,9 @@ public class HotelsServiceImpl implements HotelsService{
 
     @Autowired
     PaymentRepository paymentRepository;
+
+    @Autowired
+    DailyTransactionRepository dailyTransactionRepository;
 
     @Autowired
     UserRepository userRepository;
@@ -199,6 +205,16 @@ public class HotelsServiceImpl implements HotelsService{
                 .createdDate(new Date())
                 .build();
         guestInsurance = guestInsuranceRepository.save(guestInsurance);
+
+        Company company = companyRepository.findById(companyId).get();
+        DailyTransactions dailyTransactions = DailyTransactions.builder()
+                .amount(975 * guestInsurance.getNoOfPersons())
+                .companyId(companyId)
+                .noOfGuest(guestInsurance.getNoOfPersons())
+                .transactionDate(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy hh:mm:ss")))
+                .insuranceCompany(company.getInsuranceCompany())
+                .build();
+        dailyTransactionRepository.save(dailyTransactions);
         return guestInsurance;
     }
 
@@ -274,6 +290,52 @@ public class HotelsServiceImpl implements HotelsService{
             if (returnGuests != null && returnGuests instanceof Closeable) {
                 try {
                     ((Closeable) returnGuests).close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    public double getHotelOutstandingBalance(Long companyId) throws NotFoundException {
+        Company company = companyRepository.findById(companyId).orElseThrow(() -> new NotFoundException(String.format("Company with this id: %s does not exist", companyId)));
+        List<DailyTransactions> dailyTransactions = dailyTransactionRepository.findAllByCompanyId(company.getId());
+        List<Payment> payments = paymentRepository.findAllByCompanyId(company.getId());
+
+        double totalPaymentAmount = payments.stream()
+                .mapToDouble(Payment::getAmountPaid)
+                .sum();
+
+        double totalTransactionAmount = dailyTransactions.stream()
+                .mapToDouble(DailyTransactions::getAmount)
+                .sum();
+
+        return totalTransactionAmount - totalPaymentAmount;
+    }
+
+    public PaginationModel getAllInsuranceCompanyGuestInsurance(Integer page, Integer pageSize, String searchField, Long companyId) throws UserAlreadyExistException {
+        boolean companyExists = companyRepository.existsById(companyId);
+        if (!companyExists) {
+            throw new UserAlreadyExistException(String.format("Company with id: %s does not exist exists", companyId));
+
+        }
+        Company company = companyRepository.findById(companyId).get();
+        Page<GuestInsurance> guestInsurances = null;
+        Pageable pagination = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.DESC, "createdDate"));
+        try {
+            guestInsurances = searchField.length() > 0
+                    ? guestInsuranceRepository.findByCompanyIdAndFirstNameContainingOrLastNameContainingOrCertificateNumberContaining(companyId,searchField, searchField, searchField, pagination)
+                    : guestInsuranceRepository.findAllByCompanyId(companyId, pagination);
+
+            PaginationModel paginationModel = new PaginationModel();
+            paginationModel.setTotalCount(guestInsurances.getTotalElements());
+            paginationModel.setData(guestInsurances.getContent());
+
+            return paginationModel;
+        } finally {
+            if (guestInsurances != null && guestInsurances instanceof Closeable) {
+                try {
+                    ((Closeable) guestInsurances).close();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
