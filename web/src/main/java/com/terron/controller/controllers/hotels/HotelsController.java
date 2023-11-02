@@ -97,6 +97,20 @@ public class HotelsController {
         return new ResponseEntity<>(responseDetails, HttpStatus.OK);
     }
 
+    @GetMapping("/update-guest-insurances")
+    public ResponseEntity<?> updateGuestInsurance() {
+        hotelsService.updateGuestInsurances();
+        ResponseDetailsWithObject responseDetails = new ResponseDetailsWithObject(LocalDateTime.now(), "Guest insurance updated successfully", "guestInsurance", "success");
+        return new ResponseEntity<>(responseDetails, HttpStatus.OK);
+    }
+
+    @GetMapping("/update-companies")
+    public ResponseEntity<?> updateCompanies() {
+        hotelsService.updateCompanies();
+        ResponseDetailsWithObject responseDetails = new ResponseDetailsWithObject(LocalDateTime.now(), "Company updated successfully", "companies", "success");
+        return new ResponseEntity<>(responseDetails, HttpStatus.OK);
+    }
+
     @GetMapping("/guest-insurances/{companyId}")
     public ResponseEntity<?> getGuestInsurances(
             @RequestParam(value = "page", defaultValue = "1", required = false) int page,

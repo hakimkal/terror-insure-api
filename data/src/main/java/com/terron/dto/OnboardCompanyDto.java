@@ -1,6 +1,7 @@
 package com.terron.dto;
 
 import com.terron.models.company.CompanyType;
+import lombok.Builder;
 import lombok.Data;
 
 import javax.persistence.Column;
@@ -9,6 +10,7 @@ import javax.persistence.Enumerated;
 import javax.validation.constraints.NotBlank;
 
 @Data
+@Builder
 public class OnboardCompanyDto {
 
     private String officialEmailAddress;

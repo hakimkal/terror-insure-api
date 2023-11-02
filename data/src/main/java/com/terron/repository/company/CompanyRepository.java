@@ -28,7 +28,7 @@ public interface CompanyRepository extends JpaRepository<Company, Long> {
 
     Company findByCompanyName(String companyName);
 
-    Long countAllByInsuranceCompany(String insuranceCompany);
+    Long countAllByInsuranceCompanyId(Long insuranceCompany);
 
-    List<Company> getCompaniesByInsuranceCompany(String insuranceCompany);
+//    List<Company> getCompaniesByInsuranceCompanyId(String insuranceCompany);
 }

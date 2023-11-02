@@ -92,9 +92,9 @@ public class CompanyServiceImpl implements CompanyService{
         }
         Company company = new Company();
         if(onboardCompanyDto.getInsuranceCompany() != null){
-            Company insuranceCompany = companyRepository.findById(onboardCompanyDto.getInsuranceCompany()).
+             companyRepository.findById(onboardCompanyDto.getInsuranceCompany()).
                     orElseThrow( () -> new UserAlreadyExistException(String.format("Insurance company with id: %s does not exist", onboardCompanyDto.getInsuranceCompany())));
-            company.setInsuranceCompany(insuranceCompany.getCompanyName());
+            company.setInsuranceCompanyId(onboardCompanyDto.getInsuranceCompany());
         }
 
         company.setCompanyLogo(onboardCompanyDto.getCompanyLogo());
@@ -165,8 +165,22 @@ public class CompanyServiceImpl implements CompanyService{
         virtualAccountRepository.save(virtualAccount);
     }
 
-    public VirtualAccount getCompanyAccountDetails(Long companyId) {
+    public VirtualAccount getCompanyAccountDetails(Long companyId) throws UserAlreadyExistException, ServiceUnavailableException {
         VirtualAccount virtualAccount = virtualAccountRepository.findByCompanyId(companyId);
+        Company company = companyRepository.findById(companyId).
+                orElseThrow( () -> new UserAlreadyExistException(String.format("Company with id: %s does not exist", companyId)));
+        if(virtualAccount == null){
+            OnboardCompanyDto onboardCompanyDto = OnboardCompanyDto.builder()
+                    .contactPersonFirstname(company.getContactPersonFirstname())
+                    .contactPersonPhoneNumber(company.getContactPersonPhoneNumber())
+                    .companyName(company.getCompanyName())
+                    .officialEmailAddress(company.getOfficialEmailAddress())
+                    .build();
+            if(company.getCompanyType() == CompanyType.hotel){
+               createVirtualAccount(onboardCompanyDto, company);
+            }
+            virtualAccount = virtualAccountRepository.findByCompanyId(companyId);
+        }
         return virtualAccount;
     }
 
@@ -366,6 +380,37 @@ public class CompanyServiceImpl implements CompanyService{
         }
     }
 
+
+    public PaginationModel getAllInsuranceCompanyGuestInsurance(Integer page, Integer pageSize, String searchField, Long companyId) throws UserAlreadyExistException {
+        boolean companyExists = companyRepository.existsById(companyId);
+        if (!companyExists) {
+            throw new UserAlreadyExistException(String.format("Company with id: %s does not exist exists", companyId));
+
+        }
+
+        Page<GuestInsurance> guestInsurances = null;
+        Pageable pagination = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.DESC, "createdDate"));
+        try {
+            guestInsurances = searchField.length() > 0
+                    ? guestInsuranceRepository.findByInsuranceCompanyIdAndFirstNameContainingOrLastNameContainingOrCertificateNumberContaining(companyId,searchField, searchField, searchField, pagination)
+                    : guestInsuranceRepository.findAllByInsuranceCompanyId(companyId, pagination);
+
+            PaginationModel paginationModel = new PaginationModel();
+            paginationModel.setTotalCount(guestInsurances.getTotalElements());
+            paginationModel.setData(guestInsurances.getContent());
+
+            return paginationModel;
+        } finally {
+            if (guestInsurances != null && guestInsurances instanceof Closeable) {
+                try {
+                    ((Closeable) guestInsurances).close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
     public HotelPaginationModel getAllHotels(Integer page, Integer pageSize, String searchField, String state){
         Page<Company> companies = null;
         Pageable pagination = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.DESC, "registeredDate"));
@@ -471,14 +516,13 @@ public class CompanyServiceImpl implements CompanyService{
     public GuestInsuranceResponseDto companyDashboard(Long companyId) throws UserAlreadyExistException {
         Company company = companyRepository.findById(companyId).orElseThrow( () -> new UserAlreadyExistException(String.format("Company with id: %s does not exist", companyId)));
         long users = userRepository.count();
-        List<Company> companies = companyRepository.getCompaniesByInsuranceCompany(company.getCompanyName());
 
         long hotelUsersCount = userRepository.countAllByRoleAndCompanyId(UserRole.COMPANY_OWNER,companyId);
         long insuranceUsersCount = userRepository.countAllByRoleAndCompanyId(UserRole.INSURANCE_USER,companyId);
         long ntdcUsersCount = userRepository.countAllByRoleAndCompanyId(UserRole.NTDC,companyId);
         long guestCount = guestInsuranceRepository.countAllByCompanyId(companyId);
 
-        Long companiesCount = companyRepository.countAllByInsuranceCompany(company.getCompanyName());
+        Long companiesCount = companyRepository.countAllByInsuranceCompanyId(company.getId());
 
         List<Payment> payments = paymentRepository.findAllByInsuranceCompany(company.getCompanyName());
         double totalAmountPaid = payments.stream()
@@ -499,17 +543,17 @@ public class CompanyServiceImpl implements CompanyService{
         return guestInsuranceResponseDto;
     }
 
-    public void revenueTrend(Long companyId, Date startDate, Date endDate) throws UserAlreadyExistException {
-        Company company = companyRepository.findById(companyId).orElseThrow( () -> new UserAlreadyExistException(String.format("Company with id: %s does not exist", companyId)));
-        List<Company> companies = companyRepository.getCompaniesByInsuranceCompany(company.getCompanyName());
-        long guestCount = 0L;
-        for(Company company1 : companies){
-            Long totalGuest = guestInsuranceRepository.countAllByCompanyId(company1.getId());
-            guestCount = guestCount + totalGuest;
-        }
-
-        List<Payment> payments = paymentRepository.findAllByInsuranceCompany(company.getCompanyName());
-
-        double totalAmountInsured = guestCount * 690.0;
-    }
+//    public void revenueTrend(Long companyId, Date startDate, Date endDate) throws UserAlreadyExistException {
+//        Company company = companyRepository.findById(companyId).orElseThrow( () -> new UserAlreadyExistException(String.format("Company with id: %s does not exist", companyId)));
+//        List<Company> companies = companyRepository.getCompaniesByInsuranceCompany(company.getCompanyName());
+//        long guestCount = 0L;
+//        for(Company company1 : companies){
+//            Long totalGuest = guestInsuranceRepository.countAllByCompanyId(company1.getId());
+//            guestCount = guestCount + totalGuest;
+//        }
+//
+//        List<Payment> payments = paymentRepository.findAllByInsuranceCompany(company.getCompanyName());
+//
+//        double totalAmountInsured = guestCount * 690.0;
+//    }
 }

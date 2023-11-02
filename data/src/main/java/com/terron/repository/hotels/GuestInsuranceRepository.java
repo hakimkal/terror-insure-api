@@ -18,6 +18,10 @@ public interface GuestInsuranceRepository extends JpaRepository<GuestInsurance, 
 
     Page<GuestInsurance> findAllByCompanyId(Long companyId, Pageable pagination);
 
+    Page<GuestInsurance> findByInsuranceCompanyIdAndFirstNameContainingOrLastNameContainingOrCertificateNumberContaining(Long companyId,String firstName, String lastName, String certificateNumber, Pageable pagination);
+
+    Page<GuestInsurance> findAllByInsuranceCompanyId(Long companyId, Pageable pagination);
+
     List<GuestInsurance> findAllByCompanyId(Long companyId);
 
     Long countAllByCompanyId(Long companyId);

@@ -33,6 +33,7 @@ public class GuestInsurance {
     private String certificateNumber;
     private String receiptNumber;
     private Long companyId;
+    private Long insuranceCompanyId;
     private String lastName;
     private String firstName;
     private String gender;

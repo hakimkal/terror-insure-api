@@ -28,6 +28,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Base64;
+import java.util.UUID;
 
 @Service
 @Slf4j
@@ -45,7 +46,12 @@ public class PaymentService {
 
     public PaymentResponse makeCardPayment(CardPaymentRequest request, Long companyId) throws ServiceUnavailableException {
         try {
-
+            Company company = companyRepository.findById(companyId).get();
+            String token = UUID.randomUUID().toString();
+            request.setReference(token);
+            request.setCurrency("NGN");
+            request.setCustomerEmail(company.getOfficialEmailAddress());
+            request.setCustomerName(company.getCompanyName());
             String jsonString = new Gson().toJson(request);
             String chargeData = Base64.getEncoder().encodeToString(jsonString.getBytes(StandardCharsets.UTF_8));
 
@@ -63,12 +69,12 @@ public class PaymentService {
                     .bodyToMono(PaymentResponse.class)
                     .block();
 
-            Company company = companyRepository.findById(companyId).get();
+            Company insuranceCompany = companyRepository.findById(companyId).get();
             Payment payment = Payment.builder()
                     .reference(request.getReference())
                     .datePaid(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy hh:mm:ss")))
                     .status("pending")
-                    .insuranceCompany(company.getInsuranceCompany())
+                    .insuranceCompany(insuranceCompany.getCompanyName())
                     .amountPaid(request.getAmount())
                     .companyId(companyId)
                     .build();

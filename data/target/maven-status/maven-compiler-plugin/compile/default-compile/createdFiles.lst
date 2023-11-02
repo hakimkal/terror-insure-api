@@ -55,6 +55,7 @@ com/terron/models/payment/Payment.class
 com/terron/models/company/Company.class
 com/terron/dto/VirtualAccountResponse$Data.class
 com/terron/dto/RequestResetPasswordDto.class
+com/terron/dto/OnboardCompanyDto$OnboardCompanyDtoBuilder.class
 com/terron/models/states/LocalGovt$LocalGovtBuilder.class
 com/terron/repository/hotels/GroupBookingsRepository.class
 com/terron/models/hotels/GuestInsurance.class

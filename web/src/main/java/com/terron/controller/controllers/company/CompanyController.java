@@ -1,6 +1,7 @@
 package com.terron.controller.controllers.company;
 
 import com.terron.dto.OnboardCompanyDto;
+import com.terron.exceptions.UserAlreadyExistException;
 import com.terron.models.company.Company;
 import com.terron.models.company.VirtualAccount;
 import com.terron.models.user.UserRole;
@@ -109,6 +110,24 @@ public class CompanyController {
         }
         PaginationModel payments = companyService.getAllInsuranceCompanyPayments(insuranceCompanyId, startDate, endDate ,page, pageSize);
         return new ResponseEntity<>(payments, HttpStatus.OK);
+    }
+
+    @GetMapping("/guest-insurances/{insuranceCompanyId}")
+    public ResponseEntity<?> getGuestInsurances(
+            @RequestParam(value = "page", defaultValue = "1", required = false) int page,
+            @RequestParam(value = "pageSize", defaultValue = "100", required = false) int pageSize,
+            @RequestParam(value = "searchField", defaultValue = "", required = false) String searchField,
+            @RequestHeader(name = "Authorization") String token,
+            @PathVariable Long insuranceCompanyId
+    ) throws UserAlreadyExistException {
+        String role = decodeToken(token);
+        if(!Objects.equals(role, "ROLE_ADMIN")  && !Objects.equals(role, "ROLE_INSURANCE_USER") && !Objects.equals(role, "ROLE_NTDC")){
+            ResponseDetails responseDetails = new ResponseDetails(LocalDateTime.now(), "Access is denied", "error");
+            return new ResponseEntity<>(responseDetails, HttpStatus.FORBIDDEN);
+        }
+
+        PaginationModel guestInsurance = companyService.getAllInsuranceCompanyGuestInsurance(page, pageSize, searchField, insuranceCompanyId);
+        return new ResponseEntity<>(guestInsurance, HttpStatus.OK);
     }
 
     @GetMapping("/transactions/{insuranceCompanyId}")
