@@ -235,7 +235,7 @@ public class HotelsServiceImpl implements HotelsService{
         List<Company> companies = companyRepository.findAllByCompanyType(CompanyType.hotel);
         for (Company company: companies){
             if(company.getInsuranceCompanyId() == null){
-                company.setInsuranceCompanyId(6L);
+                company.setInsuranceCompanyId(1L);
                 companyRepository.save(company);
             }
         }
