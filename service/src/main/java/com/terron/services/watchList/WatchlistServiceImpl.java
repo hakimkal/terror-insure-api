@@ -106,7 +106,7 @@ public class WatchlistServiceImpl implements WatchListService{
                 .height(personOfInterestDto.getHeight())
                 .weight(personOfInterestDto.getWeight())
                 .heightType(personOfInterestDto.getHeightType())
-                .hairColor(personOfInterestDto.getDateOfBirth())
+                .hairColor(personOfInterestDto.getHairColor())
                 .complexionType(personOfInterestDto.getComplexionType())
                 .eyeColor(personOfInterestDto.getEyeColor())
                 .reasonForInterest(personOfInterestDto.getReasonForInterest())
