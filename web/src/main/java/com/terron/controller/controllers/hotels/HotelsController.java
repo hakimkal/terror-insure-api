@@ -283,7 +283,7 @@ public class HotelsController {
     @GetMapping ("/guest-insurances/details/{guestInsuranceId}")
     public ResponseEntity<?> getGuestInsurance(@RequestHeader(name = "Authorization") String token, @PathVariable Long guestInsuranceId) throws Exception {
         String role = decodeToken(token);
-        if (!Objects.equals(role, "ROLE_COMPANY_OWNER") && !Objects.equals(role, "ROLE_DSS") && !Objects.equals(role, "ROLE_INTERPOL")  && !Objects.equals(role, "ROLE_NSA") && !Objects.equals(role, "ROLE_ADMIN")) {
+        if (!Objects.equals(role, "ROLE_COMPANY_OWNER") &&  !Objects.equals(role, "ROLE_DSS") && !Objects.equals(role, "ROLE_INSURANCE_USER") && !Objects.equals(role, "ROLE_INTERPOL")  && !Objects.equals(role, "ROLE_NSA") && !Objects.equals(role, "ROLE_ADMIN")) {
             ResponseDetails responseDetails = new ResponseDetails(LocalDateTime.now(), "Access is denied", "error");
             return new ResponseEntity<>(responseDetails, HttpStatus.FORBIDDEN);
         }
