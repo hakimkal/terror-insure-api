@@ -167,6 +167,7 @@ public class HotelsServiceImpl implements HotelsService{
             throw new UserAlreadyExistException(String.format("Company with id: %s does not exist exists", companyId));
 
         }
+        Company company = companyRepository.findById(companyId).get();
         String token = UUID.randomUUID().toString();
         String token2 = UUID.randomUUID().toString();
 
@@ -174,6 +175,7 @@ public class HotelsServiceImpl implements HotelsService{
                 .certificateNumber(token)
                 .receiptNumber(token2)
                 .companyId(companyId)
+                .insuranceCompanyId(company.getInsuranceCompanyId())
                 .lastName(createGuestInsuranceDto.getLastName())
                 .firstName(createGuestInsuranceDto.getFirstName())
                 .gender(createGuestInsuranceDto.getGender())
@@ -205,17 +207,38 @@ public class HotelsServiceImpl implements HotelsService{
                 .createdDate(new Date())
                 .build();
         guestInsurance = guestInsuranceRepository.save(guestInsurance);
+        Company insuranceCompany = companyRepository.findById(company.getInsuranceCompanyId()).get();
 
-        Company company = companyRepository.findById(companyId).get();
         DailyTransactions dailyTransactions = DailyTransactions.builder()
                 .amount(975 * guestInsurance.getNoOfPersons())
                 .companyId(companyId)
                 .noOfGuest(guestInsurance.getNoOfPersons())
                 .transactionDate(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy hh:mm:ss")))
-                .insuranceCompany(company.getInsuranceCompany())
+                .insuranceCompany(insuranceCompany.getCompanyName())
                 .build();
         dailyTransactionRepository.save(dailyTransactions);
         return guestInsurance;
+    }
+
+    public void updateGuestInsurances(){
+        List<GuestInsurance> guestInsurances = guestInsuranceRepository.findAll();
+        for (GuestInsurance guestInsurance: guestInsurances){
+            Company company = companyRepository.findById(guestInsurance.getCompanyId()).get();
+            if(company.getInsuranceCompanyId() != null){
+                guestInsurance.setInsuranceCompanyId(company.getInsuranceCompanyId());
+                guestInsuranceRepository.save(guestInsurance);
+            }
+        }
+    }
+
+    public void updateCompanies(){
+        List<Company> companies = companyRepository.findAllByCompanyType(CompanyType.hotel);
+        for (Company company: companies){
+            if(company.getInsuranceCompanyId() == null){
+                company.setInsuranceCompanyId(6L);
+                companyRepository.save(company);
+            }
+        }
     }
 
     @Override
@@ -311,36 +334,6 @@ public class HotelsServiceImpl implements HotelsService{
                 .sum();
 
         return totalTransactionAmount - totalPaymentAmount;
-    }
-
-    public PaginationModel getAllInsuranceCompanyGuestInsurance(Integer page, Integer pageSize, String searchField, Long companyId) throws UserAlreadyExistException {
-        boolean companyExists = companyRepository.existsById(companyId);
-        if (!companyExists) {
-            throw new UserAlreadyExistException(String.format("Company with id: %s does not exist exists", companyId));
-
-        }
-        Company company = companyRepository.findById(companyId).get();
-        Page<GuestInsurance> guestInsurances = null;
-        Pageable pagination = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.DESC, "createdDate"));
-        try {
-            guestInsurances = searchField.length() > 0
-                    ? guestInsuranceRepository.findByCompanyIdAndFirstNameContainingOrLastNameContainingOrCertificateNumberContaining(companyId,searchField, searchField, searchField, pagination)
-                    : guestInsuranceRepository.findAllByCompanyId(companyId, pagination);
-
-            PaginationModel paginationModel = new PaginationModel();
-            paginationModel.setTotalCount(guestInsurances.getTotalElements());
-            paginationModel.setData(guestInsurances.getContent());
-
-            return paginationModel;
-        } finally {
-            if (guestInsurances != null && guestInsurances instanceof Closeable) {
-                try {
-                    ((Closeable) guestInsurances).close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
     }
 
     @Override
