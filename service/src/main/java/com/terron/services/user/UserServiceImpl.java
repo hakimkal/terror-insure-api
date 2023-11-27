@@ -1,12 +1,28 @@
 package com.terron.services.user;
 
+import com.auth0.jwt.JWT;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.terron.dto.*;
+import com.terron.exceptions.UserAlreadyExistException;
+import com.terron.models.company.Company;
+import com.terron.models.payment.Payment;
+import com.terron.models.user.UserRole;
 import com.terron.models.user.Users;
+import com.terron.repository.company.CompanyRepository;
+import com.terron.repository.hotels.GuestInsuranceRepository;
+import com.terron.repository.hotels.ReservationsRepository;
+import com.terron.repository.payment.PaymentRepository;
 import com.terron.repository.user.UserRepository;
 import com.terron.services.email.EmailServiceImpl;
+import com.terron.services.utils.CompanyPaginatedModel;
+import com.terron.services.utils.GuestInsuranceResponseDto;
+import com.terron.services.utils.UserDetailsDto;
 import javassist.NotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.Conditions;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -14,10 +30,12 @@ import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
+
+import static com.terron.security.SecurityConstant.SECRET;
 
 @Slf4j
 @Service
@@ -27,6 +45,17 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
     private final PasswordEncoder encoder;
+
+    private final CompanyRepository companyRepository;
+
+    @Autowired
+    ReservationsRepository reservationsRepository;
+
+    @Autowired
+    GuestInsuranceRepository guestInsuranceRepository;
+
+    @Autowired
+    PaymentRepository paymentRepository;
 
     @Autowired
     ModelMapper modelMapper;
@@ -123,4 +152,79 @@ public class UserServiceImpl implements UserService {
         return user;
     }
 
+    public UserDetailsDto getUserById(Long id) throws NotFoundException {
+        Users user = userRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(String.format("User with this id: %s does not exist", id)));
+        Company company = new Company();
+        if(user.getCompanyId() != null){
+            company = companyRepository.findById(user.getCompanyId()).get();
+        }
+        return UserDetailsDto.builder()
+                .user(user)
+                .company(company)
+                .build();
+    }
+
+    public UserDetailsDto getUserByToken(String token) throws NotFoundException {
+        String[] chunks = token.split("\\.");
+        Base64.Decoder decoder = Base64.getUrlDecoder();
+
+        String payload = new String(decoder.decode(chunks[1]));
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode jsonNode = null;
+        try {
+            jsonNode = objectMapper.readTree(payload);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        String subject = jsonNode.get("sub").asText();
+        Users user = userRepository.findByEmailAddress(subject)
+                .orElseThrow(() -> new NotFoundException(String.format("User with this id: %s does not exist", subject)));
+        Company company = companyRepository.findById(user.getCompanyId()).get();
+        return UserDetailsDto.builder()
+                .user(user)
+                .company(company)
+                .build();
+    }
+
+    public Users registerUser(UserRegistrationDto userRegistrationDto) throws Exception {
+        Boolean userExists = userRepository.existsByEmailAddress(userRegistrationDto.getEmailAddress());
+        if (userExists) {
+            throw new UserAlreadyExistException(String.format("User with email address: %s already exists", userRegistrationDto.getEmailAddress()));
+
+        }
+        Users user = modelMapper.map(userRegistrationDto, Users.class);
+        user.setPassword(encoder.encode(userRegistrationDto.getPassword()));
+        user.setIsVerified(true);
+        user.setIsActive(true);
+        user.setModifiedDate(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy hh:mm:ss")));
+        user.setRegisteredDate(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy hh:mm:ss")));
+        user = userRepository.save(user);
+        return user;
+    }
+
+    public Users updateUser(UpdateProfileDto updateProfileDto, Long userId, Long companyId) throws Exception {
+        boolean userExists = userRepository.existsById(userId);
+        if (!userExists) {
+            throw new UserAlreadyExistException(String.format("User with id: %s does not exist", userId));
+
+        }
+
+        Users user = userRepository.findById(userId).get();
+        ModelMapper mapper = new ModelMapper();
+        mapper.getConfiguration().setPropertyCondition(Conditions.isNotNull());
+        mapper.map(updateProfileDto, user);
+        if (companyId != 0) {
+            boolean companyExists = companyRepository.existsById(companyId);
+            if (!companyExists) {
+                throw new UserAlreadyExistException(String.format("Company with id: %s does not exist", companyId));
+
+            }
+            user.setCompanyId(companyId);
+        }
+
+        user.setModifiedDate(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy hh:mm:ss")));
+        user = userRepository.save(user);
+        return user;
+    }
 }

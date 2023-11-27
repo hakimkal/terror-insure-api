@@ -6,6 +6,7 @@ import lombok.Data;
 import javax.persistence.Column;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.validation.constraints.NotBlank;
 
 @Data
 public class OnboardCompanyDto {
@@ -15,6 +16,7 @@ public class OnboardCompanyDto {
     @Enumerated(value = EnumType.ORDINAL)
     private CompanyType companyType;
     private String branch;
+    private Long insuranceCompany;
     private String contactPersonCountryCode;
     private String companyLogo;
     private String contactPersonPhoneNumber;
@@ -23,6 +25,8 @@ public class OnboardCompanyDto {
     private String cacRegistrationDate;
     private String state;
     private String lga;
+    @NotBlank
+    private String bvn;
     private String address;
     private String gpsCoordinate;
     private String contactPersonFirstname;

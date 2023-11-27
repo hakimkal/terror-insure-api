@@ -1,19 +1,20 @@
 package com.terron.controller.controllers.users;
 
-import com.terron.dto.ChangePasswordDto;
-import com.terron.dto.RequestResetPasswordDto;
-import com.terron.dto.UpdatePasswordDto;
-import com.terron.dto.UserRegistrationDto;
+import com.terron.dto.*;
 import com.terron.models.user.Users;
 import com.terron.response.ResponseDetails;
 import com.terron.response.ResponseDetailsWithObject;
 import com.terron.services.user.UserServiceImpl;
+import com.terron.services.utils.UserDetailsDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.time.LocalDateTime;
+import java.util.Objects;
+
+import static com.terron.utils.utility.decodeToken;
 
 
 @RestController
@@ -53,10 +54,44 @@ public class UserController {
         return new ResponseEntity<>(responseDetails, HttpStatus.OK);
     }
 
+    @PostMapping ("/register")
+    public ResponseEntity<?> registerUser(@Valid @RequestBody UserRegistrationDto userRegistrationDto, @RequestHeader(name = "Authorization") String token) throws Exception {
+        String role = decodeToken(token);
+        if (!Objects.equals(role, "ROLE_COMPANY_OWNER") && !Objects.equals(role, "ROLE_ADMIN")) {
+            ResponseDetails responseDetails = new ResponseDetails(LocalDateTime.now(), "Access is denied", "error");
+            return new ResponseEntity<>(responseDetails, HttpStatus.FORBIDDEN);
+        }
+
+        Users user = userServiceImpl.registerUser(userRegistrationDto);
+        ResponseDetailsWithObject responseDetails = new ResponseDetailsWithObject(LocalDateTime.now(), "Registration successful",user, "success");
+        return new ResponseEntity<>(responseDetails, HttpStatus.CREATED);
+    }
+
     @PostMapping("/reset-password")
     public ResponseEntity<?> confirmResetPasswordToken(@RequestParam("token") String token, @RequestBody UpdatePasswordDto updatePasswordDto) throws Exception {
         userServiceImpl.confirmResetPassword(token, updatePasswordDto);
         ResponseDetails responseDetails = new ResponseDetails(LocalDateTime.now(), "Password rest successful", "success");
+        return new ResponseEntity<>(responseDetails, HttpStatus.OK);
+    }
+
+    @GetMapping ("/{userId}")
+    public ResponseEntity<?> getSingleUser(@PathVariable Long userId) throws Exception {
+        UserDetailsDto user = userServiceImpl.getUserById(userId);
+        ResponseDetailsWithObject responseDetails = new ResponseDetailsWithObject(LocalDateTime.now(), "User gotten successfully",user, "success");
+        return new ResponseEntity<>(responseDetails, HttpStatus.OK);
+    }
+
+    @GetMapping ("/profile")
+    public ResponseEntity<?> getUser(@RequestHeader(name = "Authorization") String token) throws Exception {
+        UserDetailsDto user = userServiceImpl.getUserByToken(token);
+        ResponseDetailsWithObject responseDetails = new ResponseDetailsWithObject(LocalDateTime.now(), "User gotten successfully", user, "success");
+        return new ResponseEntity<>(responseDetails, HttpStatus.OK);
+    }
+
+    @PatchMapping ("/{userId}")
+    public ResponseEntity<?> updateUser(@RequestBody UpdateProfileDto updateProfileDto, @PathVariable Long userId,@RequestParam(value = "companyId", defaultValue = "0", required = false) Long companyId) throws Exception {
+        Users user = userServiceImpl.updateUser(updateProfileDto, userId, companyId);
+        ResponseDetailsWithObject responseDetails = new ResponseDetailsWithObject(LocalDateTime.now(), "User updated successfully", user, "success");
         return new ResponseEntity<>(responseDetails, HttpStatus.OK);
     }
 }

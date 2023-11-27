@@ -41,6 +41,10 @@ public class Users {
 
     private String password;
 
+    private String staffNo;
+
+    private String govtAgency;
+
     String verificationToken;
 
     @Enumerated(value = EnumType.ORDINAL)
@@ -55,4 +59,6 @@ public class Users {
     private Boolean isVerified;
 
     private Long companyId;
+
+    private String profilePic;
 }

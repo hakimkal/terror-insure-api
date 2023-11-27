@@ -4,6 +4,8 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
@@ -13,6 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import static com.terron.security.SecurityConstant.*;
 
@@ -37,6 +40,15 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = getAuthentication(request);
         SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
 
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated()) {
+            List<GrantedAuthority> authorities = new ArrayList<>(authentication.getAuthorities());
+            // Log authorities (roles) as needed
+            authorities.forEach(authority -> {
+                // Log role name or authority name
+                logger.info("Role: " + authority.getAuthority());
+            });
+        }
         chain.doFilter(request, response);
     }
 

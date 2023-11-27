@@ -15,6 +15,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -25,9 +26,14 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import static com.terron.security.SecurityConstant.*;
 
 @Slf4j
@@ -65,9 +71,15 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     @Override
     @ExceptionHandler(Exception.class)
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException {
+        List<String> roles = ((User) authResult.getPrincipal())
+                .getAuthorities()
+                .stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.toList());
 
         String token = JWT.create()
                 .withSubject(((User) authResult.getPrincipal()).getUsername())
+                .withClaim("roles", roles)
                 .withExpiresAt(new Date(System.currentTimeMillis()+ EXPIRATION_TIME))
                 .sign(Algorithm.HMAC512(SECRET.getBytes(StandardCharsets.UTF_8)));
 
@@ -84,16 +96,21 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         response.addHeader(HEADER_STRING, TOKEN_PREFIX + token);
         response.getOutputStream().print("{ \"data\":"  + oMapper.writeValueAsString(responseDto) +  "}");
         response.flushBuffer();
-
-
     }
 
 
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
-        super.unsuccessfulAuthentication(request, response, failed);UnsuccessfulLogin responseDetails = new UnsuccessfulLogin(LocalDateTime.now(), "Incorrect email or password", "Bad request", "/api/user/login");
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.setContentType("application/json");
 
-        response.getOutputStream().print("{ \"message\":"  + responseDetails +  "}");
+        UnsuccessfulLogin responseDetails = new UnsuccessfulLogin(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy hh:mm:ss")), "Incorrect email or password", "Bad request", "/api/user/login");
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String responseBody = objectMapper.writeValueAsString(responseDetails);
+
+        response.getWriter().write(responseBody);
+        response.getWriter().flush();
     }
 
 }
