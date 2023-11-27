@@ -4,7 +4,7 @@ target/
 .mvn
 !**/src/main/**
 !**/src/test/**
-
+.idea
 ### STS ###
 .apt_generated
 .classpath
@@ -15,7 +15,7 @@ target/
 .sts4-cache
 
 ### IntelliJ IDEA ###
-.idea
+.idea/*
 *.iws
 *.iml
 *.ipr
@@ -107,4 +107,3 @@ local.properties
 .sts4-cache/
 
 # End of https://www.gitignore.io/api/eclipse
-
