@@ -58,7 +58,7 @@ public class HotelsController {
             @PathVariable Long companyId
     ) {
         String role = decodeToken(token);
-        if (!Objects.equals(role, "ROLE_COMPANY_OWNER") && !Objects.equals(role, "ROLE_ADMIN")) {
+        if (!Objects.equals(role, "ROLE_NTDA") && !Objects.equals(role, "ROLE_COMPANY_OWNER") && !Objects.equals(role, "ROLE_ADMIN")) {
             ResponseDetails responseDetails = new ResponseDetails(LocalDateTime.now(), "Access is denied", "error");
             return new ResponseEntity<>(responseDetails, HttpStatus.FORBIDDEN);
         }
@@ -222,7 +222,7 @@ public class HotelsController {
             @RequestHeader(name = "Authorization") String token
     ) {
         String role = decodeToken(token);
-        if (!Objects.equals(role, "ROLE_DSS") && !Objects.equals(role, "ROLE_INTERPOL")  && !Objects.equals(role, "ROLE_NSA") && !Objects.equals(role, "ROLE_ADMIN")) {
+        if (!Objects.equals(role, "ROLE_NTDA") && !Objects.equals(role, "ROLE_DSS") && !Objects.equals(role, "ROLE_INTERPOL")  && !Objects.equals(role, "ROLE_NSA") && !Objects.equals(role, "ROLE_ADMIN")) {
             ResponseDetails responseDetails = new ResponseDetails(LocalDateTime.now(), "Access is denied", "error");
             return new ResponseEntity<>(responseDetails, HttpStatus.FORBIDDEN);
         }
@@ -241,7 +241,7 @@ public class HotelsController {
             @RequestHeader(name = "Authorization") String token
     ) {
         String role = decodeToken(token);
-        if (!Objects.equals(role, "ROLE_DSS") && !Objects.equals(role, "ROLE_INTERPOL")  && !Objects.equals(role, "ROLE_NSA") && !Objects.equals(role, "ROLE_ADMIN")) {
+        if (!Objects.equals(role, "ROLE_NTDA") && !Objects.equals(role, "ROLE_DSS") && !Objects.equals(role, "ROLE_INTERPOL")  && !Objects.equals(role, "ROLE_NSA") && !Objects.equals(role, "ROLE_ADMIN")) {
             ResponseDetails responseDetails = new ResponseDetails(LocalDateTime.now(), "Access is denied", "error");
             return new ResponseEntity<>(responseDetails, HttpStatus.FORBIDDEN);
         }
