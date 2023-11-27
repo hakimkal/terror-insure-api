@@ -69,7 +69,7 @@ public class CompanyController {
             @RequestHeader(name = "Authorization") String token
     ) {
         String role = decodeToken(token);
-        if(!Objects.equals(role, "ROLE_ADMIN") && !Objects.equals(role, "ROLE_NTDC")){
+        if(!Objects.equals(role, "ROLE_NTDA") && !Objects.equals(role, "ROLE_ADMIN") && !Objects.equals(role, "ROLE_NTDA")){
             ResponseDetails responseDetails = new ResponseDetails(LocalDateTime.now(), "Access is denied", "error");
             return new ResponseEntity<>(responseDetails, HttpStatus.FORBIDDEN);
         }
@@ -86,7 +86,7 @@ public class CompanyController {
             @RequestHeader(name = "Authorization") String token
     ) {
         String role = decodeToken(token);
-        if(!Objects.equals(role, "ROLE_ADMIN") && !Objects.equals(role, "ROLE_NTDC")){
+        if(!Objects.equals(role, "ROLE_ADMIN") && !Objects.equals(role, "ROLE_NTDA")){
             ResponseDetails responseDetails = new ResponseDetails(LocalDateTime.now(), "Access is denied", "error");
             return new ResponseEntity<>(responseDetails, HttpStatus.FORBIDDEN);
         }
@@ -104,7 +104,7 @@ public class CompanyController {
             @RequestHeader(name = "Authorization") String token
     ) throws NotFoundException {
         String role = decodeToken(token);
-        if(!Objects.equals(role, "ROLE_ADMIN")  && !Objects.equals(role, "ROLE_INSURANCE_USER") && !Objects.equals(role, "ROLE_NTDC")){
+        if(!Objects.equals(role, "ROLE_ADMIN")  && !Objects.equals(role, "ROLE_INSURANCE_USER") && !Objects.equals(role, "ROLE_NTDA")){
             ResponseDetails responseDetails = new ResponseDetails(LocalDateTime.now(), "Access is denied", "error");
             return new ResponseEntity<>(responseDetails, HttpStatus.FORBIDDEN);
         }
@@ -121,7 +121,7 @@ public class CompanyController {
             @PathVariable Long insuranceCompanyId
     ) throws UserAlreadyExistException {
         String role = decodeToken(token);
-        if(!Objects.equals(role, "ROLE_ADMIN")  && !Objects.equals(role, "ROLE_INSURANCE_USER") && !Objects.equals(role, "ROLE_NTDC")){
+        if(!Objects.equals(role, "ROLE_ADMIN")  && !Objects.equals(role, "ROLE_INSURANCE_USER") && !Objects.equals(role, "ROLE_NTDA")){
             ResponseDetails responseDetails = new ResponseDetails(LocalDateTime.now(), "Access is denied", "error");
             return new ResponseEntity<>(responseDetails, HttpStatus.FORBIDDEN);
         }
@@ -140,7 +140,7 @@ public class CompanyController {
             @RequestHeader(name = "Authorization") String token
     ) throws NotFoundException {
         String role = decodeToken(token);
-        if(!Objects.equals(role, "ROLE_ADMIN")  && !Objects.equals(role, "ROLE_INSURANCE_USER") && !Objects.equals(role, "ROLE_NTDC")){
+        if(!Objects.equals(role, "ROLE_ADMIN")  && !Objects.equals(role, "ROLE_INSURANCE_USER") && !Objects.equals(role, "ROLE_NTDA")){
             ResponseDetails responseDetails = new ResponseDetails(LocalDateTime.now(), "Access is denied", "error");
             return new ResponseEntity<>(responseDetails, HttpStatus.FORBIDDEN);
         }
@@ -192,7 +192,7 @@ public class CompanyController {
             @PathVariable String userRole
     ) {
         String role = decodeToken(token);
-        if (!Objects.equals(role, "ROLE_NTDC") && !Objects.equals(role, "ROLE_ADMIN")) {
+        if (!Objects.equals(role, "ROLE_NTDA") && !Objects.equals(role, "ROLE_ADMIN")) {
             ResponseDetails responseDetails = new ResponseDetails(LocalDateTime.now(), "Access is denied", "error");
             return new ResponseEntity<>(responseDetails, HttpStatus.FORBIDDEN);
         }
