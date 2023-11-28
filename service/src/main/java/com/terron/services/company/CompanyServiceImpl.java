@@ -490,7 +490,7 @@ public class CompanyServiceImpl implements CompanyService{
 
         long hotelUsersCount = userRepository.countAllByRole(UserRole.COMPANY_OWNER);
         long insuranceUsersCount = userRepository.countAllByRole(UserRole.INSURANCE_USER);
-        long ntdcUsersCount = userRepository.countAllByRole(UserRole.NTDC);
+        long ntdcUsersCount = userRepository.countAllByRole(UserRole.NTDA);
         long guestCount = guestInsuranceRepository.count();
         long companiesCount = companyRepository.count();
 
