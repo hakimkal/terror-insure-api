@@ -490,7 +490,7 @@ public class CompanyServiceImpl implements CompanyService{
 
         long hotelUsersCount = userRepository.countAllByRole(UserRole.COMPANY_OWNER);
         long insuranceUsersCount = userRepository.countAllByRole(UserRole.INSURANCE_USER);
-        long ntdcUsersCount = userRepository.countAllByRole(UserRole.NTDC);
+        long ntdcUsersCount = userRepository.countAllByRole(UserRole.NTDA);
         long guestCount = guestInsuranceRepository.count();
         long companiesCount = companyRepository.count();
 
@@ -519,7 +519,7 @@ public class CompanyServiceImpl implements CompanyService{
 
         long hotelUsersCount = userRepository.countAllByRoleAndCompanyId(UserRole.COMPANY_OWNER,companyId);
         long insuranceUsersCount = userRepository.countAllByRoleAndCompanyId(UserRole.INSURANCE_USER,companyId);
-        long ntdcUsersCount = userRepository.countAllByRoleAndCompanyId(UserRole.NTDC,companyId);
+        long ntdcUsersCount = userRepository.countAllByRoleAndCompanyId(UserRole.NTDA,companyId);
         long guestCount = guestInsuranceRepository.countAllByCompanyId(companyId);
 
         Long companiesCount = companyRepository.countAllByInsuranceCompanyId(company.getId());
