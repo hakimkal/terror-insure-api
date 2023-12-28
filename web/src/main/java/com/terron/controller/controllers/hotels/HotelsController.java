@@ -1,26 +1,35 @@
 package com.terron.controller.controllers.hotels;
+
+import static com.terron.utils.utility.decodeToken;
+
 import com.terron.dto.CreateGuestInsuranceDto;
 import com.terron.dto.CreateReservationDto;
 import com.terron.exceptions.UserAlreadyExistException;
-import com.terron.models.hotels.GroupBookings;
 import com.terron.models.hotels.GuestInsurance;
-import com.terron.models.hotels.Reservations;
 import com.terron.repository.user.UserRepository;
 import com.terron.response.ResponseDetails;
 import com.terron.response.ResponseDetailsWithObject;
 import com.terron.services.company.CompanyServiceImpl;
 import com.terron.services.hotels.HotelsServiceImpl;
-import com.terron.services.utils.*;
-import javassist.NotFoundException;
+import com.terron.services.utils.CompanyPaginatedModel;
+import com.terron.services.utils.GroupBookingDetailsDto;
+import com.terron.services.utils.GuestInsuranceDto;
+import com.terron.services.utils.PaginationModel;
+import com.terron.services.utils.ReservationDetailsDto;
+import java.time.LocalDateTime;
+import java.util.Objects;
+import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import javax.validation.Valid;
-import java.time.LocalDateTime;
-import java.util.Objects;
-
-import static com.terron.utils.utility.decodeToken;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 
 @RestController
@@ -272,7 +281,7 @@ public class HotelsController {
     @GetMapping ("/reservations/details/{reservationId}")
     public ResponseEntity<?> getReservation(@RequestHeader(name = "Authorization") String token, @PathVariable Long reservationId) throws Exception {
         String role = decodeToken(token);
-        if (!Objects.equals(role, "ROLE_COMPANY_OWNER") && !Objects.equals(role, "ROLE_DSS") && !Objects.equals(role, "ROLE_INTERPOL")  && !Objects.equals(role, "ROLE_NSA") && !Objects.equals(role, "ROLE_ADMIN")) {
+        if (!Objects.equals(role, "ROLE_COMPANY_OWNER") && !Objects.equals(role, "ROLE_NTDA") && !Objects.equals(role, "ROLE_DSS") && !Objects.equals(role, "ROLE_INTERPOL")  && !Objects.equals(role, "ROLE_NSA") && !Objects.equals(role, "ROLE_ADMIN")) {
             ResponseDetails responseDetails = new ResponseDetails(LocalDateTime.now(), "Access is denied", "error");
             return new ResponseEntity<>(responseDetails, HttpStatus.FORBIDDEN);
         }
@@ -283,7 +292,7 @@ public class HotelsController {
     @GetMapping ("/guest-insurances/details/{guestInsuranceId}")
     public ResponseEntity<?> getGuestInsurance(@RequestHeader(name = "Authorization") String token, @PathVariable Long guestInsuranceId) throws Exception {
         String role = decodeToken(token);
-        if (!Objects.equals(role, "ROLE_COMPANY_OWNER") &&  !Objects.equals(role, "ROLE_DSS") && !Objects.equals(role, "ROLE_INSURANCE_USER") && !Objects.equals(role, "ROLE_INTERPOL")  && !Objects.equals(role, "ROLE_NSA") && !Objects.equals(role, "ROLE_ADMIN")) {
+        if (!Objects.equals(role, "ROLE_COMPANY_OWNER") && !Objects.equals(role, "ROLE_NTDA") &&  !Objects.equals(role, "ROLE_DSS") && !Objects.equals(role, "ROLE_INSURANCE_USER") && !Objects.equals(role, "ROLE_INTERPOL")  && !Objects.equals(role, "ROLE_NSA") && !Objects.equals(role, "ROLE_ADMIN")) {
             ResponseDetails responseDetails = new ResponseDetails(LocalDateTime.now(), "Access is denied", "error");
             return new ResponseEntity<>(responseDetails, HttpStatus.FORBIDDEN);
         }
