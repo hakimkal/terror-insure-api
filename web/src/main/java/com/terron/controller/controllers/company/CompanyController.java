@@ -1,5 +1,7 @@
 package com.terron.controller.controllers.company;
 
+import static com.terron.utils.utility.decodeToken;
+
 import com.terron.dto.OnboardCompanyDto;
 import com.terron.exceptions.UserAlreadyExistException;
 import com.terron.models.company.Company;
@@ -11,19 +13,27 @@ import com.terron.response.ResponseDetails;
 import com.terron.response.ResponseDetailsWithObject;
 import com.terron.services.company.CompanyServiceImpl;
 import com.terron.services.hotels.HotelsServiceImpl;
-import com.terron.services.utils.*;
-import javassist.NotFoundException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import javax.validation.Valid;
+import com.terron.services.utils.CompanyPaginatedModel;
+import com.terron.services.utils.GuestInsuranceResponseDto;
+import com.terron.services.utils.HotelPaginationModel;
+import com.terron.services.utils.InsuranceCompanyPaginatedModel;
+import com.terron.services.utils.PaginationModel;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
-
-import static com.terron.utils.utility.decodeToken;
+import javassist.NotFoundException;
+import javax.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/v1/company")
@@ -157,7 +167,7 @@ public class CompanyController {
     @GetMapping ("/details/{companyId}")
     public ResponseEntity<?> getInsuranceCompany(@RequestHeader(name = "Authorization") String token, @PathVariable Long companyId) throws Exception {
         String role = decodeToken(token);
-        if (!Objects.equals(role, "ROLE_INSURANCE_USER") && !Objects.equals(role, "ROLE_ADMIN")) {
+        if (!Objects.equals(role, "ROLE_INSURANCE_USER") && !Objects.equals(role, "ROLE_ADMIN") && !Objects.equals(role, "ROLE_NTDA")) {
             ResponseDetails responseDetails = new ResponseDetails(LocalDateTime.now(), "Access is denied", "error");
             return new ResponseEntity<>(responseDetails, HttpStatus.FORBIDDEN);
         }

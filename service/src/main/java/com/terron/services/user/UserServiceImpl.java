@@ -1,14 +1,15 @@
 package com.terron.services.user;
 
-import com.auth0.jwt.JWT;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.terron.dto.*;
+import com.terron.dto.ChangePasswordDto;
+import com.terron.dto.RequestResetPasswordDto;
+import com.terron.dto.UpdatePasswordDto;
+import com.terron.dto.UpdateProfileDto;
+import com.terron.dto.UserRegistrationDto;
 import com.terron.exceptions.UserAlreadyExistException;
 import com.terron.models.company.Company;
-import com.terron.models.payment.Payment;
-import com.terron.models.user.UserRole;
 import com.terron.models.user.Users;
 import com.terron.repository.company.CompanyRepository;
 import com.terron.repository.hotels.GuestInsuranceRepository;
@@ -16,9 +17,12 @@ import com.terron.repository.hotels.ReservationsRepository;
 import com.terron.repository.payment.PaymentRepository;
 import com.terron.repository.user.UserRepository;
 import com.terron.services.email.EmailServiceImpl;
-import com.terron.services.utils.CompanyPaginatedModel;
-import com.terron.services.utils.GuestInsuranceResponseDto;
 import com.terron.services.utils.UserDetailsDto;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Base64;
+import java.util.Random;
+import java.util.UUID;
 import javassist.NotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,13 +33,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
-
-import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
-
-import static com.terron.security.SecurityConstant.SECRET;
 
 @Slf4j
 @Service
@@ -235,4 +232,7 @@ public class UserServiceImpl implements UserService {
         user = userRepository.save(user);
         return user;
     }
+
+
+
 }
