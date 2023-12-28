@@ -203,7 +203,7 @@ public class HotelsController {
             @RequestHeader(name = "Authorization") String token
     ) {
         String role = decodeToken(token);
-        if(!Objects.equals(role, "ROLE_ADMIN")  && !Objects.equals(role, "ROLE_COMPANY_OWNER") && !Objects.equals(role, "ROLE_NTDC")){
+        if(!Objects.equals(role, "ROLE_ADMIN")  && !Objects.equals(role, "ROLE_COMPANY_OWNER") && !Objects.equals(role, "ROLE_NTDA") && !Objects.equals(role, "ROLE_NTDC")){
             ResponseDetails responseDetails = new ResponseDetails(LocalDateTime.now(), "Access is denied", "error");
             return new ResponseEntity<>(responseDetails, HttpStatus.FORBIDDEN);
         }
@@ -214,7 +214,7 @@ public class HotelsController {
     @GetMapping ("/details/{companyId}")
     public ResponseEntity<?> getHotel(@RequestHeader(name = "Authorization") String token, @PathVariable Long companyId) throws Exception {
         String role = decodeToken(token);
-        if (!Objects.equals(role, "ROLE_COMPANY_OWNER") && !Objects.equals(role, "ROLE_ADMIN")) {
+        if (!Objects.equals(role, "ROLE_COMPANY_OWNER") && !Objects.equals(role, "ROLE_ADMIN") && !Objects.equals(role, "ROLE_NTDA")) {
             ResponseDetails responseDetails = new ResponseDetails(LocalDateTime.now(), "Access is denied", "error");
             return new ResponseEntity<>(responseDetails, HttpStatus.FORBIDDEN);
         }
