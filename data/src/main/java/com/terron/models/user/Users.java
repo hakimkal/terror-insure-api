@@ -1,14 +1,18 @@
 package com.terron.models.user;
 
-import com.terron.models.company.Company;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
-
-import javax.persistence.*;
 
 @Entity
 @Data
@@ -39,7 +43,8 @@ public class Users {
 
     private String phoneNumber;
 
-    private String password;
+   @JsonIgnore
+   private String password;
 
     private String staffNo;
 

@@ -1,34 +1,36 @@
 package com.terron.services.payment;
 
 import com.google.gson.Gson;
-import com.terron.dto.*;
-import com.terron.exceptions.NotFoundException;
+import com.terron.dto.BankTransferRequest;
+import com.terron.dto.CardPaymentRequest;
+import com.terron.dto.FixedVirtualAccountRequest;
+import com.terron.dto.PaymentResponse;
+import com.terron.dto.VirtualAccountResponse;
 import com.terron.models.company.Company;
 import com.terron.models.payment.Payment;
 import com.terron.repository.company.CompanyRepository;
 import com.terron.repository.payment.PaymentRepository;
-import io.netty.handler.codec.http.HttpUtil;
+import com.terron.services.payment.dto.GraphData;
+import com.terron.services.payment.dto.PaymentStatSummary;
+import java.net.URI;
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
+import java.util.Base64;
+import java.util.UUID;
+import javax.naming.ServiceUnavailableException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientRequestException;
-import org.springframework.web.reactive.function.client.WebClientResponseException;
 import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Mono;
-
-import javax.naming.ServiceUnavailableException;
-import java.net.URI;
-import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Base64;
-import java.util.UUID;
 
 @Service
 @Slf4j
@@ -121,5 +123,33 @@ public class PaymentService {
                 .retrieve()
                 .bodyToMono(PaymentResponse.class);
     }
-}
 
+    public PaymentResponse generateStatsCurrentMonth() {
+
+      PaymentResponse paymentResponse =  new PaymentResponse();
+      paymentResponse.setResponseCode("00");
+      paymentResponse.setResponseMessage("Payment Summary for 30 Days");
+
+        PaymentStatSummary statisticsData = new PaymentStatSummary(
+            3000,
+            500000,
+            Arrays.asList(
+                new GraphData("January", 30000),
+                new GraphData("February", 40000),
+                new GraphData("March", 600),
+                new GraphData("April", 30000),
+                new GraphData("May", 30000),
+                new GraphData("June", 30000),
+                new GraphData("July", 50000),
+                new GraphData("August", 30000),
+                new GraphData("September", 30000),
+                new GraphData("October", 30000),
+                new GraphData("November", 30000),
+                new GraphData("December", 30000)
+            )
+        );
+      paymentResponse.setData(statisticsData);
+      paymentResponse.setSuccess(true);
+      return paymentResponse;
+    }
+}

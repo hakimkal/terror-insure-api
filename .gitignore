@@ -13,12 +13,14 @@ target/
 .settings
 .springBeans
 .sts4-cache
-
+.target
 ### IntelliJ IDEA ###
 .idea
+.idea/misc.xml
 *.iws
 *.iml
 *.ipr
+terron.iml
 
 ### NetBeans ###
 /nbproject/private/
@@ -107,4 +109,3 @@ local.properties
 .sts4-cache/
 
 # End of https://www.gitignore.io/api/eclipse
-
