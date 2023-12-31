@@ -33,14 +33,13 @@ public class PaymentController {
 
   }
 
-  @GetMapping("/stats/hotel/${hotelId}")
-  public PaymentResponse paymentMonthStatsForHotel() {
+  @GetMapping("/stats/hotel/{hotelId}")
+  public PaymentResponse paymentMonthStatsForHotel(@PathVariable String hotelId) {
     return paymentService.generateStatsCurrentMonth();
 
   }
-
-  @GetMapping("/stats/insurance/${insuranceId}")
-  public PaymentResponse paymentMonthStatsForInsurance() {
+  @GetMapping("/stats/insurance/{insuranceId}")
+  public PaymentResponse paymentMonthStatsForInsurance(@PathVariable String insuranceId) {
     return paymentService.generateStatsCurrentMonth();
 
   }
