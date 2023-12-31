@@ -33,6 +33,19 @@ public class PaymentController {
 
   }
 
+  @GetMapping("/stats/hotel/${hotelId}")
+  public PaymentResponse paymentMonthStatsForHotel() {
+    return paymentService.generateStatsCurrentMonth();
+
+  }
+
+  @GetMapping("/stats/insurance/${insuranceId}")
+  public PaymentResponse paymentMonthStatsForInsurance() {
+    return paymentService.generateStatsCurrentMonth();
+
+  }
+
+
   @PostMapping("/card-payment/{companyId}")
   public PaymentResponse makeCardPayment(@RequestBody CardPaymentRequest request,
       @PathVariable Long companyId) throws ServiceUnavailableException {
