@@ -4,7 +4,10 @@ target/
 .mvn
 !**/src/main/**
 !**/src/test/**
-
+web/target
+data/target
+security/target
+service/target
 ### STS ###
 .apt_generated
 .classpath
