@@ -28,6 +28,8 @@ public interface CompanyRepository extends JpaRepository<Company, Long> {
 
     Company findByCompanyName(String companyName);
 
+    Company findByOfficialEmailAddress(String officialEmailAddress);
+
     Long countAllByInsuranceCompanyId(Long insuranceCompany);
 
 //    List<Company> getCompaniesByInsuranceCompanyId(String insuranceCompany);

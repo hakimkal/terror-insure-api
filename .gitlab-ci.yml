@@ -1,47 +1,252 @@
-# Use the appropriate Docker image that includes the necessary build tools.
+# GitLab CI/CD Pipeline for Terron API
+# Supports: Docker Build, Railway Deployment
+
 image: docker:latest
 
 services:
   - docker:dind
 
+variables:
+  # Docker settings
+  DOCKER_DRIVER: overlay2
+  DOCKER_TLS_CERTDIR: ""
+  
+  # Railway settings
+  RAILWAY_PROJECT_ID: $RAILWAY_PROJECT_ID
+  RAILWAY_TOKEN: $RAILWAY_TOKEN
+  RAILWAY_SERVICE_NAME: $RAILWAY_SERVICE_NAME
+  
+  # Maven settings
+  MAVEN_OPTS: "-Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository"
+  MAVEN_CLI_OPTS: "--batch-mode --errors --fail-at-end --show-version"
+
+# Cache Maven dependencies
+cache:
+  paths:
+    - .m2/repository
+
 stages:
-  - docker build
-  - docker push
+  - build
+  - test
+  - package
+  - deploy
 
-before_script:
-  # Login to Gitlab Container Registry using your credentials or tokens.
-  # Modify the login command according to your GitLab setup.
-  - echo $CI_JOB_TOKEN | docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-
+# Build Stage: Compile the application
 build:
   stage: build
-  only:
-    refs:
-      - dev
+  image: maven:3.8-eclipse-temurin-11
   script:
-    - docker build -t terronapi_img/terrorapi:latest .
-    - docker push terronapi_img/terronapi:latest
-
-deploy:
-  stage: deploy
+    - ./mvnw $MAVEN_CLI_OPTS compile -DskipTests
   only:
-    refs:
-      - dev
-  image: alpine
-  environment:
-    name: dev
+    - main
+    - master
+    - develop
+    - merge_requests
+
+# Test Stage: Run unit tests
+test:
+  stage: test
+  image: maven:3.8-eclipse-temurin-11
+  script:
+    - ./mvnw $MAVEN_CLI_OPTS test
+  artifacts:
+    reports:
+      junit:
+        - "**/target/surefire-reports/TEST-*.xml"
+    paths:
+      - "**/target/surefire-reports/"
+    expire_in: 1 week
+  only:
+    - main
+    - master
+    - develop
+    - merge_requests
+
+# Package Stage: Build Docker image
+package:
+  stage: package
   before_script:
-    - apk add openssh-client
-    - eval $(ssh-agent -s)
-
-    # Set up SSH key for authentication during deployment.
-    # Replace 'your-private-key' with your actual private key.
-    - mkdir -p ~/.ssh
-    - chmod 700 ~/.ssh
-    - echo -e "$CI_REGISTRY_PASSWORD" > ~/.ssh/id_rsa
-    - chmod 700 ~/.ssh/id_rsa
-    - echo "$CI_REGISTRY_PASSWORD" | tr -d '\r' | ssh-add -
-
+    - echo $CI_JOB_TOKEN | docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
   script:
+    - docker build -t $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA -t $CI_REGISTRY_IMAGE:latest .
+    - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
+    - docker push $CI_REGISTRY_IMAGE:latest
+  only:
+    - main
+    - master
+
+# =============================================================================
+# RAILWAY DEPLOYMENT JOBS
+# =============================================================================
+
+# Deploy to Railway using CLI
+railway_deploy:
+  stage: deploy
+  image: node:18-alpine
+  before_script:
+    # Install Railway CLI
+    - npm install -g @railway/cli
+    # Verify installation
+    - railway --version
+  script:
+    - echo "🚀 Starting Railway deployment..."
+    
+    # Login to Railway using token
+    - railway login --token $RAILWAY_TOKEN
+    
+    # Link to project
+    - railway link --project $RAILWAY_PROJECT_ID
+    
+    # Set environment variables from GitLab CI/CD variables
     - |
-      ssh -o StrictHostKeyChecking=no "$DEPLOY_USER@$DEPLOY_HOST" "your-deployment-command"
+      if [ -n "$SPRING_PROFILES_ACTIVE" ]; then
+        railway variables set SPRING_PROFILES_ACTIVE="$SPRING_PROFILES_ACTIVE"
+      fi
+    - |
+      if [ -n "$JAVA_OPTS" ]; then
+        railway variables set JAVA_OPTS="$JAVA_OPTS"
+      fi
+    - |
+      if [ -n "$CORS_ALLOWED_ORIGINS" ]; then
+        railway variables set CORS_ALLOWED_ORIGINS="$CORS_ALLOWED_ORIGINS"
+      fi
+    
+    # Deploy to Railway
+    - railway up --detach
+    
+    # Wait for deployment to be ready
+    - echo "⏳ Waiting for deployment to be ready..."
+    - sleep 30
+    
+    # Get deployment status
+    - railway status
+    
+    - echo "✅ Railway deployment completed!"
+    - echo "🌐 Service URL: $RAILWAY_SERVICE_URL"
+  environment:
+    name: production
+    url: $RAILWAY_SERVICE_URL
+  only:
+    - main
+    - master
+  when: manual
+  allow_failure: false
+
+# Deploy to Railway with health check verification
+railway_deploy_with_healthcheck:
+  stage: deploy
+  image: node:18-alpine
+  before_script:
+    # Install required packages
+    - apk add --no-cache curl
+    # Install Railway CLI
+    - npm install -g @railway/cli
+    - railway --version
+  script:
+    - echo "🚀 Starting Railway deployment with health check..."
+    
+    # Login and link
+    - railway login --token $RAILWAY_TOKEN
+    - railway link --project $RAILWAY_PROJECT_ID
+    
+    # Deploy
+    - railway up --detach
+    
+    # Wait for deployment
+    - echo "⏳ Waiting for deployment to stabilize..."
+    - sleep 45
+    
+    # Health check with retry
+    - |
+      echo "🏥 Performing health check..."
+      MAX_RETRIES=10
+      RETRY_COUNT=0
+      HEALTHY=false
+      
+      while [ $RETRY_COUNT -lt $MAX_RETRIES ] && [ "$HEALTHY" = "false" ]; do
+        echo "Health check attempt $((RETRY_COUNT + 1))/$MAX_RETRIES..."
+        
+        if curl -sf "$RAILWAY_SERVICE_URL/actuator/health" | grep -q "UP"; then
+          echo "✅ Health check passed!"
+          HEALTHY=true
+        else
+          echo "❌ Health check failed, retrying in 10 seconds..."
+          sleep 10
+          RETRY_COUNT=$((RETRY_COUNT + 1))
+        fi
+      done
+      
+      if [ "$HEALTHY" = "false" ]; then
+        echo "❌ Deployment health check failed after $MAX_RETRIES attempts"
+        exit 1
+      fi
+    
+    - echo "✅ Railway deployment completed and verified!"
+  environment:
+    name: production
+    url: $RAILWAY_SERVICE_URL
+  only:
+    - main
+    - master
+  when: manual
+
+# Deploy specific Docker image to Railway
+railway_deploy_docker:
+  stage: deploy
+  image: node:18-alpine
+  before_script:
+    - npm install -g @railway/cli
+    - railway --version
+  script:
+    - echo "🚀 Deploying Docker image to Railway..."
+    
+    # Login and link
+    - railway login --token $RAILWAY_TOKEN
+    - railway link --project $RAILWAY_PROJECT_ID
+    
+    # Configure Railway to use Docker
+    - railway variables set RAILWAY_DOCKERFILE_PATH=Dockerfile
+    
+    # Optional: Set specific service name if multiple services exist
+    - |
+      if [ -n "$RAILWAY_SERVICE_NAME" ]; then
+        railway link --service "$RAILWAY_SERVICE_NAME"
+      fi
+    
+    # Deploy
+    - railway up --detach
+    
+    - echo "✅ Docker deployment to Railway completed!"
+    - echo "🌐 Service URL: $RAILWAY_SERVICE_URL"
+  environment:
+    name: production
+    url: $RAILWAY_SERVICE_URL
+  only:
+    - main
+    - master
+  when: manual
+
+# Rollback to previous deployment
+railway_rollback:
+  stage: deploy
+  image: node:18-alpine
+  before_script:
+    - npm install -g @railway/cli
+  script:
+    - echo "🔄 Rolling back Railway deployment..."
+    
+    - railway login --token $RAILWAY_TOKEN
+    - railway link --project $RAILWAY_PROJECT_ID
+    
+    # List recent deployments
+    - echo "📋 Recent deployments:"
+    - railway list
+    
+    # Rollback (requires interactive input or specific deployment ID)
+    - echo "⚠️ To rollback, use: railway rollback <deployment-id>"
+    - echo "Or rollback manually from Railway dashboard: https://railway.app/project/$RAILWAY_PROJECT_ID"
+  when: manual
+  allow_failure: true
+  only:
+    - main
+    - master
