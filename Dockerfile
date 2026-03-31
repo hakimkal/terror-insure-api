@@ -14,7 +14,7 @@ COPY web/pom.xml web/
 # Download dependencies (cached layer)
 RUN mvn dependency:go-offline -B
 
-# Copy source code
+# Copy source code (cache-bust: 2026-03-31)
 COPY data/src data/src
 COPY security/src security/src
 COPY service/src service/src
