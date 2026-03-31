@@ -14,7 +14,9 @@ COPY web/pom.xml web/
 # Download dependencies (cached layer)
 RUN mvn dependency:go-offline -B
 
-# Copy source code (cache-bust: 2026-03-31)
+# Force cache invalidation for source code
+ARG CACHEBUST=1
+# Copy source code
 COPY data/src data/src
 COPY security/src security/src
 COPY service/src service/src
@@ -25,9 +27,6 @@ RUN mvn clean package -DskipTests -B
 
 # Stage 2: Create the runtime image
 FROM eclipse-temurin:11-jre
-
-# Install wget for healthcheck
-RUN apt-get update && apt-get install -y wget && rm -rf /var/lib/apt/lists/*
 
 # Add a non-root user for security
 RUN groupadd -r terron && useradd -r -g terron terron
@@ -45,10 +44,6 @@ USER terron
 
 # Expose the application port
 EXPOSE 8000
-
-# Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=60s --retries=3 \
-  CMD wget --no-verbose --tries=1 --spider http://localhost:8000/actuator/health || exit 1
 
 # Run the application
 ENTRYPOINT ["java", "-Djava.security.egd=file:/dev/./urandom", "-jar", "app.jar"]
