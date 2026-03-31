@@ -1,7 +1,7 @@
 package com.terron.models.user;
 
 public enum UserRole {
-    COMPANY_OWNER, NTDA, DSS, ADMIN, INSURANCE_USER, INTERPOL, NSA;
+    COMPANY_OWNER, NTDA, DSS, ADMIN, INSURANCE_USER;
 
     @Override
     public String toString() {

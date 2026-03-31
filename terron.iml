@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module version="4">
-  <component name="AdditionalModuleElements">
-    <content url="file://$MODULE_DIR$" dumb="true">
-      <excludeFolder url="file://$MODULE_DIR$/.idea/.idea" />
-    </content>
+  <component name="SonarLintModuleSettings">
+    <option name="uniqueId" value="4c1e0986-2df9-42a3-84aa-4535bef1c552" />
   </component>
 </module>

@@ -79,7 +79,7 @@ public class CompanyController {
             @RequestHeader(name = "Authorization") String token
     ) {
         String role = decodeToken(token);
-        if(!Objects.equals(role, "ROLE_NTDA") && !Objects.equals(role, "ROLE_ADMIN") && !Objects.equals(role, "ROLE_NTDA")){
+        if(!Objects.equals(role, "ROLE_ADMIN") && !Objects.equals(role, "ROLE_NTDA")){
             ResponseDetails responseDetails = new ResponseDetails(LocalDateTime.now(), "Access is denied", "error");
             return new ResponseEntity<>(responseDetails, HttpStatus.FORBIDDEN);
         }
@@ -167,7 +167,7 @@ public class CompanyController {
     @GetMapping ("/details/{companyId}")
     public ResponseEntity<?> getInsuranceCompany(@RequestHeader(name = "Authorization") String token, @PathVariable Long companyId) throws Exception {
         String role = decodeToken(token);
-        if (!Objects.equals(role, "ROLE_INSURANCE_USER") && !Objects.equals(role, "ROLE_ADMIN") && !Objects.equals(role, "ROLE_NTDA")) {
+        if (!Objects.equals(role, "ROLE_NTDA") && !Objects.equals(role, "ROLE_INSURANCE_USER") && !Objects.equals(role, "ROLE_ADMIN")) {
             ResponseDetails responseDetails = new ResponseDetails(LocalDateTime.now(), "Access is denied", "error");
             return new ResponseEntity<>(responseDetails, HttpStatus.FORBIDDEN);
         }

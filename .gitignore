@@ -15,10 +15,7 @@ target/
 .mvn
 !**/src/main/**
 !**/src/test/**
-web/target
-data/target
-security/target
-service/target
+.idea
 ### STS ###
 .apt_generated
 .classpath
@@ -29,8 +26,7 @@ service/target
 .sts4-cache
 .target
 ### IntelliJ IDEA ###
-.idea
-.idea/misc.xml
+.idea/*
 *.iws
 *.iml
 *.ipr
