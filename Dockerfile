@@ -15,7 +15,7 @@ COPY web/pom.xml web/
 RUN mvn dependency:go-offline -B
 
 # Force cache invalidation for source code
-ARG CACHEBUST=1
+ARG CACHEBUST=2
 # Copy source code
 COPY data/src data/src
 COPY security/src security/src
