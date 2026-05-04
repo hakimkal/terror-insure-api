@@ -21,17 +21,21 @@ import com.terron.repository.hotels.ReturnGuestRepository;
 import com.terron.repository.payment.DailyTransactionRepository;
 import com.terron.repository.payment.PaymentRepository;
 import com.terron.repository.user.UserRepository;
+import com.terron.services.email.EmailService;
 import com.terron.services.utils.*;
 import javassist.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.usertype.UserType;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -71,6 +75,15 @@ public class HotelsServiceImpl implements HotelsService{
     @Autowired
     CompanyRepository companyRepository;
 
+    @Autowired
+    EmailService emailService;
+
+    @Autowired
+    TemplateEngine templateEngine;
+
+    @Value("${app.mail.from-address}")
+    private String defaultFromAddress;
+
     @Override
     public void createReservation(CreateReservationDto createReservationDto, Long companyId) throws UserAlreadyExistException {
         boolean companyExists = companyRepository.existsById(companyId);
@@ -78,8 +91,8 @@ public class HotelsServiceImpl implements HotelsService{
             throw new UserAlreadyExistException(String.format("Company with id: %s does not exist exists", companyId));
 
         }
-        Reservations reservation;
-        GroupBookings groupBookings;
+        Reservations reservation = null;
+        GroupBookings groupBookings = null;
         if(createReservationDto.getNoOfRooms() <= 1){
              reservation = Reservations.builder()
                     .reservationNumber(UUID.randomUUID().toString())
@@ -133,6 +146,30 @@ public class HotelsServiceImpl implements HotelsService{
 
         if(isReturnGuest >= 1){
             createReturnGuest(createReservationDto, companyId);
+        }
+
+        try {
+            Company hotel = companyRepository.findById(companyId).orElse(null);
+            String reservationNumber = createReservationDto.getNoOfRooms() <= 1
+                    ? reservation.getReservationNumber()
+                    : groupBookings.getReservationNumber();
+
+            Context context = new Context();
+            context.setVariable("name", createReservationDto.getFirstName() + " " + createReservationDto.getLastName());
+            context.setVariable("reservationNumber", reservationNumber);
+            context.setVariable("hotelName", hotel != null ? hotel.getCompanyName() : "");
+            context.setVariable("dateOfArrival", createReservationDto.getDateOfArrival());
+            context.setVariable("dateOfDeparture", createReservationDto.getDateOfDeparture());
+            context.setVariable("roomType", createReservationDto.getRoomType());
+            context.setVariable("roomNumber", createReservationDto.getRoomNumber());
+            context.setVariable("noOfPersons", createReservationDto.getNoOfPersons());
+            context.setVariable("noOfNights", createReservationDto.getNoOfNights());
+
+            String content = templateEngine.process("reservationConfirmation", context);
+            emailService.sendNotification(defaultFromAddress, "Terron Reservations",
+                    createReservationDto.getEmailAddress(), "Your Reservation is Confirmed", "", content);
+        } catch (Exception ex) {
+            log.error("Failed to send reservation confirmation email: {}", ex.getMessage());
         }
     }
 
@@ -217,6 +254,27 @@ public class HotelsServiceImpl implements HotelsService{
                 .insuranceCompany(insuranceCompany.getCompanyName())
                 .build();
         dailyTransactionRepository.save(dailyTransactions);
+
+        try {
+            Context context = new Context();
+            context.setVariable("name", createGuestInsuranceDto.getFirstName() + " " + createGuestInsuranceDto.getLastName());
+            context.setVariable("certificateNumber", guestInsurance.getCertificateNumber());
+            context.setVariable("receiptNumber", guestInsurance.getReceiptNumber());
+            context.setVariable("hotelName", company.getCompanyName());
+            context.setVariable("dateOfArrival", createGuestInsuranceDto.getDateOfArrival());
+            context.setVariable("dateOfDeparture", createGuestInsuranceDto.getDateOfDeparture());
+            context.setVariable("roomType", createGuestInsuranceDto.getRoomType());
+            context.setVariable("roomNumber", createGuestInsuranceDto.getRoomNumber());
+            context.setVariable("noOfPersons", createGuestInsuranceDto.getNoOfPersons());
+            context.setVariable("noOfNights", createGuestInsuranceDto.getNoOfNights());
+
+            String content = templateEngine.process("guestInsuranceConfirmation", context);
+            emailService.sendNotification(defaultFromAddress, "Terron Check-in",
+                    createGuestInsuranceDto.getEmailAddress(), "Your Check-in is Confirmed", "", content);
+        } catch (Exception ex) {
+            log.error("Failed to send guest insurance confirmation email: {}", ex.getMessage());
+        }
+
         return guestInsurance;
     }
 

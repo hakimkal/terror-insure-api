@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light">
+    <meta name="supported-color-schemes" content="light">
+    <title>Reservation Confirmation</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #1a1a1a;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .container {
+            max-width: 600px;
+            margin: 2rem auto;
+            background-color: #ffffff;
+            border-radius: 8px;
+            padding: 2rem;
+        }
+        h1 {
+            color: rgb(12, 139, 12);
+        }
+        .detail {
+            margin: 0.5rem 0;
+            padding: 0.75rem;
+            background-color: #f9f9f9;
+            border-radius: 4px;
+        }
+        .detail strong {
+            display: inline-block;
+            width: 140px;
+            color: #555;
+        }
+        .footer {
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid #ddd;
+            font-size: 0.85rem;
+            color: #777;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Reservation Confirmed</h1>
+    <p>Hi <strong th:text="${name}"></strong>,</p>
+    <p>Your reservation has been successfully created. Here are your details:</p>
+
+    <div class="detail"><strong>Reservation #</strong> <span th:text="${reservationNumber}"></span></div>
+    <div class="detail"><strong>Hotel</strong> <span th:text="${hotelName}"></span></div>
+    <div class="detail"><strong>Check-in</strong> <span th:text="${dateOfArrival}"></span></div>
+    <div class="detail"><strong>Check-out</strong> <span th:text="${dateOfDeparture}"></span></div>
+    <div class="detail"><strong>Room Type</strong> <span th:text="${roomType}"></span></div>
+    <div class="detail"><strong>Room Number</strong> <span th:text="${roomNumber}"></span></div>
+    <div class="detail"><strong>Guests</strong> <span th:text="${noOfPersons}"></span></div>
+    <div class="detail"><strong>Nights</strong> <span th:text="${noOfNights}"></span></div>
+
+    <p>We look forward to welcoming you!</p>
+
+    <div class="footer">
+        <p>Terron Visitor Management System</p>
+    </div>
+</div>
+</body>
+</html>
