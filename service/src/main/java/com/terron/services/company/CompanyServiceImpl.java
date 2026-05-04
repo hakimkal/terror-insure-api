@@ -43,6 +43,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -123,7 +124,7 @@ public class CompanyServiceImpl implements CompanyService{
         company.setContactPersonPhoneNumber(onboardCompanyDto.getContactPersonPhoneNumber());
         company.setRegisteredDate(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy hh:mm:ss")));
         company = companyRepository.save(company);
-        String verificationToken = String.format("%04d", random.nextInt(10000));
+        String verificationToken = UUID.randomUUID().toString();
         Users user = Users.builder()
                 .emailAddress(onboardCompanyDto.getOfficialEmailAddress())
                 .registeredDate(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy hh:mm:ss")))
