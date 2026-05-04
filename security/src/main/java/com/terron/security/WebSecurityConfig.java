@@ -54,6 +54,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .permitAll()
                 .antMatchers(HttpMethod.PATCH, "/v1/users/change-password")
                 .permitAll()
+                .antMatchers("/v1/test/**")
+                .permitAll()
 //                .antMatchers("/v1/hotels/guest-insurances/{companyId}").hasRole("COMPANY_OWNER")
 //                .antMatchers("/v1/company/hotels").hasAuthority("ADMIN")
                 .anyRequest().authenticated()

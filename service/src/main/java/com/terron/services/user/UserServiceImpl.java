@@ -25,7 +25,7 @@ import java.util.Base64;
 import java.util.Random;
 import java.util.UUID;
 import javassist.NotFoundException;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.Conditions;
 import org.modelmapper.ModelMapper;
@@ -37,7 +37,7 @@ import org.thymeleaf.context.Context;
 
 @Slf4j
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;

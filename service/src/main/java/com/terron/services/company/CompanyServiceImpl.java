@@ -24,7 +24,7 @@ import org.springframework.beans.factory.annotation.Value;
 import com.terron.services.payment.PaymentService;
 import com.terron.services.utils.*;
 import javassist.NotFoundException;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +46,7 @@ import java.util.*;
 
 @Slf4j
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class CompanyServiceImpl implements CompanyService{
 
     private final UserRepository userRepository;
