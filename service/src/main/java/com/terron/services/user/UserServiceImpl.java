@@ -69,6 +69,9 @@ public class UserServiceImpl implements UserService {
     @Value("${app.mail.from-address}")
     private String defaultFromAddress;
 
+    @Value("${app.frontend.base-url}")
+    private String frontendBaseUrl;
+
     private void sendWelcomeMail(Users user) throws Exception {
         String toAddress = user.getEmailAddress();
         String senderName = "Terror Insure";
@@ -124,7 +127,7 @@ public class UserServiceImpl implements UserService {
         user.setPassword(encoder.encode(updatePasswordDto.getNewPassword()));
         user.setVerificationToken(null);
         userRepository.save(user);
-        sendConfirmResetPasswordEmail(user, "localhost:3000");
+        sendConfirmResetPasswordEmail(user, frontendBaseUrl);
     }
 
     private void sendResetPasswordEmail(Users user, String url) throws Exception {
@@ -148,7 +151,7 @@ public class UserServiceImpl implements UserService {
         String token = UUID.randomUUID().toString();
         user.setVerificationToken(token);
         userRepository.save(user);
-        sendResetPasswordEmail(user, "localhost:3000");
+        sendResetPasswordEmail(user, frontendBaseUrl);
         return user;
     }
 

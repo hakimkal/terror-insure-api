@@ -62,6 +62,9 @@ public class CompanyServiceImpl implements CompanyService{
     @Value("${app.mail.from-address}")
     private String defaultFromAddress;
 
+    @Value("${app.frontend.base-url}")
+    private String frontendBaseUrl;
+
     @Autowired
     PaymentRepository paymentRepository;
 
@@ -146,7 +149,7 @@ public class CompanyServiceImpl implements CompanyService{
                 log.error("Virtual account creation failed for company {}: {}", company.getCompanyName(), ex.getMessage());
             }
         }
-        sendConfirmationMail(user, "localhost:3000");
+        sendConfirmationMail(user, frontendBaseUrl);
         return company;
     }
 
