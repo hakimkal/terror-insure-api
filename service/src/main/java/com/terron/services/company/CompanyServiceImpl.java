@@ -19,7 +19,8 @@ import com.terron.repository.hotels.ReservationsRepository;
 import com.terron.repository.payment.DailyTransactionRepository;
 import com.terron.repository.payment.PaymentRepository;
 import com.terron.repository.user.UserRepository;
-import com.terron.services.email.EmailServiceImpl;
+import com.terron.services.email.EmailService;
+import org.springframework.beans.factory.annotation.Value;
 import com.terron.services.payment.PaymentService;
 import com.terron.services.utils.*;
 import javassist.NotFoundException;
@@ -55,6 +56,11 @@ public class CompanyServiceImpl implements CompanyService{
     private final PaymentService paymentService;
 
     private final VirtualAccountRepository virtualAccountRepository;
+
+    private final EmailService emailService;
+
+    @Value("${app.mail.from-address}")
+    private String defaultFromAddress;
 
     @Autowired
     PaymentRepository paymentRepository;
@@ -471,7 +477,6 @@ public class CompanyServiceImpl implements CompanyService{
 
     private void sendConfirmationMail(Users applicationUser, String url) throws Exception {
         String toAddress = applicationUser.getEmailAddress();
-        String fromAddress = "o.ifeoluwah@gmail.com";
         String senderName = "Terror Insure";
         String subject = "Welcome to Terror insure";
         String verifyURL = url + "/verify?token=" + applicationUser.getVerificationToken();
@@ -482,7 +487,7 @@ public class CompanyServiceImpl implements CompanyService{
 
         String content = templateEngine.process("confirmationEmail", context);
 
-        new EmailServiceImpl().sendNotification(fromAddress, senderName, toAddress, subject, verifyURL, content);
+        emailService.sendNotification(defaultFromAddress, senderName, toAddress, subject, verifyURL, content);
     }
 
     public GuestInsuranceResponseDto dashboard() {

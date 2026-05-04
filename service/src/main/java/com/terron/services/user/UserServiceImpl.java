@@ -16,7 +16,8 @@ import com.terron.repository.hotels.GuestInsuranceRepository;
 import com.terron.repository.hotels.ReservationsRepository;
 import com.terron.repository.payment.PaymentRepository;
 import com.terron.repository.user.UserRepository;
-import com.terron.services.email.EmailServiceImpl;
+import com.terron.services.email.EmailService;
+import org.springframework.beans.factory.annotation.Value;
 import com.terron.services.utils.UserDetailsDto;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -63,9 +64,13 @@ public class UserServiceImpl implements UserService {
     @Autowired
     TemplateEngine templateEngine;
 
+    private final EmailService emailService;
+
+    @Value("${app.mail.from-address}")
+    private String defaultFromAddress;
+
     private void sendWelcomeMail(Users user) throws Exception {
         String toAddress = user.getEmailAddress();
-        String fromAddress = "o.ifeoluwah@gmail.com";
         String senderName = "Terror Insure";
         String subject = "Welcome to Terror insure";
 
@@ -75,7 +80,7 @@ public class UserServiceImpl implements UserService {
 
         String content = templateEngine.process("welcome", context);
 
-        new EmailServiceImpl().sendNotification(fromAddress, senderName, toAddress, subject, "verifyURL", content);
+        emailService.sendNotification(defaultFromAddress, senderName, toAddress, subject, "verifyURL", content);
     }
 
     @Override
@@ -99,7 +104,6 @@ public class UserServiceImpl implements UserService {
 
     private void sendConfirmResetPasswordEmail(Users user, String url) throws Exception {
         String toAddress = user.getEmailAddress();
-        String fromAddress = "o.ifeoluwah@gmail.com";
         String senderName = "Terror";
         String subject = "Welcome to Terror insure";
         String verifyURL = url + "/verify?token=" + user.getVerificationToken();
@@ -110,7 +114,7 @@ public class UserServiceImpl implements UserService {
 
         String content = templateEngine.process("resetPasswordConfirmation", context);
 
-        new EmailServiceImpl().sendNotification(fromAddress, senderName, toAddress, subject, verifyURL, content);
+        emailService.sendNotification(defaultFromAddress, senderName, toAddress, subject, verifyURL, content);
     }
 
 
@@ -125,7 +129,6 @@ public class UserServiceImpl implements UserService {
 
     private void sendResetPasswordEmail(Users user, String url) throws Exception {
         String toAddress = user.getEmailAddress();
-        String fromAddress = "o.ifeoluwah@gmail.com";
         String senderName = "Terror insure";
         String subject = "Reset your password";
         String verifyURL = url + "/verify?token=" + user.getVerificationToken();
@@ -136,7 +139,7 @@ public class UserServiceImpl implements UserService {
 
         String content = templateEngine.process("resetPassword", context);
 
-        new EmailServiceImpl().sendNotification(fromAddress, senderName, toAddress, subject, verifyURL, content);
+        emailService.sendNotification(defaultFromAddress, senderName, toAddress, subject, verifyURL, content);
     }
 
     @Override
