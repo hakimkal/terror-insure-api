@@ -140,7 +140,11 @@ public class CompanyServiceImpl implements CompanyService{
         userRepository.save(user);
 
         if(onboardCompanyDto.getCompanyType() == CompanyType.hotel){
-           createVirtualAccount(onboardCompanyDto, company);
+            try {
+                createVirtualAccount(onboardCompanyDto, company);
+            } catch (Exception ex) {
+                log.error("Virtual account creation failed for company {}: {}", company.getCompanyName(), ex.getMessage());
+            }
         }
         sendConfirmationMail(user, "localhost:3000");
         return company;
